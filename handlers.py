@@ -28,6 +28,7 @@ class HomeHandler(BaseHandler):
         skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
         experiences = yield self.db.execute("SELECT * FROM experience")
         educations = yield self.db.execute("SELECT * FROM educations")
+        projects = yield self.db.execute("SELECT * FROM projects")
         # entries = self.db.query("SELECT * FROM entries ORDER BY published "
         #                         "DESC LIMIT 5")
         # if not entries:
@@ -40,5 +41,6 @@ class HomeHandler(BaseHandler):
                                   skills=skills.fetchall(),
                                   experiences=experiences.fetchall(),
                                   educations=educations,
+                                  projects=projects,
                                   format_date=format_date)
 

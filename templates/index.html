@@ -227,285 +227,32 @@
               <div class="container">
                 <div class="portfolio-top-inner">
                    <h2 class="title">Portfolio</h2>
-                   <div class="controls">  
-                    <button class="filter waves-effect waves-light btn" data-filter="all">All</button>
-                    <button class="filter waves-effect waves-light btn" data-filter=".html">HTMl</button>
-                    <button class="filter waves-effect waves-light btn" data-filter=".design">Design</button>
-                    <button class="filter waves-effect waves-light btn" data-filter=".fashion">Fashion</button>
-                </div>
+                   <!--<div class="controls">  -->
+                    <!--<button class="filter waves-effect waves-light btn" data-filter="all">All</button>-->
+                    <!--<button class="filter waves-effect waves-light btn" data-filter=".html">HTMl</button>-->
+                    <!--<button class="filter waves-effect waves-light btn" data-filter=".design">Design</button>-->
+                    <!--<button class="filter waves-effect waves-light btn" data-filter=".fashion">Fashion</button>-->
+                  <!--</div>-->
               </div>
             </div>
             </div>
             <div class="portfolio-bottom">
               <div class="container">
                 <div class="portfolio-bottom-inner">
-                  <div id="portfolio-list">                    
+                  <div id="portfolio-list">
+                    {% for project in projects %}
                     <div class="mix html" data-value="2">
-                      <a href="#">
-                        <img src="/static/img/portfolio/html/html-2.jpg" alt="img">
+                      <a href="{{project['url']}}">
+                        <img src="/static/img/profireader.fw.png" alt="img">
                         <i class="material-icons view-icon">pageview</i>
                       </a>
                     </div>
-                    <div class="mix fashion" data-value="4">
-                      <a href="#">
-                        <img src="/static/img/portfolio/fashion/fashion-1.jpg" alt="img">
-                        <i class="material-icons view-icon">pageview</i>           
-                      </a>
-                    </div>
-                    <div class="mix design" data-value="1">
-                      <a href="#">
-                        <img src="/static/img/portfolio/design/design-1.jpg" alt="img">
-                        <i class="material-icons view-icon">pageview</i>
-                      </a>
-                    </div>
-                    <div class="mix html" data-value="5">
-                      <a href="#">
-                        <img src="/static/img/portfolio/html/html-1.jpg" alt="img">
-                        <i class="material-icons view-icon">pageview</i>
-                      </a>
-                    </div>
-                    <div class="mix fashion" data-value="3">
-                      <a href="#">
-                        <img src="/static/img/portfolio/fashion/fashion-2.jpg" alt="img">
-                        <i class="material-icons view-icon">pageview</i>
-                      </a>
-                    </div>
-                    <div class="mix design" data-value="9">
-                      <a href="#">
-                        <img src="/static/img/portfolio/design/design-2.jpg" alt="img">
-                        <i class="material-icons view-icon">pageview</i>
-                      </a>
-                    </div>
-                    <div class="mix html" data-value="12">
-                      <a href="#">
-                        <img src="/static/img/portfolio/html/html-3.jpg" alt="img">
-                        <i class="material-icons view-icon">pageview</i>
-                      </a>
-                    </div>
-                    <div class="mix fashion" data-value="7">
-                      <a href="#">
-                        <img src="/static/img/portfolio/fashion/fashion-3.jpg" alt="img">
-                        <i class="material-icons view-icon">pageview</i>
-                      </a>
-                    </div>
-                    <div class="mix design" data-value="6">
-                      <a href="#">
-                        <img src="/static/img/portfolio/design/design-3.jpg" alt="img">
-                        <i class="material-icons view-icon">pageview</i>
-                      </a>
-                    </div>
-
+                    {% end %}
                   </div>
                 </div>
               </div>
             </div>
           </section>
-          <!-- Start Facts -->
-          <section id="facts">
-            <div class="facts-overlay">
-              <div class="container">
-              <div class="row">
-                <div class="col s12">
-                  <div class="facts-inner">
-                    <div class="row">
-                      <div class="col s12 m4 l4">
-                        <div class="single-facts waves-effect waves-block waves-light">
-                          <i class="material-icons">work</i>
-                          <span class="counter">329</span>
-                          <span class="counter-text">Project Completed</span>
-                        </div>
-                      </div>
-                      <div class="col s12 m4 l4">
-                        <div class="single-facts waves-effect waves-block waves-light">
-                          <i class="material-icons">supervisor_account</i>
-                          <span class="counter">250</span>
-                          <span class="counter-text">Happy Clients</span>
-                        </div>
-                      </div>
-                      <div class="col s12 m4 l4">
-                        <div class="single-facts waves-effect waves-block waves-light">
-                          <i class="material-icons">redeem</i>
-                          <span class="counter">69</span>
-                          <span class="counter-text">Award Won</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            </div>
-          </section>
-          <!-- Testimonial -->
-          <section id="testimonial">
-            <div class="container">
-              <div class="row">
-               <div class="col s12">
-                 <div class="testimonial-inner">
-                   <h2 class="title">Testimonial</h2>
-                   <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.</p>
-                    <!-- Start Testimonial Slider -->
-                    <div class="testimonial-slider-area">
-                      <div id="owl-carousel2" class="testimonial-slider row">
-                        <div class="col s12">
-                          <div class="single-testimonial">
-                            <div class="testimonial-img">
-                              <img src="/static/img/profile-img.jpg" alt="img">
-                            </div>
-                            <div class="testimonial-content">
-                              <h3>Mike Jones</h3>
-                              <span>CEO, Google Inc.</span>
-                              <p>"The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout"</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col s12">
-                          <div class="single-testimonial">
-                            <div class="testimonial-img">
-                              <img src="/static/img/profile-img1.jpg" alt="img">
-                            </div>
-                            <div class="testimonial-content">
-                              <h3>Mike Jones</h3>
-                              <span>CEO, Google Inc.</span>
-                              <p>"The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout"</p>
-                            </div>
-                          </div>
-                        </div> 
-                        <div class="col s12">
-                          <div class="single-testimonial">
-                            <div class="testimonial-img">
-                              <img src="/static/img/profile-img.jpg" alt="img">
-                            </div>
-                            <div class="testimonial-content">
-                              <h3>Mike Jones</h3>
-                              <span>CEO, Google Inc.</span>
-                              <p>"The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout"</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col s12">
-                          <div class="single-testimonial">
-                            <div class="testimonial-img">
-                              <img src="/static/img/profile-img1.jpg" alt="img">
-                            </div>
-                            <div class="testimonial-content">
-                              <h3>Mike Jones</h3>
-                              <span>CEO, Google Inc.</span>
-                              <p>"The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout"</p>
-                            </div>
-                          </div>
-                        </div>                                       
-                      </div>
-                      <div class="customNavigation">
-                        <a class="btn prev2 btn-floating waves-effect waves-light btn-large white"><i class="mdi-navigation-chevron-left brand-text"></i></a>
-                        <a class="btn next2 btn-floating waves-effect waves-light btn-large white"><i class="mdi-navigation-chevron-right brand-text"></i></a>
-                      </div>                  
-                    </div>
-                 </div>
-               </div>
-               </div> 
-            </div>
-          </section>
-          <!-- Start Blog -->
-          <section id="blog">
-            <div class="container">
-              <div class="row">
-               <div class="col s12">
-                 <div class="blog-inner">
-                   <h2 class="title">Blog</h2>
-                   <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.</p>
-
-                  <!-- Start Blog area -->
-                  <div class="blog-area">
-                    <div class="row">
-                      <!-- Start single blog post -->
-                      <div class="col s12 m4 l4">
-                        <div class="blog-post">
-                          <div class="card">
-                            <div class="card-image">
-                              <img src="/static/img/blog1.jpg">
-                            </div>
-                            <div class="card-content blog-post-content">
-                              <h2><a href="blog-single.html">Awesome Post Title</a></h2>
-                              <div class="meta-media">
-                                <div class="single-meta">
-                                  Post By <a href="#">Admin</a>
-                                </div>
-                                <div class="single-meta">
-                                  Category : <a href="#">Web/Design</a>
-                                </div>
-                              </div>
-                              <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.</p>
-                            </div>
-                            <div class="card-action">
-                              <a class="post-comment" href="#"><i class="material-icons">comment</i><span>15</span></a>
-                              <a class="readmore-btn" href="blog-single.html">Read More</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- Start single blog post -->
-                      <div class="col s12 m4 l4">
-                        <div class="blog-post">
-                          <div class="card">
-                            <div class="card-image">
-                              <img src="/static/img/blog2.jpg">
-                            </div>
-                            <div class="card-content blog-post-content">
-                              <h2><a href="blog-single.html">Awesome Post Title</a></h2>
-                              <div class="meta-media">
-                                <div class="single-meta">
-                                  Post By <a href="#">Admin</a>
-                                </div>
-                                <div class="single-meta">
-                                  Category : <a href="#">Web/Design</a>
-                                </div>
-                              </div>
-                              <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.</p>
-                            </div>
-                            <div class="card-action">
-                              <a class="post-comment" href="#"><i class="material-icons">comment</i><span>10</span></a>
-                              <a class="readmore-btn" href="blog-single.html">Read More</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- Start single blog post -->
-                      <div class="col s12 m4 l4">
-                        <div class="blog-post">
-                          <div class="card">
-                            <div class="card-image">
-                              <img src="/static/img/blog3.jpg">
-                            </div>
-                            <div class="card-content blog-post-content">
-                              <h2><a href="blog-single.html">Awesome Post Title</a></h2>
-                              <div class="meta-media">
-                                <div class="single-meta">
-                                  Post By <a href="#">Admin</a>
-                                </div>
-                                <div class="single-meta">
-                                  Category : <a href="#">Web/Design</a>
-                                </div>
-                              </div>
-                              <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.</p>
-                            </div>
-                            <div class="card-action">
-                              <a class="post-comment" href="#"><i class="material-icons">comment</i><span>15</span></a>
-                              <a class="readmore-btn" href="blog-single.html">Read More</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- All Post Button -->
-                    <a class="waves-effect waves-light btn-large allpost-btn" href="blog-archive.html">All Post</a>
-                  </div>                    
-                 </div>
-                </div>
-              </div> 
-            </div>
-          </section>
-          <!-- Start Footer -->
           <footer id="footer" role="contentinfo">
             <!-- Start Footer Top -->
             <div class="footer-top">
