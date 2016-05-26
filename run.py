@@ -8,15 +8,16 @@ from urls import hundlers
 import momoko
 import config
 from tornado.ioloop import IOLoop
+from concurrent.futures import ThreadPoolExecutor
 
 def run():
-    tornado.options.parse_command_line()
-    http_server = tornado.httpserver.HTTPServer(Application())
-    http_server.listen(8888)
+    aplication = Application()
+    aplication.listen(8888)
     tornado.ioloop.IOLoop.current().start()
 
 class Application(tornado.web.Application):
     def __init__(self):
+        _workers = ThreadPoolExecutor(max_workers=10)
         handlers = hundlers
         settings = dict(
             portfolio_title=u"Stepan Shysh",
