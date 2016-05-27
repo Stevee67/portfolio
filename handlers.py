@@ -7,6 +7,7 @@ from urllib import parse
 import tornado.ioloop
 
 class BaseHandler(tornado.web.RequestHandler):
+
     @property
     def db(self):
         return self.application.db
@@ -50,7 +51,6 @@ class HomeHandler(BaseHandler):
 
     @tornado.gen.coroutine
     def post(self):
-        print(self.get_argument('name'))
         message = """ Message from %(from)s \n
             User email %(email)s \n
             Subject: %(subject)s \n
@@ -60,7 +60,5 @@ class HomeHandler(BaseHandler):
                                        'message': self.get_argument('message')}
 
         tornado.ioloop.IOLoop.current().spawn_callback(send_message_async, message)
-        # print(message)
-        # self.write(message)
 
 
