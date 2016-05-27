@@ -48,4 +48,15 @@ class HomeHandler(BaseHandler):
                                   projects=projects,
                                   format_date=format_date)
 
+    @tornado.gen.coroutine
+    def post(self):
+        message = """ Message from %(from)s \n
+            User email %(email)s \n
+            Subject: %(subject)s \n
+            Message: %(message)s""" % {'from': self.get_argument('contactName'),
+                                       'email': self.get_argument('contactEmail'),
+                                       'subject': self.get_argument('contactSubject'),
+                                       'message': self.get_argument('contactMessage')}
+        print(message)
+
 
