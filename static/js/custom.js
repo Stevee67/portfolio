@@ -216,36 +216,35 @@ jQuery(function($){
 });
 function send_email(){
 	var data = {};
-	var required_fields = ['contactName', 'contactEmail', 'contactSubject', 'contactMessage'];
+	var required_fields = ['name', 'email', 'subject', 'message'];
 	for(var i=0; i<required_fields.length; i++){
-		var field_obj = document.getElementsByName(required_fields[i]);
-		console.log(field_obj.value);
+		var field_obj = document.getElementById(required_fields[i]);
 		var field_obj_val = field_obj.value;
-		// if(field_obj_val){
-		// 	data[required_fields[i]] = field_obj_val;
-		// }
-		// else{
-		// 	swal({title: "Please fill all fields",text: "Please fill <span style='color:#F8BB86'>"+required_fields[i]+ "</span> field.", timer:3000, html: true });
-		// 	return
-		// }
+		if(field_obj_val){
+			data[required_fields[i]] = field_obj_val;
+		}
+		else{
+			flash("Please fill field "+"<span style='color:red'>"+required_fields[i]+ "</span>"+"!");
+			return
+		}
 	}
+	console.log(data)
 	$.ajax({
 		url: '/',
 		type: 'post',
 		data: data,
 		success: function (data) {
-			console.log('dsa')
 			flash("Thank you for you message. I'll answer you in a few hours.")
 		}
 	})
 }
 
 function flash(message) {
-    var $flashMsg = message
-    if ($flashMsg.length) { // we've got one
-       var top = $flashMsg.offset().top;
-       $('html,body').animate({ scrollTop: top })
-                     .delay(3000)
-                     .animate({ scrollTop: 0 });
-    }
+    $(".flash").remove();
+    $('body').prepend(
+        '<div class="flash">' +
+            message +
+        '</div>'
+    );
+    $(".flash").delay(4000).fadeOut();
 }

@@ -39,6 +39,21 @@ h6{
   font-family: "Roboto",sans-serif;
 }
 
+.flash {
+  position: fixed;
+  z-index: 1;
+  top: 100px;
+  left: 10px;
+  color: #fff;
+  font-size: 19px;
+  width: 20%;
+  padding: 20px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background-color: #2a292f
+}
+
 
 .custom-nav li a{
   font-family: "Roboto",sans-serif;

@@ -1,6 +1,6 @@
 import tornado.web
 import tornado.gen
-from modules.utils import format_date
+from modules.utils import format_date, send_message_async, send_message
 import requests
 import datetime
 from urllib import parse
@@ -50,13 +50,17 @@ class HomeHandler(BaseHandler):
 
     @tornado.gen.coroutine
     def post(self):
+        print(self.get_argument('name'))
         message = """ Message from %(from)s \n
             User email %(email)s \n
             Subject: %(subject)s \n
-            Message: %(message)s""" % {'from': self.get_argument('contactName'),
-                                       'email': self.get_argument('contactEmail'),
-                                       'subject': self.get_argument('contactSubject'),
-                                       'message': self.get_argument('contactMessage')}
-        print(message)
+            Message: %(message)s""" % {'from': self.get_argument('name'),
+                                       'email': self.get_argument('email'),
+                                       'subject': self.get_argument('subject'),
+                                       'message': self.get_argument('message')}
+
+        tornado.ioloop.IOLoop.current().spawn_callback(send_message_async, message)
+        # print(message)
+        # self.write(message)
 
 
