@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="PostgreSQL - postgres@localhost" uuid="9006d150-87de-4144-b730-079a94e532a1">
+      <secret-storage>memory</secret-storage>
+      <first-sync>true</first-sync>
+      <ssh-properties>
+        <enabled>true</enabled>
+        <proxy-host>192.168.0.146</proxy-host>
+        <proxy-port>22</proxy-port>
+        <secret-storage>master_key</secret-storage>
+        <user>webdev</user>
+        <use-password>true</use-password>
+        <password>dfdddfcfdfc8dfcedfcfdfdcdff5dfcbdfc9dfc9dfcfdfd9dfd9</password>
+      </ssh-properties>
+    </data-source>
+  </component>
+</project>
