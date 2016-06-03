@@ -214,6 +214,15 @@ jQuery(function($){
 
 	
 });
+
+get_personal_info = function () {
+	console.log('here')
+	$.post('/admin/personal_info', function (data) {
+
+	})
+}
+get_personal_info()
+
 function send_email(){
 	var data = {};
 	var required_fields = ['name', 'email', 'subject', 'message'];
@@ -228,7 +237,6 @@ function send_email(){
 			return
 		}
 	}
-	console.log(data)
 	$.ajax({
 		url: '/',
 		type: 'post',

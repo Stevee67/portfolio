@@ -1,10 +1,11 @@
 import tornado.web
 import tornado.gen
-from modules.utils import format_date, send_message_async, send_message
+from modules.utils import format_date, send_message_async, dict_from_cursor
 import requests
 import datetime
 from urllib import parse
 import tornado.ioloop
+import json
 
 class BaseHandler(tornado.web.RequestHandler):
 
@@ -60,5 +61,44 @@ class HomeHandler(BaseHandler):
                                        'message': self.get_argument('message')}
 
         tornado.ioloop.IOLoop.current().spawn_callback(send_message_async, message)
+
+
+class AdminHandler(BaseHandler):
+
+    @tornado.gen.coroutine
+    def get(self):
+        self.render("admin/index.html")
+
+class FormsHandler(BaseHandler):
+
+    @tornado.gen.coroutine
+    def get(self):
+        self.render("admin/form_component.html")
+
+class EditPersonalInfo(BaseHandler):
+
+    @tornado.gen.coroutine
+    def get(self):
+        self.render("admin/personal_info.html")
+
+    @tornado.gen.coroutine
+    def post(self):
+        personal_info = yield self.db.execute("SELECT * FROM personal_info")
+        dict_info = dict_from_cursor(personal_info)
+        self.write(dict_info)
+
+    @tornado.gen.coroutine
+    def put(self, *args, **kwargs):
+        data = json.loads(self.request.body.decode())
+        yield self.db.execute(""" UPDATE personal_info SET name='{name}',
+                                        lastname='{lastname}',email='{email}',
+                                        about_me='{about_me}', age={age},
+                                        phone='{phone}',address='{address}',
+                                        skype='{skype}',linkedin='{linkedin}',
+                                        facebook='{facebook}' """.format(**data))
+        self.write(data)
+
+
+
 
 

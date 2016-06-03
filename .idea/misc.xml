@@ -10,5 +10,5 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.4.2 (ssh://webdev@192.168.0.146:22/home/webdev/Projects/.venv/bin/python3.4)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.4.2 (ssh://webdev@192.168.0.56:22/home/webdev/Projects/.venv/bin/python3.4)" project-jdk-type="Python SDK" />
 </project>
