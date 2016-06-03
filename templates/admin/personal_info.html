@@ -1,0 +1,118 @@
+{% extends 'main.html' %}
+<script src="/static/admin/js/form-component.js"></script>
+{% block content %}
+
+<script>
+    portfolioApp.controller('myCtrl', function($scope, $http) {
+        $scope.firstName = "John";
+        $scope.lastName = "Doe";
+        $scope.get_personal_info = function () {
+            return $http({ method: 'POST',url: '/admin/personal_info'}).then(function successCallback(response) {
+                $scope.info = response.data
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+        }
+
+        $scope.save = function(info) {
+            return $http({ method: 'PUT',url: '/admin/personal_info', data: info}).then(function successCallback(response) {
+                $scope.info = response.data
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+        }
+
+    });
+
+</script>
+<section ng-init="get_personal_info()" id="main-content" style="margin-bottom: 200px" ng-controller="myCtrl">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-file-text-o"></i> Form elements</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+                    <li><i class="icon_document_alt"></i>Forms</li>
+                    <li><i class="fa fa-file-text-o"></i>Form elements</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Form Elements
+                    </header>
+                    <div class="panel-body">
+                        <form class="form-horizontal " method="get">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">FirstName</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="info.name" placeholder="put your name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">LastName</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="info.lastname" placeholder="put your last name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Email</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="info.email" placeholder="put your email">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Age</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" ng-model="info.age" placeholder="put your age">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Phone</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" ng-model="info.phone" placeholder="put your phone">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Address</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" ng-model="info.address" placeholder="put your address">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Skype</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="info.skype" placeholder="put your skype">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Linkedin</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="info.linkedin" placeholder="put your linkedin url">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Facebook</label>
+                                <div class="col-lg-7">
+                                    <input type="text" class="form-control" ng-model="info.facebook" placeholder="put your facebook url">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                    <label class="col-lg-2 control-label">About Me</label>
+                                <div class="col-sm-7">
+                                    <textarea class="form-control" rows="6" ng-model="info.about_me"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                        <button style="float: right;" type="submit" class="btn btn-primary" ng-click="save(info)">Save</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+{% end %}

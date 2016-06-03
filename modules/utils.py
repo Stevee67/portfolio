@@ -35,3 +35,11 @@ def send_message_async(message):
 @tornado.gen.coroutine
 def call_blocking_func(func, *args):
     threading.Thread(target=func, args=args).start()
+
+def dict_from_cursor(cursor):
+    keys = cursor.description
+    obj = cursor.fetchone()
+    new_dict = {}
+    for k in keys:
+        new_dict[k[0]] = obj[k[0]]
+    return new_dict

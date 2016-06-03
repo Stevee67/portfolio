@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 def run():
     aplication = Application()
-    aplication.listen(8888)
+    aplication.listen(8888, '0.0.0.0')
     tornado.ioloop.IOLoop.current().start()
 
 class Application(tornado.web.Application):
