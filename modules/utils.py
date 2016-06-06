@@ -36,10 +36,21 @@ def send_message_async(message):
 def call_blocking_func(func, *args):
     threading.Thread(target=func, args=args).start()
 
-def dict_from_cursor(cursor):
+def dict_from_cursor_one(cursor):
     keys = cursor.description
     obj = cursor.fetchone()
     new_dict = {}
     for k in keys:
         new_dict[k[0]] = obj[k[0]]
     return new_dict
+
+def dict_from_cursor_all(cursor):
+    keys = cursor.description
+    objs = cursor.fetchall()
+    list_objs = []
+    for obj in objs:
+        new_dict = {}
+        for k in keys:
+            new_dict[k[0]] = obj[k[0]]
+        list_objs.append(new_dict)
+    return list_objs

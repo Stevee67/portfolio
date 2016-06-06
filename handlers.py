@@ -1,11 +1,12 @@
 import tornado.web
 import tornado.gen
-from modules.utils import format_date, send_message_async, dict_from_cursor
+from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all
 import requests
 import datetime
 from urllib import parse
 import tornado.ioloop
 import json
+import re
 
 class BaseHandler(tornado.web.RequestHandler):
 
@@ -36,13 +37,13 @@ class HomeHandler(BaseHandler):
 
     @tornado.gen.coroutine
     def get(self):
-        response = requests.get('http://ipinfo.io')
+        # response = requests.get('http://ipinfo.io')
         user = yield self.db.execute("SELECT * FROM personal_info")
         skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
         experiences = yield self.db.execute("SELECT * FROM experience")
         educations = yield self.db.execute("SELECT * FROM educations")
         projects = yield self.db.execute("SELECT * FROM projects")
-        tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
+        # tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
         self.render("index.html", user=user.fetchone(),
                                   skills=skills.fetchall(),
                                   experiences=experiences.fetchall(),
@@ -77,6 +78,8 @@ class FormsHandler(BaseHandler):
 
 class EditPersonalInfo(BaseHandler):
 
+    __required_fields = []
+
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/personal_info.html")
@@ -84,7 +87,7 @@ class EditPersonalInfo(BaseHandler):
     @tornado.gen.coroutine
     def post(self):
         personal_info = yield self.db.execute("SELECT * FROM personal_info")
-        dict_info = dict_from_cursor(personal_info)
+        dict_info = dict_from_cursor_one(personal_info)
         self.write(dict_info)
 
     @tornado.gen.coroutine
@@ -97,6 +100,55 @@ class EditPersonalInfo(BaseHandler):
                                         skype='{skype}',linkedin='{linkedin}',
                                         facebook='{facebook}' """.format(**data))
         self.write(data)
+
+class EditSkills(BaseHandler):
+
+    _actions = ['add', 'edit']
+
+    __required_fields = []
+
+    @tornado.gen.coroutine
+    def get(self):
+        self.render("admin/skills.html")
+
+    @tornado.gen.coroutine
+    def post(self):
+        skills = yield self.db.execute("SELECT * FROM skils WHERE user_id='{}'".format('984e586d-bd84-4ecc-b261-46b1c9c00c8c'))
+        list_skills= dict_from_cursor_all(skills)
+        self.write({'skills': list_skills})
+
+    @tornado.gen.coroutine
+    def put(self, *args, **kwargs):
+        data = json.loads(self.request.body.decode())
+        data['user_id'] = '984e586d-bd84-4ecc-b261-46b1c9c00c8c'
+        action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
+        if action in EditSkills._actions:
+            if action == 'add':
+                yield self.db.execute(""" INSERT INTO skils(name, kn_percent, user_id)
+                                          VALUES('{0}', {1}, '{2}')""".format(data['name'],
+                                                                              data['kn_percent'], data['user_id']))
+            elif action == 'edit':
+                yield self.db.execute(""" UPDATE skils SET name='{name}',
+                                        kn_percent={kn_percent},user_id='{user_id}'""".format(**data) +
+                                      """ WHERE id ='{}'""".format(data['id']))
+            skills = yield self.db.execute(
+                "SELECT * FROM skils WHERE user_id='{}'".format('984e586d-bd84-4ecc-b261-46b1c9c00c8c'))
+            list_skills = dict_from_cursor_all(skills)
+            self.write({'skills': list_skills})
+        else:
+            self.write({'skills': {}, 'error': 'Bad action!'})
+
+    @tornado.gen.coroutine
+    def delete(self):
+        data = json.loads(self.request.body.decode())
+        yield self.db.execute(
+            "DELETE FROM skils WHERE id='{}'".format(data['id']))
+        skills = yield self.db.execute(
+            "SELECT * FROM skils WHERE user_id='{}'".format('984e586d-bd84-4ecc-b261-46b1c9c00c8c'))
+        list_skills = dict_from_cursor_all(skills)
+        self.write({'skills': list_skills})
+
+
 
 
 
