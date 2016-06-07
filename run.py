@@ -22,7 +22,7 @@ class Application(tornado.web.Application):
             portfolio_title=u"Stepan Shysh",
             template_path=config.TEMPLATE_PATH,
             static_path=config.STATIC_PATH,
-            cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
+            cookie_secret=config.SECRET_COOKIE,
             login_url="/auth/login",
             debug=True,
         )

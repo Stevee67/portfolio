@@ -6,3 +6,14 @@ var portfolioApp = angular.module('portfolio_app', [])
 
 portfolioApp.run(function($http) {
 });
+
+
+function flash(message) {
+    $(".flash").remove();
+    $('body').prepend(
+        '<div class="flash">' +
+            message +
+        '</div>'
+    );
+    $(".flash").delay(4000).fadeOut();
+}
