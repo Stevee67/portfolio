@@ -1,7 +1,7 @@
 import tornado.web
 import tornado.gen
-from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all
-import requests
+from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
+    generate_password, verify_password
 import datetime
 from urllib import parse
 import tornado.ioloop
@@ -19,9 +19,7 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.application.db_connect
 
     def get_current_user(self):
-        user_id = '984e586d-bd84-4ecc-b261-46b1c9c00c8c'
-        if not user_id: return None
-        return  self.db.execute("SELECT * FROM personal_info WHERE id = '{}'".format(user_id))
+        return self.get_secure_cookie("email")
 
     @tornado.gen.coroutine
     def save_visitors(self, data):
@@ -38,7 +36,7 @@ class HomeHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
         # response = requests.get('http://ipinfo.io')
-        user = yield self.db.execute("SELECT * FROM personal_info")
+        user = yield self.db.execute("SELECT * FROM users")
         skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
         experiences = yield self.db.execute("SELECT * FROM experience")
         educations = yield self.db.execute("SELECT * FROM educations")
@@ -68,7 +66,11 @@ class AdminHandler(BaseHandler):
 
     @tornado.gen.coroutine
     def get(self):
-        self.render("admin/index.html")
+        if not self.current_user:
+            self.redirect('/admin/login')
+        else:
+            print(self.current_user)
+            self.render("admin/index.html")
 
 class FormsHandler(BaseHandler):
 
@@ -80,20 +82,23 @@ class EditPersonalInfo(BaseHandler):
 
     __required_fields = []
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/personal_info.html")
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
-        personal_info = yield self.db.execute("SELECT * FROM personal_info")
+        personal_info = yield self.db.execute("SELECT * FROM users")
         dict_info = dict_from_cursor_one(personal_info)
         self.write(dict_info)
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
         data = json.loads(self.request.body.decode())
-        yield self.db.execute(""" UPDATE personal_info SET name='{name}',
+        yield self.db.execute(""" UPDATE users SET name='{name}',
                                         lastname='{lastname}',email='{email}',
                                         about_me='{about_me}', age={age},
                                         phone='{phone}',address='{address}',
@@ -107,16 +112,19 @@ class EditSkills(BaseHandler):
 
     __required_fields = []
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/skills.html")
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         skills = yield self.db.execute("SELECT * FROM skils WHERE user_id='{}'".format('984e586d-bd84-4ecc-b261-46b1c9c00c8c'))
         list_skills= dict_from_cursor_all(skills)
         self.write({'skills': list_skills})
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
         data = json.loads(self.request.body.decode())
@@ -138,6 +146,7 @@ class EditSkills(BaseHandler):
         else:
             self.write({'skills': {}, 'error': 'Bad action!'})
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
         data = json.loads(self.request.body.decode())
@@ -147,6 +156,40 @@ class EditSkills(BaseHandler):
             "SELECT * FROM skils WHERE user_id='{}'".format('984e586d-bd84-4ecc-b261-46b1c9c00c8c'))
         list_skills = dict_from_cursor_all(skills)
         self.write({'skills': list_skills})
+
+class Login(BaseHandler):
+
+    @tornado.gen.coroutine
+    def get(self):
+        if self.current_user:
+            self.redirect('/admin')
+        self.render("admin/login.html")
+
+    @tornado.gen.coroutine
+    def post(self):
+        data = json.loads(self.request.body.decode())
+        if not 'password' in data:
+            self.write({'error': 'fill password'})
+            return
+        if not 'email' in data:
+            self.write({'error': 'fill email'})
+            return
+
+        user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(data['email']))
+        cur = user.fetchone()
+
+        if cur and verify_password(cur['password_hash'], data['password']):
+            self.set_secure_cookie("email", data['email'])
+            self.write({'login':'SUCCESS'})
+
+class Logout(BaseHandler):
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def get(self):
+        self.set_secure_cookie("email", '')
+        self.redirect("/")
+
 
 
 
