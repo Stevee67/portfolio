@@ -7,7 +7,6 @@ from urllib import parse
 import tornado.ioloop
 import json
 import re
-from tornado.gen import Return
 
 class BaseHandler(tornado.web.RequestHandler):
 
