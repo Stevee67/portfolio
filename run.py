@@ -10,11 +10,6 @@ from tornado.ioloop import IOLoop
 from concurrent.futures import ThreadPoolExecutor
 from handlers import ErrorHandler
 
-def run():
-    aplication = Application()
-    aplication.listen(8888, '0.0.0.0')
-    tornado.ioloop.IOLoop.current().start()
-
 class Application(tornado.web.Application):
     def __init__(self):
         _workers = ThreadPoolExecutor(max_workers=10)
@@ -39,31 +34,10 @@ class Application(tornado.web.Application):
         ioloop.start()
         future.result()  # raises exception on connection error
 
-
-
-
-        # self.db = momoko.Pool(url, size=5)
-        # future = self.db.connect()
-        # ioloop.add_future(future, lambda x: ioloop.stop())
-        # ioloop.start()
-        # future.result()
-        # Have one global connection to the blog DB across all handlers
-        # self.db = torndb.Connection(
-        #     host=options.mysql_host, database=options.mysql_database,
-        #     user=options.mysql_user, password=options.mysql_password)
-        #
-        # self.maybe_create_tables()
-
-    # def maybe_create_tables(self):
-    #     try:
-    #         self.db.get("SELECT COUNT(*) from entries;")
-    #     except MySQLdb.ProgrammingError:
-    #         subprocess.check_call(['mysql',
-    #                                '--host=' + options.mysql_host,
-    #                                '--database=' + options.mysql_database,
-    #                                '--user=' + options.mysql_user,
-    #                                '--password=' + options.mysql_password],
-    #                               stdin=open('schema.sql'))
+application = Application()
+def run():
+    application.listen(8888, '0.0.0.0')
+    tornado.ioloop.IOLoop.current().start()
 
 
 if __name__ == "__main__":
