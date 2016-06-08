@@ -8,6 +8,7 @@ import momoko
 import config
 from tornado.ioloop import IOLoop
 from concurrent.futures import ThreadPoolExecutor
+from handlers import ErrorHandler
 
 def run():
     aplication = Application()
@@ -23,6 +24,8 @@ class Application(tornado.web.Application):
             template_path=config.TEMPLATE_PATH,
             static_path=config.STATIC_PATH,
             cookie_secret=config.SECRET_COOKIE,
+            default_handler_class=ErrorHandler,
+            default_handler_args= dict(status_code=404),
             login_url="/auth/login",
             debug=True,
         )

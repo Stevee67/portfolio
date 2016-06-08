@@ -5,6 +5,8 @@
 <script>
     portfolioApp.controller('personal_info', function($scope, $http) {
 
+        $scope.change_password = {};
+
         $scope.get_personal_info = function () {
             return $http({ method: 'POST',url: '/admin/personal_info'}).then(function successCallback(response) {
                 $scope.info = response.data
@@ -12,11 +14,26 @@
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
             });
-        }
+        };
 
         $scope.save = function(info) {
-            return $http({ method: 'PUT',url: '/admin/personal_info', data: info}).then(function successCallback(response) {
-                $scope.info = response.data
+            return $http({ method: 'PUT',url: '/admin/personal_info?edit', data: info}).then(function successCallback(response) {
+                $scope.info = response.data.data
+                if('success' in response.data)
+                    flash(response.data.success)
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+        };
+
+        $scope.change_pass = function(data) {
+            return $http({ method: 'PUT',url: '/admin/personal_info?passchange', data: data}).then(function successCallback(response) {
+                if('success' in response.data){
+                    flash(response.data.success)
+                }else if('error' in response.data){
+                    flash(response.data.error)
+                }
             }, function errorCallback(response) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -42,7 +59,7 @@
             <div class="col-lg-12">
                 <section class="panel">
                     <header class="panel-heading">
-                        Form Elements
+                        Personal info
                     </header>
                     <div class="panel-body">
                         <form class="form-horizontal " method="get">
@@ -108,6 +125,28 @@
                             </div>
                         </form>
                         <button style="float: right;" type="submit" class="btn btn-primary" ng-click="save(info)">Save</button>
+                    </div>
+                </section>
+                <section class="panel">
+                    <header class="panel-heading">
+                        Change password
+                    </header>
+                    <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">New password</label>
+                                <div class="col-sm-7">
+                                    <input type="password" class="form-control" ng-model="change_password.new_pass" placeholder="put new password">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Check password</label>
+                                <div class="col-sm-7">
+                                    <input type="password" class="form-control" ng-model="change_password.check_pass" placeholder="check new password">
+                                </div>
+                            </div>
+                        </form>
+                        <button style="float: right;" type="submit" class="btn btn-primary" ng-click="change_pass(change_password)">Change</button>
                     </div>
                 </section>
             </div>

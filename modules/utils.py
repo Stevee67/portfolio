@@ -33,8 +33,8 @@ def send_message_async(message):
     yield call_blocking_func(send_message, message)
 
 @tornado.gen.coroutine
-def call_blocking_func(func, *args):
-    threading.Thread(target=func, args=args).start()
+def call_blocking_func(func, *args, **kwargs):
+    threading.Thread(target=func, args=args, kwargs=kwargs).start()
 
 def dict_from_cursor_one(cursor):
     keys = cursor.description

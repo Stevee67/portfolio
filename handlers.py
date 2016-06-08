@@ -1,12 +1,13 @@
 import tornado.web
 import tornado.gen
 from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
-    generate_password, verify_password
+    generate_password, verify_password, call_blocking_func
 import datetime
 from urllib import parse
 import tornado.ioloop
 import json
 import re
+from tornado.gen import Return
 
 class BaseHandler(tornado.web.RequestHandler):
 
@@ -17,6 +18,7 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def db_connect(self):
         return self.application.db_connect
+
 
     def get_current_user(self):
         return self.get_secure_cookie("email")
@@ -30,6 +32,17 @@ class BaseHandler(tornado.web.RequestHandler):
                               format(data['ip'], data['loc'], datetime.datetime.now(), data['city'], data['country'],
                                      region, data['hostname']))
 
+    def write_error(self, status_code, **kwargs):
+        if status_code in [403, 404, 500, 503]:
+            self.render("admin/404.html")
+        else:
+            self.write('BOOM!')
+
+    @tornado.gen.coroutine
+    def get_current_user_dict(self):
+        email = self.current_user.decode()
+        cur = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(email))
+        return dict_from_cursor_one(cur)
 
 class HomeHandler(BaseHandler):
 
@@ -69,7 +82,6 @@ class AdminHandler(BaseHandler):
         if not self.current_user:
             self.redirect('/admin/login')
         else:
-            print(self.current_user)
             self.render("admin/index.html")
 
 class FormsHandler(BaseHandler):
@@ -80,6 +92,7 @@ class FormsHandler(BaseHandler):
 
 class EditPersonalInfo(BaseHandler):
 
+    _actions = ['passchange', 'edit']
     __required_fields = []
 
     @tornado.web.authenticated
@@ -98,17 +111,32 @@ class EditPersonalInfo(BaseHandler):
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
         data = json.loads(self.request.body.decode())
-        yield self.db.execute(""" UPDATE users SET name='{name}',
-                                        lastname='{lastname}',email='{email}',
-                                        about_me='{about_me}', age={age},
-                                        phone='{phone}',address='{address}',
-                                        skype='{skype}',linkedin='{linkedin}',
-                                        facebook='{facebook}' """.format(**data))
-        self.write(data)
+        action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
+        user = yield self.get_current_user_dict()
+        if action in EditPersonalInfo._actions:
+            if action == 'edit':
+                yield self.db.execute(""" UPDATE users SET name='{name}',
+                                                lastname='{lastname}',email='{email}',
+                                                about_me='{about_me}', age={age},
+                                                phone='{phone}',address='{address}',
+                                                skype='{skype}',linkedin='{linkedin}',
+                                                facebook='{facebook}' """.format(**data)+
+                                                " WHERE id='{}'".format(user['id']))
+                self.write({'data':data, 'success': 'You successful change your info!'})
+            elif action == 'passchange' and data['new_pass']:
+                if data['new_pass'] == data['check_pass']:
+                    yield self.db.execute(""" UPDATE users SET password_hash='{}'""".format(generate_password(data['new_pass'])) +
+                                          " WHERE id='{}'".format(user['id']))
+
+                    self.write({'success': 'You successful change password!'})
+                else:
+                    self.write({'error': 'Fill in the same password!'})
+
+
 
 class EditSkills(BaseHandler):
 
-    _actions = ['add', 'edit']
+    _actions = ['change_password', 'edit']
 
     __required_fields = []
 
@@ -128,7 +156,8 @@ class EditSkills(BaseHandler):
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
         data = json.loads(self.request.body.decode())
-        data['user_id'] = '984e586d-bd84-4ecc-b261-46b1c9c00c8c'
+        user = yield self.get_current_user_dict()
+        data['user_id'] = user['id']
         action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
         if action in EditSkills._actions:
             if action == 'add':
@@ -140,7 +169,7 @@ class EditSkills(BaseHandler):
                                         kn_percent={kn_percent},user_id='{user_id}'""".format(**data) +
                                       """ WHERE id ='{}'""".format(data['id']))
             skills = yield self.db.execute(
-                "SELECT * FROM skils WHERE user_id='{}'".format('984e586d-bd84-4ecc-b261-46b1c9c00c8c'))
+                "SELECT * FROM skils WHERE user_id='{}'".format(user['id']))
             list_skills = dict_from_cursor_all(skills)
             self.write({'skills': list_skills})
         else:
@@ -149,11 +178,12 @@ class EditSkills(BaseHandler):
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
+        user = yield self.get_current_user_dict()
         data = json.loads(self.request.body.decode())
         yield self.db.execute(
             "DELETE FROM skils WHERE id='{}'".format(data['id']))
         skills = yield self.db.execute(
-            "SELECT * FROM skils WHERE user_id='{}'".format('984e586d-bd84-4ecc-b261-46b1c9c00c8c'))
+            "SELECT * FROM skils WHERE user_id='{}'".format(user['id']))
         list_skills = dict_from_cursor_all(skills)
         self.write({'skills': list_skills})
 
@@ -168,19 +198,26 @@ class Login(BaseHandler):
     @tornado.gen.coroutine
     def post(self):
         data = json.loads(self.request.body.decode())
-        if not 'password' in data:
-            self.write({'error': 'fill password'})
-            return
         if not 'email' in data:
-            self.write({'error': 'fill email'})
+            self.write({'error': 'Please fill in email!'})
+            return
+        if not re.match('(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', data['email']):
+            self.write({'error': 'Incorrect email!'})
+            return
+        if not 'password' in data:
+            self.write({'error': 'Please fill in password!'})
             return
 
         user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(data['email']))
         cur = user.fetchone()
-
+        if not cur:
+            self.write({'error': 'User for this email does not exist!'})
+            return
         if cur and verify_password(cur['password_hash'], data['password']):
             self.set_secure_cookie("email", data['email'])
             self.write({'login':'SUCCESS'})
+        else:
+            self.write({'error': 'Password for this email is wrong!'})
 
 class Logout(BaseHandler):
 
@@ -189,6 +226,12 @@ class Logout(BaseHandler):
     def get(self):
         self.set_secure_cookie("email", '')
         self.redirect("/")
+
+class ErrorHandler(tornado.web.ErrorHandler, BaseHandler):
+    """
+    Default handler gonna to be used in case of 404 error
+    """
+    pass
 
 
 
