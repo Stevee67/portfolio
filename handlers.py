@@ -1,7 +1,7 @@
 import tornado.web
 import tornado.gen
 from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
-    generate_password, verify_password, call_blocking_func
+    generate_password, verify_password, strip_date
 import datetime
 from urllib import parse
 import tornado.ioloop
@@ -135,7 +135,7 @@ class EditPersonalInfo(BaseHandler):
 
 class EditSkills(BaseHandler):
 
-    _actions = ['change_password', 'edit']
+    _actions = ['add', 'edit']
 
     __required_fields = []
 
@@ -147,7 +147,8 @@ class EditSkills(BaseHandler):
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
-        skills = yield self.db.execute("SELECT * FROM skils WHERE user_id='{}'".format('984e586d-bd84-4ecc-b261-46b1c9c00c8c'))
+        user = yield self.get_current_user_dict()
+        skills = yield self.db.execute("SELECT * FROM skils WHERE user_id='{}'".format(user['id']))
         list_skills= dict_from_cursor_all(skills)
         self.write({'skills': list_skills})
 
@@ -185,6 +186,71 @@ class EditSkills(BaseHandler):
             "SELECT * FROM skils WHERE user_id='{}'".format(user['id']))
         list_skills = dict_from_cursor_all(skills)
         self.write({'skills': list_skills})
+
+class EditExperience(BaseHandler):
+
+    _actions = ['add', 'edit']
+
+    __required_fields = []
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def get(self):
+        self.render("admin/experience.html")
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def post(self):
+        user = yield self.get_current_user_dict()
+        experiences = yield self.db.execute("SELECT * FROM experience WHERE user_id='{}'".format(user['id']))
+        list_experiences= dict_from_cursor_all(experiences)
+        self.write({'experiences': list_experiences})
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def put(self, *args, **kwargs):
+        data = json.loads(self.request.body.decode())
+        user = yield self.get_current_user_dict()
+        action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
+        print(data)
+        data['w_from'] = strip_date(data['w_from'])
+        data['w_to'] = strip_date(data['w_to'])
+        if action in EditExperience._actions:
+            if action == 'add':
+                yield self.db.execute(""" INSERT INTO experience(title, subtitle, w_from, w_to, description, user_id)
+                                          VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')""".format(data['title'],
+                                                                              data['subtitle'], data['w_from'],
+                                                                              data['w_to'], data['description'], user['id']))
+            elif action == 'edit':
+                if data['w_to']:
+                    yield self.db.execute(""" UPDATE experience SET
+                                            title='{title}',
+                                            subtitle='{subtitle}',
+                                            w_from='{w_from}', w_to={w_to}, description='{description}'"""
+                                          .format(**data) + """ WHERE id ='{}'""".format(data['id']))
+                else:
+                    yield self.db.execute(""" UPDATE experience SET
+                        title='{title}',
+                        subtitle='{subtitle}',
+                        w_from='{w_from}', w_to=NULL, description='{description}'"""
+                                          .format(**data) + """ WHERE id ='{}'""".format(data['id']))
+            experiences = yield self.db.execute("SELECT * FROM experience WHERE user_id='{}'".format(user['id']))
+            list_experiences = dict_from_cursor_all(experiences)
+            self.write({'experiences': list_experiences})
+        else:
+            self.write({'experiences': {}, 'error': 'Bad action!'})
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def delete(self):
+        user = yield self.get_current_user_dict()
+        data = json.loads(self.request.body.decode())
+        yield self.db.execute(
+            "DELETE FROM experience WHERE id='{}'".format(data['id']))
+        experiences = yield self.db.execute(
+            "SELECT * FROM experience WHERE user_id='{}'".format(user['id']))
+        list_experiences = dict_from_cursor_all(experiences)
+        self.write({'experiences': list_experiences})
 
 class Login(BaseHandler):
 

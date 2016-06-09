@@ -615,6 +615,10 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
     margin: 0 0 0 10px;    
 }
 
+.modal-content .modal-row{
+    padding-bottom: 10px
+}
+
 .navbar-form .form-control{
     width: 200px;
     height: 30px;

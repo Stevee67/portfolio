@@ -1,4 +1,4 @@
-from handlers import HomeHandler, AdminHandler, FormsHandler, EditPersonalInfo, EditSkills, Login, Logout
+from handlers import HomeHandler, AdminHandler, FormsHandler, EditPersonalInfo, EditSkills, Login, Logout, EditExperience
 
 hundlers = [
             (r"/", HomeHandler),
@@ -6,6 +6,7 @@ hundlers = [
             (r"/admin/forms", FormsHandler),
             (r"/admin/personal_info", EditPersonalInfo),
             (r"/admin/skills", EditSkills),
+            (r"/admin/experience", EditExperience),
             (r"/admin/login", Login),
             (r"/admin/logout", Logout),
         ]

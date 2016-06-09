@@ -36,7 +36,7 @@ class Application(tornado.web.Application):
 
 application = Application()
 def run():
-    application.listen(8888, config.HOST)
+    application.listen(config.PORT, config.HOST)
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":

@@ -14,8 +14,15 @@ def datetime_from_utc_to_local(utc_datetime):
 def format_date(date):
     b = datetime_from_utc_to_local(date)
     month = b.month if len(str(b.month)) > 1 else '0'+str(b.month)
-    formating_date = '{0}-{1}-{2}'.format(b.day, month, b.year)
+    day = b.day if len(str(b.day)) > 1 else '0'+str(b.day)
+    formating_date = '{0}/{1}/{2}'.format(month, day, b.year)
     return formating_date
+
+def strip_date(date):
+    if date:
+        return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+    else:
+        return None
 
 def send_message(message, password=config.MAIL_PASS):
     fromaddr = config.SENDER_ADDRESS
@@ -41,7 +48,9 @@ def dict_from_cursor_one(cursor):
     obj = cursor.fetchone()
     new_dict = {}
     for k in keys:
-        if k[0] != 'password_hash':
+        if isinstance(obj[k[0]], datetime.datetime):
+            new_dict[k[0]] = format_date(obj[k[0]])
+        else:
             new_dict[k[0]] = obj[k[0]]
     return new_dict
 
@@ -53,7 +62,10 @@ def dict_from_cursor_all(cursor):
         new_dict = {}
         for k in keys:
             if k[0] != 'password_hash':
-                new_dict[k[0]] = obj[k[0]]
+                if isinstance(obj[k[0]], datetime.datetime):
+                    new_dict[k[0]] = format_date(obj[k[0]])
+                else:
+                    new_dict[k[0]] = obj[k[0]]
         list_objs.append(new_dict)
     return list_objs
 
