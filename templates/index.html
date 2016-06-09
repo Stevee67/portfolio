@@ -74,7 +74,7 @@
                   <div class="col s12">
                     <div class="home-inner">
                       <h1 class="home-title">HI! I'm <span>{{ user['name'] }} {{ user['lastname'] }}</span></h1>
-                      <p>{{user['short_about']}}</p>
+                      <p>{{user['short_about'] if user['short_about'] else ''}}</p>
                       <a class="hire-me-btn btn waves-effect waves-light btn-large" href="#footer">Write me <i class="mdi-content-send left"></i>
                       </a>
                       <!-- Call to About Button -->
@@ -113,7 +113,7 @@
                             </ul>
                           </div>
                           <div class="resume-download col s12 m12 l6">
-                            <a href="#" class="waves-effect waves-light btn-large resume-btn"><i class="mdi-content-archive left"></i> Download Resume</a>
+                            <!--<a href="#" class="waves-effect waves-light btn-large resume-btn"><i class="mdi-content-archive left"></i> Download Resume</a>-->
                           </div>
                         </div>
                       </div>
