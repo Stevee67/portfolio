@@ -34,9 +34,11 @@ class Application(tornado.web.Application):
         ioloop.start()
         future.result()  # raises exception on connection error
 
-application = Application()
+
 def run():
-    application.listen(config.PORT, config.HOST)
+    application = Application()
+    http_server = tornado.httpserver.HTTPServer(application)
+    http_server.listen(8080, config.HOST)
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
