@@ -1,12 +1,15 @@
 import tornado.web
 import tornado.gen
 from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
-    generate_password, verify_password, strip_date
+    generate_password, verify_password, strip_date, get_next_index_from_file
 import datetime
 from urllib import parse
 import tornado.ioloop
 import json
 import re
+import base64
+import os
+
 
 class BaseHandler(tornado.web.RequestHandler):
 
@@ -43,6 +46,29 @@ class BaseHandler(tornado.web.RequestHandler):
         cur = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(email))
         return dict_from_cursor_one(cur)
 
+
+    @tornado.gen.coroutine
+    def get_image(self, id):
+        cur = yield self.db.execute("SELECT * FROM images WHERE id='{}'".format(id))
+        return dict_from_cursor_one(cur)
+
+
+    @tornado.gen.coroutine
+    def upd_dict_with_img_url(self, data):
+        new_list = []
+        for element in data:
+            new_dict = {}
+            image = yield self.get_image(element['image_id'])
+            if image:
+                image_url = '/static/img/' + image['folder_name'] + '/' + \
+                            image['file_name']
+                new_dict['image_url'] = image_url
+            else:
+                new_dict['image_url'] = ''
+            new_dict.update(element)
+            new_list.append(new_dict)
+        return new_list
+
 class HomeHandler(BaseHandler):
 
     @tornado.gen.coroutine
@@ -53,13 +79,15 @@ class HomeHandler(BaseHandler):
         experiences = yield self.db.execute("SELECT * FROM experience")
         educations = yield self.db.execute("SELECT * FROM educations")
         projects = yield self.db.execute("SELECT * FROM projects")
+        list_projects = yield self.upd_dict_with_img_url(dict_from_cursor_all(projects))
+
         # tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
         self.render("index.html", user=user.fetchone(),
-                                  skills=skills.fetchall(),
-                                  experiences=experiences.fetchall(),
-                                  educations=educations,
-                                  projects=projects,
-                                  format_date=format_date)
+                    skills=skills.fetchall(),
+                    experiences=experiences.fetchall(),
+                    educations=educations,
+                    projects=list_projects,
+                    format_date=format_date)
 
     @tornado.gen.coroutine
     def post(self):
@@ -314,6 +342,106 @@ class EditEducation(BaseHandler):
             "SELECT * FROM educations")
         list_educations = dict_from_cursor_all(educations)
         self.write({'educations': list_educations})
+
+class EditProjects(BaseHandler):
+
+    _actions = ['add', 'edit']
+
+    __required_fields = []
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def get(self):
+        self.render("admin/portfolio.html")
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def post(self):
+        projects = yield self.db.execute("SELECT * FROM projects")
+        list_projects= dict_from_cursor_all(projects)
+        self.write({'projects': list_projects})
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def put(self, *args, **kwargs):
+        data = json.loads(self.request.body.decode())
+        action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
+        print(data['name'], data['image_id'])
+        if action in EditExperience._actions:
+            if action == 'add':
+                file = yield self.save_image(data)
+                yield self.db.execute(""" INSERT INTO projects(name, url, image_id)
+                                          VALUES('{0}', '{1}', '{2}')""".format(data['name'],
+                                                                              data['url'], file['id'] if file else None))
+            elif action == 'edit':
+                cur = yield self.db.execute("SELECT id FROM images WHERE id='{}'".format(data['image_id']))
+                image = dict_from_cursor_one(cur)
+                if 'file' in data:
+                    if image:
+                        yield self.delete_image(image['id'])
+                    image = yield self.save_image(data)
+                if image:
+                    yield self.db.execute(""" UPDATE projects SET name='{}',
+                                              url='{}', image_id='{}'"""
+                                              .format(data['name'], data['url'], image['id'])+
+                                              """ WHERE id ='{}'""".format(data['id']))
+                else:
+                    yield self.db.execute(""" UPDATE projects SET name='{}',
+                        url='{}'"""
+                                          .format(data['name'], data['url']) +
+                                          """ WHERE id ='{}'""".format(data['id']))
+
+
+
+            projects = yield self.db.execute("SELECT * FROM projects")
+            list_projects = dict_from_cursor_all(projects)
+            self.write({'projects': list_projects})
+        else:
+            self.write({'projects': {}, 'error': 'Bad action!'})
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def delete(self):
+        data = json.loads(self.request.body.decode())
+        yield self.db.execute(
+            "DELETE FROM projects WHERE id='{}'".format(data['id']))
+        yield self.delete_image(data['image_id'])
+        projects = yield self.db.execute(
+            "SELECT * FROM projects")
+        list_projects = dict_from_cursor_all(projects)
+        self.write({'projects': list_projects})
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def delete_image(self, image_id):
+        cur = yield self.db.execute("SELECT * FROM images WHERE id='{}'".format(image_id))
+        image = dict_from_cursor_one(cur)
+        os.remove(os.path.join(os.path.dirname(__file__), "static") + '/img/projects/' + image['file_name'])
+        yield self.db.execute(
+            "DELETE FROM images WHERE id='{}'".format(image['id']))
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def save_image(self, data):
+        if 'file' in data:
+            imgdataContent = data['file']['content']
+            image_data = re.sub('^data:image/.+;base64,', '', imgdataContent)
+            content = base64.b64decode(image_data)
+            size = len(content)
+            index = get_next_index_from_file(os.path.join(os.path.dirname(__file__), "static") + '/img/projects/')
+            file_name = 'file(' + str(index) + ')''.' + data['file']['mime'].split('/')[1]
+            url = os.path.join(os.path.dirname(__file__), "static") + '/img/projects/' + file_name
+            with open(url, 'wb+') as f:
+                f.write(content)
+            try:
+                yield self.db.execute(""" INSERT INTO images(file_name, folder_name, mime, size)
+                    VALUES('{0}', '{1}', '{2}', {3})""".format(file_name,
+                                                          'projects', data['file']['mime'], size))
+            except:
+                os.remove(url)
+            cur = yield self.db.execute(""" SELECT * FROM images WHERE file_name='{}'  AND folder_name='{}'""".format(file_name, 'projects'))
+            return dict_from_cursor_one(cur)
+
 
 class Login(BaseHandler):
 

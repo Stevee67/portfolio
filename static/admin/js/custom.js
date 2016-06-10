@@ -32,6 +32,24 @@ portfolioApp.directive('pfDate', function () {
         }
 });
 
+
+function callBackAfterReadFile(file, func, data) {
+    if(file){
+        var fr = new FileReader();
+        fr.onload = function (e) {
+            data['file'] = {'mime': file.type, 'name': file.name, 'content': fr.result}
+            func(data)
+        };
+        fr.onerror = function (e) {
+            flash('File loading error');
+        };
+        fr.readAsDataURL(file);
+    }else{
+        func(data)
+    }
+
+  }
+
 function flash(message) {
     $(".flash").remove();
     $('body').prepend(
