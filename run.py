@@ -12,7 +12,6 @@ from handlers import ErrorHandler
 
 class Application(tornado.web.Application):
     def __init__(self):
-        _workers = ThreadPoolExecutor(max_workers=10)
         handlers = hundlers
         settings = dict(
             portfolio_title=u"Stepan Shysh",

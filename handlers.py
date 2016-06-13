@@ -2,6 +2,7 @@ import tornado.web
 import tornado.gen
 from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
     generate_password, verify_password, strip_date, get_next_index_from_file, merge_dict_by_kk
+
 import datetime
 from urllib import parse
 import tornado.ioloop
@@ -74,25 +75,33 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
 
+
     @tornado.gen.coroutine
     def get(self):
         # response = requests.get('http://ipinfo.io')
-        user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
-        skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
-        experiences = yield self.db.execute("SELECT * FROM experience")
-        educations = yield self.db.execute("SELECT * FROM educations")
-        projects = yield self.db.execute("SELECT * FROM projects")
-        list_projects = yield self.upd_dict_with_img_url(dict_from_cursor_all(projects))
-        static_data_cur = yield self.db.execute("SELECT * FROM static_data")
-        # tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
-        self.render("index.html", user=user.fetchone(),
-                    skills=skills.fetchall(),
-                    experiences=experiences.fetchall(),
-                    educations=educations.fetchall(),
-                    projects=list_projects,
-                    static_data=merge_dict_by_kk(dict_from_cursor_all(static_data_cur), 'type', 'text'),
-                    format_date=format_date)
-
+        try:
+            user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
+            skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
+            experiences = yield self.db.execute("SELECT * FROM experience")
+            educations = yield self.db.execute("SELECT * FROM educations")
+            projects = yield self.db.execute("SELECT * FROM projects")
+            list_projects = yield self.upd_dict_with_img_url(dict_from_cursor_all(projects))
+            static_data_cur = yield self.db.execute("SELECT * FROM static_data")
+            # tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
+            self.render("index.html", user=user.fetchone(),
+                        skills=skills.fetchall(),
+                        experiences=experiences.fetchall(),
+                        educations=educations.fetchall(),
+                        projects=list_projects,
+                        static_data=merge_dict_by_kk(dict_from_cursor_all(static_data_cur), 'type', 'text'),
+                        format_date=format_date)
+        except Exception as error:
+            self.write(str(error))
+            try:
+                self.db.connect()
+            except Exception as error:
+                self.write(str(error))
+                self.finish()
     @tornado.gen.coroutine
     def post(self):
         message = """ Message from %(from)s \n
@@ -114,6 +123,7 @@ class AdminHandler(BaseHandler):
             self.redirect('/admin/login')
         else:
             self.render("admin/index.html")
+
 
 class FormsHandler(BaseHandler):
 
@@ -137,6 +147,7 @@ class EditPersonalInfo(BaseHandler):
         personal_info = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
         dict_info = dict_from_cursor_one(personal_info)
         self.write(dict_info)
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -162,6 +173,7 @@ class EditPersonalInfo(BaseHandler):
                     self.write({'success': 'You successful change password!'})
                 else:
                     self.write({'error': 'Fill in the same password!'})
+        self.finish()
 
 
 
@@ -183,6 +195,7 @@ class EditSkills(BaseHandler):
         skills = yield self.db.execute("SELECT * FROM skils WHERE user_id='{}'".format(user['id']))
         list_skills= dict_from_cursor_all(skills)
         self.write({'skills': list_skills})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -206,6 +219,7 @@ class EditSkills(BaseHandler):
             self.write({'skills': list_skills})
         else:
             self.write({'skills': {}, 'error': 'Bad action!'})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -218,6 +232,7 @@ class EditSkills(BaseHandler):
             "SELECT * FROM skils WHERE user_id='{}'".format(user['id']))
         list_skills = dict_from_cursor_all(skills)
         self.write({'skills': list_skills})
+        self.finish()
 
 class EditExperience(BaseHandler):
 
@@ -237,6 +252,7 @@ class EditExperience(BaseHandler):
         experiences = yield self.db.execute("SELECT * FROM experience WHERE user_id='{}'".format(user['id']))
         list_experiences= dict_from_cursor_all(experiences)
         self.write({'experiences': list_experiences})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -270,6 +286,7 @@ class EditExperience(BaseHandler):
             self.write({'experiences': list_experiences})
         else:
             self.write({'experiences': {}, 'error': 'Bad action!'})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -282,6 +299,7 @@ class EditExperience(BaseHandler):
             "SELECT * FROM experience WHERE user_id='{}'".format(user['id']))
         list_experiences = dict_from_cursor_all(experiences)
         self.write({'experiences': list_experiences})
+        self.finish()
 
 class EditEducation(BaseHandler):
 
@@ -300,6 +318,7 @@ class EditEducation(BaseHandler):
         educations = yield self.db.execute("SELECT * FROM educations")
         list_educations= dict_from_cursor_all(educations)
         self.write({'educations': list_educations})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -332,11 +351,11 @@ class EditEducation(BaseHandler):
             self.write({'educations': list_educations})
         else:
             self.write({'educations': {}, 'error': 'Bad action!'})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
-        user = yield self.get_current_user_dict()
         data = json.loads(self.request.body.decode())
         yield self.db.execute(
             "DELETE FROM educations WHERE id='{}'".format(data['id']))
@@ -344,6 +363,7 @@ class EditEducation(BaseHandler):
             "SELECT * FROM educations")
         list_educations = dict_from_cursor_all(educations)
         self.write({'educations': list_educations})
+        self.finish()
 
 class EditStaticData(BaseHandler):
 
@@ -363,6 +383,7 @@ class EditStaticData(BaseHandler):
         list_static_data= dict_from_cursor_all(static_data)
 
         self.write({'static_data': list_static_data, 'types':self.get_allowed_types(list_static_data)})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -386,6 +407,7 @@ class EditStaticData(BaseHandler):
             self.write({'static_data': list_static_data})
         else:
             self.write({'static_data': {}, 'error': 'Bad action!'})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -397,6 +419,69 @@ class EditStaticData(BaseHandler):
             "SELECT * FROM static_data")
         list_static_data = dict_from_cursor_all(static_data)
         self.write({'static_data': list_static_data, 'types':self.get_allowed_types(list_static_data)})
+        self.finish()
+
+    def get_allowed_types(self, data):
+        res = STATIC_TYPES[:]
+        for element in data:
+            if element['type'] in res:
+                del res[res.index(element['type'])]
+        return res
+
+class Visitors(BaseHandler):
+
+    _actions = ['add', 'edit']
+
+    __required_fields = []
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def get(self):
+        self.render("admin/visitors.html")
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def post(self):
+        visitors = yield self.db.execute("SELECT * FROM visitors")
+        list_visitors= dict_from_cursor_all(visitors)
+        self.write({'visitors': list_visitors})
+        self.finish()
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def put(self, *args, **kwargs):
+        data = json.loads(self.request.body.decode())
+        action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
+        if action in EditExperience._actions:
+            if action == 'add':
+                if not 'type' in data:
+                    self.write({'static_data': {}, 'error': 'Static data is full or not selected!'})
+                    return
+                yield self.db.execute(""" INSERT INTO static_data(type, text)
+                                          VALUES('{0}', '{1}')""".format(data['type'],
+                                                                              data['text'] if 'text' in data else ''))
+            elif action == 'edit':
+                yield self.db.execute(""" UPDATE static_data SET
+                                            type='{type}',
+                                            text='{text}' """.format(**data) + """ WHERE type ='{}'""".format(data['type']))
+            static_data = yield self.db.execute("SELECT * FROM static_data")
+            list_static_data = dict_from_cursor_all(static_data)
+            self.write({'static_data': list_static_data})
+        else:
+            self.write({'static_data': {}, 'error': 'Bad action!'})
+        self.finish()
+
+    @tornado.web.authenticated
+    @tornado.gen.coroutine
+    def delete(self):
+        data = json.loads(self.request.body.decode())
+        yield self.db.execute(
+            "DELETE FROM static_data WHERE type='{}'".format(data['type']))
+        static_data = yield self.db.execute(
+            "SELECT * FROM static_data")
+        list_static_data = dict_from_cursor_all(static_data)
+        self.write({'static_data': list_static_data, 'types':self.get_allowed_types(list_static_data)})
+        self.finish()
 
     def get_allowed_types(self, data):
         res = STATIC_TYPES[:]
@@ -422,6 +507,7 @@ class EditProjects(BaseHandler):
         projects = yield self.db.execute("SELECT * FROM projects")
         list_projects= dict_from_cursor_all(projects)
         self.write({'projects': list_projects})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -459,6 +545,7 @@ class EditProjects(BaseHandler):
             self.write({'projects': list_projects})
         else:
             self.write({'projects': {}, 'error': 'Bad action!'})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -471,6 +558,7 @@ class EditProjects(BaseHandler):
             "SELECT * FROM projects")
         list_projects = dict_from_cursor_all(projects)
         self.write({'projects': list_projects})
+        self.finish()
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -480,6 +568,7 @@ class EditProjects(BaseHandler):
         os.remove(os.path.join(os.path.dirname(__file__), "static") + '/img/projects/' + image['file_name'])
         yield self.db.execute(
             "DELETE FROM images WHERE id='{}'".format(image['id']))
+
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -535,6 +624,7 @@ class Login(BaseHandler):
             self.write({'login':'SUCCESS'})
         else:
             self.write({'error': 'Password for this email is wrong!'})
+        self.finish()
 
 class Logout(BaseHandler):
 

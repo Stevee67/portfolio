@@ -110,3 +110,6 @@ def generate_password(password):
 def verify_password(pwhash, password):
     return pwhash and \
            check_password_hash(pwhash, password)
+
+
+

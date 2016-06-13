@@ -74,7 +74,7 @@
                   <div class="col s12">
                     <div class="home-inner">
                       <h1 class="home-title">HI! I'm <span>{{ user['name'] }} {{ user['lastname'] }}</span></h1>
-                      <p>{{user['short_about']}}</p>
+                      <p>{{user['short_about'] if user['short_about'] else ''}}</p>
                       <a class="hire-me-btn btn waves-effect waves-light btn-large" href="#footer">Write me <i class="mdi-content-send left"></i>
                       </a>
                       <!-- Call to About Button -->
@@ -101,7 +101,7 @@
                       <div class="col s12 m8 l9">
                         <div class="about-inner-right">
                           <h3>About Me</h3>
-                          <p>{{user['about_me']}}</p>
+                          <p>{{user['about_me'] if user['about_me'] else ''}}</p>
                           <div class="personal-information col s12 m12 l6">
                             <h3>Personal Information</h3>
                             <ul>
