@@ -9,6 +9,7 @@ import json
 import re
 import base64
 import os
+import config
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -74,7 +75,7 @@ class HomeHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
         # response = requests.get('http://ipinfo.io')
-        user = yield self.db.execute("SELECT * FROM users")
+        user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
         skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
         experiences = yield self.db.execute("SELECT * FROM experience")
         educations = yield self.db.execute("SELECT * FROM educations")
@@ -366,7 +367,6 @@ class EditProjects(BaseHandler):
     def put(self, *args, **kwargs):
         data = json.loads(self.request.body.decode())
         action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
-        print(data['name'], data['image_id'])
         if action in EditExperience._actions:
             if action == 'add':
                 file = yield self.save_image(data)

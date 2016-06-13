@@ -4,7 +4,7 @@ TEMPLATE_PATH=os.path.join(os.path.dirname(__file__), "templates")
 STATIC_PATH=os.path.join(os.path.dirname(__file__), "static")
 MAIL_SERVER='smtp.gmail.com'
 MAIL_PORT='587'
-MAIL_PASS = 'nokia532067'
+MAIL_PASS = 'nokia675320'
 SENDER_ADDRESS = 'stopa6767@gmail.com'
 SECRET_COOKIE = 'jhyjs584sjhs45s69s9ww98r'
 
