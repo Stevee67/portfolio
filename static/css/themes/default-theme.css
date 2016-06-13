@@ -175,9 +175,9 @@ textarea.materialize-textarea:focus:not([readonly]) {
 .progress .indeterminate {
   background-color: #087B71;
 }
-.owl-item{
-  width: 400px !important;
-}
+/*.owl-item{*/
+  /*width: 350px !important;*/
+/*}*/
 /*=======================================
 Template Design By MarkUps.
 Author URI : http://www.markups.io/
