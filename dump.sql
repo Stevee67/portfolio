@@ -96,11 +96,27 @@ CREATE TABLE experience (
     title character varying(255) NOT NULL,
     subtitle character varying(255),
     w_from timestamp without time zone,
-    w_to timestamp without time zone
+    w_to timestamp without time zone,
+    description character varying(500)
 );
 
 
 ALTER TABLE experience OWNER TO webdev;
+
+--
+-- Name: images; Type: TABLE; Schema: public; Owner: webdev; Tablespace: 
+--
+
+CREATE TABLE images (
+    id character varying(64) NOT NULL,
+    folder_name character varying(150) NOT NULL,
+    file_name character varying(150),
+    mime character varying(50),
+    size integer
+);
+
+
+ALTER TABLE images OWNER TO webdev;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: webdev; Tablespace: 
@@ -154,7 +170,8 @@ ALTER SEQUENCE personal_info_age_seq OWNED BY users.age;
 CREATE TABLE projects (
     id character varying(64) NOT NULL,
     name character varying(200) NOT NULL,
-    url character varying(100) NOT NULL
+    url character varying(100) NOT NULL,
+    image_id character varying(64)
 );
 
 
@@ -215,9 +232,9 @@ ALTER TABLE ONLY users ALTER COLUMN age SET DEFAULT nextval('personal_info_age_s
 --
 
 COPY educations (id, title, level, ed_from, ed_to, description) FROM stdin;
-bb6812f2-6cb3-46da-a0c1-d6b3c1a90fd2	Volytsya	Middle School of General Education	1997-09-01 00:00:00	2008-05-31 00:00:00	daaadsasddasasd\r\nsaddasds\r\nsadasdasd\r\nsadadsasd\r\nsadasdaa
 feb53606-8430-4498-9dfc-bab330916d6f	Lviv National Agrarian University	Bachelor	2008-09-01 00:00:00	2012-07-01 00:00:00	daaadsasddasasd\r\nsaddasds\r\nsadasdasd\r\nsadadsasd\r\nsadasdaa
 c5ed1d45-2b52-46ba-830d-5430b3b3eca7	Lviv National Agrarian University	Master	2012-09-01 00:00:00	2013-12-20 00:00:00	daaadsasddasasd\r\nsaddasds\r\nsadasdasd\r\nsadadsasd\r\nsadasdaa
+bb6812f2-6cb3-46da-a0c1-d6b3c1a90fd2	Volytsya	Middle School of General Education	1997-09-01 09:00:00	2008-05-31 09:00:00	daaadsasddasasd\r\nsaddasds\r\nsadasdasd\r\nsadadsasd\r\nsadasdaa
 \.
 
 
@@ -225,10 +242,21 @@ c5ed1d45-2b52-46ba-830d-5430b3b3eca7	Lviv National Agrarian University	Master	20
 -- Data for Name: experience; Type: TABLE DATA; Schema: public; Owner: webdev
 --
 
-COPY experience (id, user_id, title, subtitle, w_from, w_to) FROM stdin;
-464c0136-e79d-4069-8b36-1fc18b876053	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Engineer	Viktar	2014-03-10 00:00:00	2014-12-05 00:00:00
-68dc1d1d-113b-4f15-ad24-4af087baf4ef	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	NTaxa	2015-03-23 00:00:00	2016-05-20 00:00:00
-0b4e28fa-6142-4e4a-9fa2-0986abe58e7d	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	UkrInSofT	2016-05-23 00:00:00	\N
+COPY experience (id, user_id, title, subtitle, w_from, w_to, description) FROM stdin;
+0b4e28fa-6142-4e4a-9fa2-0986abe58e7d	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Engineer	Viktar	2014-03-09 10:00:00	2014-12-05 10:00:00	Віктар
+464c0136-e79d-4069-8b36-1fc18b876053	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	NTaxa	2015-03-15 10:00:00	2016-05-19 09:00:00	NTaxa
+68dc1d1d-113b-4f15-ad24-4af087baf4ef	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	UkrInSofT	2016-05-23 09:00:00	\N	UkrInSofT is the Ukrainian nearshore web and mobile app development company. UkrInSofT stands for “Ukrainian Innovation Software Technologies”. This phrase perfectly mirrors our approach to software development process: here at UkrInSofT we not just deliver standard solutions, but strive to provide our clients with a software that would address their issue and strengthen their competitive position on the market.
+\.
+
+
+--
+-- Data for Name: images; Type: TABLE DATA; Schema: public; Owner: webdev
+--
+
+COPY images (id, folder_name, file_name, mime, size) FROM stdin;
+76f986f5-095e-4f58-98ac-eb5a834a8f3c	projects	file(1).png	image/png	1451577
+4af519d5-35ec-4b36-82cd-d9e22d1f4f49	projects	file(2).png	image/png	226838
+8efdb6ca-c346-4b49-81bd-61b5f9651848	projects	file(3).png	image/png	85167
 \.
 
 
@@ -243,8 +271,10 @@ SELECT pg_catalog.setval('personal_info_age_seq', 1, false);
 -- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: webdev
 --
 
-COPY projects (id, name, url) FROM stdin;
-32267cd3-04bc-4462-9055-4d0fe46e447a	Profireader	http://profireader.com/
+COPY projects (id, name, url, image_id) FROM stdin;
+9b0cdfe3-d401-49f8-bd65-7feadfbc6a05	Notice Parser	http://verifacto.com	76f986f5-095e-4f58-98ac-eb5a834a8f3c
+27bb84f3-c08c-447c-808c-2c252a0617fc	Profireader	http://profireader.com/	4af519d5-35ec-4b36-82cd-d9e22d1f4f49
+8a00584a-cd19-410e-8e34-4b090d001987	FeatureApp	http://test-ukrinsoft.rhcloud.com/	8efdb6ca-c346-4b49-81bd-61b5f9651848
 \.
 
 
@@ -410,6 +440,14 @@ ALTER TABLE ONLY experience
 
 
 --
+-- Name: image_pk; Type: CONSTRAINT; Schema: public; Owner: webdev; Tablespace: 
+--
+
+ALTER TABLE ONLY images
+    ADD CONSTRAINT image_pk PRIMARY KEY (id);
+
+
+--
 -- Name: personal_id; Type: CONSTRAINT; Schema: public; Owner: webdev; Tablespace: 
 --
 
@@ -458,6 +496,13 @@ ALTER TABLE ONLY skils
 
 
 --
+-- Name: fki_image_fk; Type: INDEX; Schema: public; Owner: webdev; Tablespace: 
+--
+
+CREATE INDEX fki_image_fk ON projects USING btree (image_id);
+
+
+--
 -- Name: ed_uuid; Type: TRIGGER; Schema: public; Owner: webdev
 --
 
@@ -469,6 +514,13 @@ CREATE TRIGGER ed_uuid BEFORE INSERT ON educations FOR EACH ROW EXECUTE PROCEDUR
 --
 
 CREATE TRIGGER ex_id BEFORE INSERT ON experience FOR EACH ROW EXECUTE PROCEDURE cr_uuid();
+
+
+--
+-- Name: image_id; Type: TRIGGER; Schema: public; Owner: webdev
+--
+
+CREATE TRIGGER image_id BEFORE INSERT ON images FOR EACH ROW EXECUTE PROCEDURE cr_uuid();
 
 
 --
@@ -490,6 +542,14 @@ CREATE TRIGGER skill_id BEFORE INSERT ON skils FOR EACH ROW EXECUTE PROCEDURE cr
 --
 
 CREATE TRIGGER uuid BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE cr_uuid();
+
+
+--
+-- Name: image_fk; Type: FK CONSTRAINT; Schema: public; Owner: webdev
+--
+
+ALTER TABLE ONLY projects
+    ADD CONSTRAINT image_fk FOREIGN KEY (image_id) REFERENCES images(id) ON UPDATE SET NULL ON DELETE SET NULL;
 
 
 --
