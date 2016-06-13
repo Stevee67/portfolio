@@ -361,7 +361,8 @@ class EditStaticData(BaseHandler):
     def post(self):
         static_data = yield self.db.execute("SELECT * FROM static_data")
         list_static_data= dict_from_cursor_all(static_data)
-        self.write({'static_data': list_static_data, 'types':STATIC_TYPES})
+
+        self.write({'static_data': list_static_data, 'types':self.get_allowed_types(list_static_data)})
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -370,22 +371,16 @@ class EditStaticData(BaseHandler):
         action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
         if action in EditExperience._actions:
             if action == 'add':
+                if not 'type' in data:
+                    self.write({'static_data': {}, 'error': 'Static data is full or not selected!'})
+                    return
                 yield self.db.execute(""" INSERT INTO static_data(type, text)
                                           VALUES('{0}', '{1}')""".format(data['type'],
                                                                               data['text'] if 'text' in data else ''))
-            # elif action == 'edit':
-            #     if data['ed_to']:
-            #         yield self.db.execute(""" UPDATE educations SET
-            #                                 title='{title}',
-            #                                 level='{level}',
-            #                                 ed_from='{ed_from}', ed_to='{ed_to}', description='{description}'"""
-            #                               .format(**data) + """ WHERE id ='{}'""".format(data['id']))
-            #     else:
-            #         yield self.db.execute(""" UPDATE educations SET
-            #             title='{title}',
-            #             level='{level}',
-            #             ed_from='{ed_from}', ed_to=NULL, description='{description}'"""
-            #                               .format(**data) + """ WHERE id ='{}'""".format(data['id']))
+            elif action == 'edit':
+                yield self.db.execute(""" UPDATE static_data SET
+                                            type='{type}',
+                                            text='{text}' """.format(**data) + """ WHERE type ='{}'""".format(data['type']))
             static_data = yield self.db.execute("SELECT * FROM static_data")
             list_static_data = dict_from_cursor_all(static_data)
             self.write({'static_data': list_static_data})
@@ -401,7 +396,14 @@ class EditStaticData(BaseHandler):
         static_data = yield self.db.execute(
             "SELECT * FROM static_data")
         list_static_data = dict_from_cursor_all(static_data)
-        self.write({'static_data': list_static_data})
+        self.write({'static_data': list_static_data, 'types':self.get_allowed_types(list_static_data)})
+
+    def get_allowed_types(self, data):
+        res = STATIC_TYPES[:]
+        for element in data:
+            if element['type'] in res:
+                del res[res.index(element['type'])]
+        return res
 
 class EditProjects(BaseHandler):
 

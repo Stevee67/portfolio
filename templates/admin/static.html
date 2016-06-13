@@ -23,16 +23,19 @@
         $scope.delete = function(static_element) {
             return $http({ method: 'DELETE',url: '/admin/static', data: static_element}).then(function successCallback(response) {
                 $scope.static_data = response.data.static_data
+                $scope.types = response.data.types;
             }, function errorCallback(response) {
             });
         };
 
         $scope.save = function (static_element) {
             var url ='';
-            if(static_element.hasOwnProperty('id')){
-                url = '/admin/static?edit'
-            }else{
+            var index = $scope.types.indexOf(static_element['type']);
+            if(index !== -1){
+                $scope.types.splice(index, 1);
                 url = '/admin/static?add'
+            }else{
+                url = '/admin/static?edit'
             }
             if(url !== ''){
                 return $http({ method: 'PUT',url: url, data: static_element}).then(function successCallback(response) {
@@ -97,7 +100,8 @@
                                 </div>
                             </div>
                         </div><!--/col-->
-                        <a class="btn btn-success" data-toggle="modal" href="#addStatic" ng-click="new_static_element={}">Add Element</a>
+
+                        <a ng-if="types.length>0" class="btn btn-success" data-toggle="modal" href="#addStatic" ng-click="new_static_element={}">Add Element</a>
                     </div>
                 </section>
             </div>
@@ -111,7 +115,7 @@
                   <h4 class="modal-title">Add Project</h4>
               </div>
               <div class="modal-body" >
-                  <div class="modal-row">
+                  <div ng-if="types.length>0" class="modal-row">
                     <select class="form-control" ng-model="new_static_element.type" ng-options="type for type in types"></select>
                   </div>
                   <div class="modal-row"><textarea class="form-control" ng-model="new_static_element.text" placeholder="text"></textarea></div>
