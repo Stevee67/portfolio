@@ -89,6 +89,17 @@ def dict_from_cursor_all(cursor):
             list_objs.append(new_dict)
     return list_objs
 
+def merge_dict(list_dict):
+    new_dict = {}
+    for d in list_dict:
+        new_dict.update(d)
+    return new_dict
+
+def merge_dict_by_kk(list_dict, k1, k2):
+    new_dict = {}
+    for el in list_dict:
+        new_dict[el[k1]] = el[k2]
+    return new_dict
 
 def generate_password(password):
     if password:

@@ -3,63 +3,58 @@
 {% block content %}
 
 <script>
-    portfolioApp.controller('portfolio', function($scope, $http, $timeout) {
+    portfolioApp.controller('static', function($scope, $http, $timeout) {
 
-        $scope.new_project = {};
+        $scope.new_static_element = {};
 
-        $scope.get_projects = function () {
-            return $http({ method: 'POST',url: '/admin/projects'}).then(function successCallback(response) {
-                $scope.projects = response.data.projects
+        $scope.get_static_data = function () {
+            return $http({ method: 'POST',url: '/admin/static'}).then(function successCallback(response) {
+                $scope.types = response.data.types;
+                $scope.static_data = response.data.static_data
             }, function errorCallback(response) {
             });
         };
 
-        $scope.edit = function(project) {
-            $scope.new_project = project;
-            $('#addProject').modal('show');
+        $scope.edit = function(static_element) {
+            $scope.new_static_element = static_element;
+            $('#addStatic').modal('show');
         };
 
-        $scope.delete = function(project) {
-            return $http({ method: 'DELETE',url: '/admin/projects', data: project}).then(function successCallback(response) {
-                $scope.projects = response.data.projects
+        $scope.delete = function(static_element) {
+            return $http({ method: 'DELETE',url: '/admin/static', data: static_element}).then(function successCallback(response) {
+                $scope.static_data = response.data.static_data
             }, function errorCallback(response) {
             });
         };
 
-        $scope.save = function (project) {
+        $scope.save = function (static_element) {
             var url ='';
-            if(project.hasOwnProperty('id')){
-                url = '/admin/projects?edit'
+            if(static_element.hasOwnProperty('id')){
+                url = '/admin/static?edit'
             }else{
-                url = '/admin/projects?add'
+                url = '/admin/static?add'
             }
             if(url !== ''){
-                return $http({ method: 'PUT',url: url, data: project}).then(function successCallback(response) {
-                    $('#addProject').modal('hide');
-                    $scope.projects = response.data.projects
+                return $http({ method: 'PUT',url: url, data: static_element}).then(function successCallback(response) {
+                    $('#addStatic').modal('hide');
+                    $scope.static_data = response.data.static_data
                 }, function errorCallback(response) {
                 });
             }
         }
 
-        $scope.add_project = function(project) {
-            var file = document.getElementById("portfolio-img").files[0];
-            callBackAfterReadFile(file, $scope.save, project)
-            $("#portfolio-img").val('');
-        }
-
     });
 
 </script>
-<section ng-init="get_projects()" id="main-content" style="margin-bottom: 200px" ng-controller="portfolio">
+<section ng-init="get_static_data()" id="main-content" style="margin-bottom: 200px" ng-controller="static">
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h3 class="page-header"><i class="fa fa-file-text-o"></i>Projects</h3>
+                <h3 class="page-header"><i class="fa fa-file-text-o"></i>Static data</h3>
                 <ol class="breadcrumb">
                     <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
                     <li><i class="icon_document_alt"></i>Forms</li>
-                    <li><i class="fa fa-file-text-o"></i>Projects</li>
+                    <li><i class="fa fa-file-text-o"></i>Static data</li>
                 </ol>
             </div>
         </div>
@@ -67,13 +62,13 @@
             <div class="col-lg-12">
                 <section class="panel">
                     <header class="panel-heading">
-                        Projects
+                        Static data
                     </header>
                     <div class="panel-body">
                         <div class="col-lg-9 col-md-12">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h2><i class="fa fa-flag-o red"></i><strong>Projects</strong></h2>
+                                    <h2><i class="fa fa-flag-o red"></i><strong>Static data</strong></h2>
                                     <div class="panel-actions">
                                         <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
                                         <a href="index.html#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
@@ -84,31 +79,31 @@
                                     <table class="table bootstrap-datatable countries">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Url</th>
+                                                <th>Type</th>
+                                                <th>Text</th>
                                                 <th></th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="project in projects">
-                                                <td ng-bind="project.name"></td>
-                                                <td ng-bind="project.url"></td>
-                                                <td><button class="btn btn-primary" ng-click="edit(project)">Edit</button></td>
-                                                <td><button class="btn btn-primary" ng-click="delete(project)">Delete</button></td>
+                                            <tr ng-repeat="element in static_data">
+                                                <td ng-bind="element.type"></td>
+                                                <td ng-bind="element.text"></td>
+                                                <td><button class="btn btn-primary" ng-click="edit(element)">Edit</button></td>
+                                                <td><button class="btn btn-primary" ng-click="delete(element)">Delete</button></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div><!--/col-->
-                        <a class="btn btn-success" data-toggle="modal" href="#addProject" ng-click="new_project={}">Add Project</a>
+                        <a class="btn btn-success" data-toggle="modal" href="#addStatic" ng-click="new_static_element={}">Add Element</a>
                     </div>
                 </section>
             </div>
         </div>
     </section>
-    <div class="modal fade" id="addProject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addStatic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header">
@@ -116,13 +111,14 @@
                   <h4 class="modal-title">Add Project</h4>
               </div>
               <div class="modal-body" >
-                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_project.name" placeholder="title"></div>
-                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_project.url" placeholder="url"></div>
-                  <div class="modal-row"><input id="portfolio-img" type="file" class="form-control" ng-model="new_project.img" placeholder="url"></div>
+                  <div class="modal-row">
+                    <select class="form-control" ng-model="new_static_element.type" ng-options="type for type in types"></select>
+                  </div>
+                  <div class="modal-row"><textarea class="form-control" ng-model="new_static_element.text" placeholder="text"></textarea></div>
               </div>
               <div class="modal-footer">
                   <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                  <button class="btn btn-success" type="button" ng-click="add_project(new_project)">Save Project</button>
+                  <button class="btn btn-success" type="button" ng-click="save(new_static_element)">Save Element</button>
               </div>
           </div>
       </div>

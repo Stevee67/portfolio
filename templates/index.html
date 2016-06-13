@@ -130,11 +130,7 @@
               <div class="container">
                 <div class="skill-inner">
                   <h2 class="title">Skills</h2>
-                  <!--<p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, -->
-                    <!--as opposed to using 'Content here, content here.-->
-                    <!--It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. -->
-                    <!--The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, -->
-                    <!--as opposed to using 'Content here, content here', making it look like readable English</p>-->
+                  <p>{{static_data['SKILL'] if static_data['SKILL'] else ''}}</p>
 
                   <!-- Start skills progress bar -->
 
@@ -154,11 +150,7 @@
               <div class="container">
                 <div class="experience-inner">
                   <h2 class="title">Experience</h2>
-                  <!--<p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, -->
-                    <!--as opposed to using 'Content here, content here.-->
-                    <!--It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. -->
-                    <!--The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, -->
-                    <!--as opposed to using 'Content here, content here', making it look like readable English</p>-->
+                  <p>{{static_data['EXPERIENCE'] if static_data['EXPERIENCE'] else ''}}</p>
                   <div id="owl-carousel" class="experience-slider row">
                     <!-- Start Single Experience -->
                     {% for experience in experiences %}
@@ -195,11 +187,7 @@
               <div class="container">
                 <div class="education-inner">
                   <h2 class="title">Education</h2>
-                  <!--<p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, -->
-                    <!--as opposed to using 'Content here, content here.-->
-                    <!--It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. -->
-                    <!--The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, -->
-                    <!--as opposed to using 'Content here, content here', making it look like readable English</p>-->
+                  <p>{{static_data['EDUCATION'] if static_data['EDUCATION'] else ''}}</p>
                   <div id="owl-carousel1" class="experience-slider row">
                     <!-- Start Single Experience -->
                     {% for education in educations %}
@@ -237,6 +225,7 @@
               <div class="container">
                 <div class="portfolio-top-inner">
                    <h2 class="title">Portfolio</h2>
+                   <p>{{static_data['PORTFOLIO'] if static_data['PORTFOLIO'] else ''}}</p>
                    <!--<div class="controls">  -->
                     <!--<button class="filter waves-effect waves-light btn" data-filter="all">All</button>-->
                     <!--<button class="filter waves-effect waves-light btn" data-filter=".html">HTMl</button>-->
@@ -271,11 +260,7 @@
                   <div class="col s12">
                     <div class="footer-top-inner">
                       <h2 class="title">Contact</h2>
-                      <!--<p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, -->
-                        <!--as opposed to using 'Content here, content here.-->
-                        <!--It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. -->
-                        <!--The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, -->
-                        <!--as opposed to using 'Content here, content here', making it look like readable English.</p>-->
+                      <p>{{static_data['CONTACT'] if static_data['CONTACT'] else ''}}</p>
                       <div class="contact">
                         <div class="row">
                           <div class="col s12 m6 l6">
@@ -320,6 +305,7 @@
                 <div class="row">
                   <div class="col s12">
                     <div class="footer-inner">
+                      <p>{{static_data['FOOTER'] if static_data['FOOTER'] else ''}}</p>
                       <!-- Bottom to Up Btn -->
                       <button class="btn-floating btn-large up-btn"><i class="mdi-navigation-expand-less"></i></button>
                     </div>
