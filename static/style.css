@@ -558,7 +558,7 @@ nav .brand-logo img {
   display: none;
   float: left;
   height: 320px;
-  margin-bottom: 1.33%;
+  margin-bottom: 25px;
   margin-left: 1%;
   width: 32.33%;
  -webkit-transition: all 0.2s ease 0s;
@@ -1965,7 +1965,7 @@ textarea.materialize-textarea {
   .prev1 { margin-top: 49%;}
   .next1{margin-top: 49%;}
   .filter {margin-bottom: 5px;margin-right: 5px;}
-  #portfolio-list .mix {height: 250px; margin-bottom: 15px; width: 100%;}
+  #portfolio-list .mix {height: 250px; margin-bottom: 25px; width: 100%;}
   .single-facts {margin-bottom: 25px;}
   .contact-map {height: 350px;margin-top: 30px;}
   .prev2 { margin-top: 30.5%;}

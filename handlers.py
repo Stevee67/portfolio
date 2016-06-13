@@ -1,7 +1,7 @@
 import tornado.web
 import tornado.gen
 from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
-    generate_password, verify_password, strip_date, get_next_index_from_file, merge_dict_by_kk
+    generate_password, verify_password, strip_date, get_next_index_from_file, merge_dict_by_kk, reconect
 
 import datetime
 from urllib import parse
@@ -62,24 +62,29 @@ class BaseHandler(tornado.web.RequestHandler):
         new_list = []
         for element in data:
             new_dict = {}
-            image = yield self.get_image(element['image_id'])
-            if image:
-                image_url = '/static/img/' + image['folder_name'] + '/' + \
-                            image['file_name']
+            if element['image_id'] == config.DEFAULT_IMAGE_ID:
+                image_url = '/static/img/' + 'projects' + '/' + \
+                            'python.png'
                 new_dict['image_url'] = image_url
             else:
-                new_dict['image_url'] = ''
+                image = yield self.get_image(element['image_id'])
+                if image:
+                    image_url = '/static/img/' + image['folder_name'] + '/' + \
+                                image['file_name']
+                    new_dict['image_url'] = image_url
+                else:
+                    new_dict['image_url'] = ''
             new_dict.update(element)
             new_list.append(new_dict)
         return new_list
 
 class HomeHandler(BaseHandler):
 
-
+    @reconect
     @tornado.gen.coroutine
     def get(self):
         # response = requests.get('http://ipinfo.io')
-        try:
+
             user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
             skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
             experiences = yield self.db.execute("SELECT * FROM experience")
@@ -95,13 +100,7 @@ class HomeHandler(BaseHandler):
                         projects=list_projects,
                         static_data=merge_dict_by_kk(dict_from_cursor_all(static_data_cur), 'type', 'text'),
                         format_date=format_date)
-        except Exception as error:
-            self.write(str(error))
-            try:
-                self.db.connect()
-            except Exception as error:
-                self.write(str(error))
-                self.finish()
+
     @tornado.gen.coroutine
     def post(self):
         message = """ Message from %(from)s \n
@@ -519,7 +518,7 @@ class EditProjects(BaseHandler):
                 file = yield self.save_image(data)
                 yield self.db.execute(""" INSERT INTO projects(name, url, image_id)
                                           VALUES('{0}', '{1}', '{2}')""".format(data['name'],
-                                                                              data['url'], file['id'] if file else None))
+                                                                              data['url'], file['id'] if file else config.DEFAULT_IMAGE_ID))
             elif action == 'edit':
                 cur = yield self.db.execute("SELECT id FROM images WHERE id='{}'".format(data['image_id']))
                 image = dict_from_cursor_one(cur)

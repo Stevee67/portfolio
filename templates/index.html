@@ -240,11 +240,12 @@
                 <div class="portfolio-bottom-inner">
                   <div id="portfolio-list">
                     {% for project in projects %}
-                    <div class="mix html" data-value="2">
+                    <div class="mix html" data-value="2" style="text-align: center">
                       <a href="{{project['url']}}">
                         <img src="{{project['image_url']}}" alt="img">
                         <i class="material-icons view-icon">pageview</i>
                       </a>
+                      <span style="margin-bottom: 20px">{{project['name']}}</span>
                     </div>
                     {% end %}
                   </div>

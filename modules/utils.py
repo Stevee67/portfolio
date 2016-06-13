@@ -111,5 +111,17 @@ def verify_password(pwhash, password):
     return pwhash and \
            check_password_hash(pwhash, password)
 
+def reconect(func):
+    def wraps(*args, **kwargs):
+        try:
+            res = func(*args, **kwargs)
+        except:
+            args[0].db.connect()
+            try:
+                res = func(*args, **kwargs)
+            except:
+                res = 'error'
+        return res
+    return wraps
 
 
