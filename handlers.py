@@ -84,7 +84,7 @@ class HomeHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
         # response = requests.get('http://ipinfo.io')
-
+        try:
             user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
             skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
             experiences = yield self.db.execute("SELECT * FROM experience")
@@ -100,6 +100,8 @@ class HomeHandler(BaseHandler):
                         projects=list_projects,
                         static_data=merge_dict_by_kk(dict_from_cursor_all(static_data_cur), 'type', 'text'),
                         format_date=format_date)
+        except:
+            self.db.connect()
 
 
     @tornado.gen.coroutine
