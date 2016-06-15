@@ -8,6 +8,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from os import listdir
 from os.path import isfile, join
 import re
+import math
+import logging
 
 def get_only_files_from_dir(path):
     return [f for f in listdir(path) if isfile(join(path, f))]
@@ -123,5 +125,30 @@ def reconect(func):
                 res = 'error'
         return res
     return wraps
+
+@tornado.gen.coroutine
+def paginaion(db, table, item_per_page, page):
+    cur_pages = yield db.execute("SELECT COUNT(ip) FROM {}".format(table))
+    len = cur_pages.fetchone()
+    pages = len[0]/item_per_page
+    offset = (page-1) * item_per_page
+    data = yield db.execute("SELECT * FROM {0} LIMIT {1} OFFSET {2}"
+                                     .format(table, item_per_page, offset))
+    return math.ceil(pages), dict_from_cursor_all(data)
+
+
+class Log:
+    def __init__(self, path):
+        logging.basicConfig(format=u'%(levelname)-8s [%(asctime)s] %(message)s',
+                            filename=path, level=logging.DEBUG)
+    @staticmethod
+    def error(message):
+        logging.error(message)
+        print(message)
+
+
+
+
+
 
 

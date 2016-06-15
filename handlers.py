@@ -1,7 +1,7 @@
 import tornado.web
 import tornado.gen
 from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
-    generate_password, verify_password, strip_date, get_next_index_from_file, merge_dict_by_kk, reconect
+    generate_password, verify_password, strip_date, get_next_index_from_file, merge_dict_by_kk, reconect, paginaion
 
 import datetime
 from urllib import parse
@@ -17,14 +17,14 @@ STATIC_TYPES = ['SKILL', 'EXPERIENCE', 'EDUCATION', 'PORTFOLIO', 'CONTACT', 'FOO
 
 class BaseHandler(tornado.web.RequestHandler):
 
+
+    @property
+    def log(self):
+        return self.application.log
+
     @property
     def db(self):
         return self.application.db
-
-    @property
-    def db_connect(self):
-        return self.application.db_connect
-
 
     def get_current_user(self):
         return self.get_secure_cookie("email")
@@ -83,8 +83,8 @@ class HomeHandler(BaseHandler):
     @reconect
     @tornado.gen.coroutine
     def get(self):
-        # response = requests.get('http://ipinfo.io')
         try:
+            # response = requests.get('http://ipinfo.io')
             user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
             skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
             experiences = yield self.db.execute("SELECT * FROM experience")
@@ -100,7 +100,8 @@ class HomeHandler(BaseHandler):
                         projects=list_projects,
                         static_data=merge_dict_by_kk(dict_from_cursor_all(static_data_cur), 'type', 'text'),
                         format_date=format_date)
-        except:
+        except Exception as e:
+            self.log.error(e)
             self.db.connect()
 
 
@@ -452,6 +453,8 @@ class EditStaticData(BaseHandler):
 
 class Visitors(BaseHandler):
 
+    item_per_page = 25
+
     _actions = ['add', 'edit']
 
     __required_fields = []
@@ -460,15 +463,15 @@ class Visitors(BaseHandler):
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
-        self.render("admin/visitors.html")
+        self.render("admin/visitors.html", format_date=format_date)
 
     @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
-        visitors = yield self.db.execute("SELECT * FROM visitors")
-        list_visitors= dict_from_cursor_all(visitors)
-        self.write({'visitors': list_visitors})
+        data = json.loads(self.request.body.decode())
+        pages, list_visitors = yield paginaion(self.db, 'visitors', Visitors.item_per_page, data['page'])
+        self.write({'visitors': list_visitors, 'pages': pages, 'page': data['page']})
         self.finish()
 
     @reconect

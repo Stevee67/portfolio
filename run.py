@@ -7,8 +7,8 @@ from urls import hundlers
 import momoko
 import config
 from tornado.ioloop import IOLoop
-from concurrent.futures import ThreadPoolExecutor
 from handlers import ErrorHandler
+from modules.utils import Log
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -27,11 +27,15 @@ class Application(tornado.web.Application):
         ioloop = IOLoop.instance()
 
         self.db = momoko.Connection(dsn=config.DSN, cursor_factory=DictCursor)
-
-        future = self.db.connect()
-        ioloop.add_future(future, lambda x: ioloop.stop())
-        ioloop.start()
-        future.result()  # raises exception on connection error
+        self.log = Log('errors.log')
+        try:
+            future = self.db.connect()
+            ioloop.add_future(future, lambda x: ioloop.stop())
+            ioloop.start()
+            future.result()
+        except:
+            self.log.error('Error db conection!')
+          # raises exception on connection error
 
 
 def run():
