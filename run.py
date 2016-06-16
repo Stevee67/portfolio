@@ -41,7 +41,7 @@ class Application(tornado.web.Application):
 def run():
     application = Application()
     http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(8080, config.HOST)
+    http_server.listen(config.PORT, config.HOST)
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
