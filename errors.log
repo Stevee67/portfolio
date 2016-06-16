@@ -130,3 +130,6 @@ INFO     [2016-06-16 10:55:10,156] 200 GET /static/img/projects/python.png (192.
 INFO     [2016-06-16 10:55:10,390] 200 GET /static/img/projects/file(1).png (192.168.0.86) 259.69ms
 WARNING  [2016-06-16 10:55:10,578] 404 GET /favicon.ico (192.168.0.86) 3.03ms
 INFO     [2016-06-16 11:01:26,477] /home/webdev/Projects/AboutMe/run.py modified; restarting server
+INFO     [2016-06-16 11:08:54,103] /home/webdev/Projects/AboutMe/run.py modified; restarting server
+INFO     [2016-06-16 11:09:15,358] /home/webdev/Projects/AboutMe/run.py modified; restarting server
+INFO     [2016-06-16 11:10:14,703] /home/webdev/Projects/AboutMe/run.py modified; restarting server

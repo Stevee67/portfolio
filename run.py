@@ -9,6 +9,7 @@ import config
 from tornado.ioloop import IOLoop
 from handlers import ErrorHandler
 from modules.utils import Log
+import tornado.wsgi
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -37,10 +38,11 @@ class Application(tornado.web.Application):
             self.log.error('Error db conection!')
           # raises exception on connection error
 
-
-def application():
-    application = Application()
-    application.listen(config.PORT, config.HOST)
+application = Application()
+def run():
+    container = tornado.wsgi.WSGIContainer(application)
+    http_server = tornado.httpserver.HTTPServer(container)
+    http_server.listen(config.PORT, config.HOST)
     tornado.ioloop.IOLoop.current().start()
 
 if __name__ == "__main__":
