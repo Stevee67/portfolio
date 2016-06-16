@@ -1,7 +1,7 @@
 import tornado.web
 import tornado.gen
 from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
-    generate_password, verify_password, strip_date, get_next_index_from_file, merge_dict_by_kk, reconect, paginaion
+    generate_password, verify_password, strip_date, get_next_index_from_file, merge_dict_by_kk, paginaion
 import requests
 import datetime
 from urllib import parse
@@ -82,29 +82,24 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
 
-    @reconect
     @tornado.gen.coroutine
     def get(self):
-        try:
-            response = requests.get('http://ipinfo.io')
-            user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
-            skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
-            experiences = yield self.db.execute("SELECT * FROM experience")
-            educations = yield self.db.execute("SELECT * FROM educations")
-            projects = yield self.db.execute("SELECT * FROM projects")
-            list_projects = yield self.upd_dict_with_img_url(dict_from_cursor_all(projects))
-            static_data_cur = yield self.db.execute("SELECT * FROM static_data")
-            tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
-            self.render("index.html", user=user.fetchone(),
-                        skills=skills.fetchall(),
-                        experiences=experiences.fetchall(),
-                        educations=educations.fetchall(),
-                        projects=list_projects,
-                        static_data=merge_dict_by_kk(dict_from_cursor_all(static_data_cur), 'type', 'text'),
-                        format_date=format_date)
-        except Exception as e:
-            # self.log.error(e)
-            self.db.connect()
+        response = requests.get('http://ipinfo.io')
+        user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
+        skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
+        experiences = yield self.db.execute("SELECT * FROM experience")
+        educations = yield self.db.execute("SELECT * FROM educations")
+        projects = yield self.db.execute("SELECT * FROM projects")
+        list_projects = yield self.upd_dict_with_img_url(dict_from_cursor_all(projects))
+        static_data_cur = yield self.db.execute("SELECT * FROM static_data")
+        tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
+        self.render("index.html", user=user.fetchone(),
+                    skills=skills.fetchall(),
+                    experiences=experiences.fetchall(),
+                    educations=educations.fetchall(),
+                    projects=list_projects,
+                    static_data=merge_dict_by_kk(dict_from_cursor_all(static_data_cur), 'type', 'text'),
+                    format_date=format_date)
 
 
     @tornado.gen.coroutine
@@ -122,7 +117,6 @@ class HomeHandler(BaseHandler):
 
 class AdminHandler(BaseHandler):
 
-    @reconect
     @tornado.gen.coroutine
     def get(self):
         if not self.current_user:
@@ -132,7 +126,7 @@ class AdminHandler(BaseHandler):
 
 
 class FormsHandler(BaseHandler):
-    @reconect
+
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/form_component.html")
@@ -142,13 +136,13 @@ class EditPersonalInfo(BaseHandler):
     _actions = ['passchange', 'edit']
     __required_fields = []
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/personal_info.html")
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
@@ -157,7 +151,7 @@ class EditPersonalInfo(BaseHandler):
         self.write(dict_info)
         self.finish()
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -192,13 +186,13 @@ class EditSkills(BaseHandler):
 
     __required_fields = []
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/skills.html")
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
@@ -208,7 +202,7 @@ class EditSkills(BaseHandler):
         self.write({'skills': list_skills})
         self.finish()
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -233,7 +227,7 @@ class EditSkills(BaseHandler):
             self.write({'skills': {}, 'error': 'Bad action!'})
         self.finish()
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
@@ -253,13 +247,12 @@ class EditExperience(BaseHandler):
 
     __required_fields = []
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/experience.html")
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
@@ -269,7 +262,7 @@ class EditExperience(BaseHandler):
         self.write({'experiences': list_experiences})
         self.finish()
 
-    @reconect
+
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -304,7 +297,6 @@ class EditExperience(BaseHandler):
             self.write({'experiences': {}, 'error': 'Bad action!'})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
@@ -324,13 +316,11 @@ class EditEducation(BaseHandler):
 
     __required_fields = []
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/education.html")
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
@@ -339,7 +329,6 @@ class EditEducation(BaseHandler):
         self.write({'educations': list_educations})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -373,7 +362,6 @@ class EditEducation(BaseHandler):
             self.write({'educations': {}, 'error': 'Bad action!'})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
@@ -392,13 +380,11 @@ class EditStaticData(BaseHandler):
 
     __required_fields = []
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/static.html")
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
@@ -408,7 +394,6 @@ class EditStaticData(BaseHandler):
         self.write({'static_data': list_static_data, 'types':self.get_allowed_types(list_static_data)})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -433,7 +418,6 @@ class EditStaticData(BaseHandler):
             self.write({'static_data': {}, 'error': 'Bad action!'})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
@@ -461,13 +445,11 @@ class Visitors(BaseHandler):
 
     __required_fields = []
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/visitors.html", format_date=format_date)
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
@@ -476,7 +458,6 @@ class Visitors(BaseHandler):
         self.write({'visitors': list_visitors, 'pages': pages, 'page': data['page']})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -501,7 +482,6 @@ class Visitors(BaseHandler):
             self.write({'static_data': {}, 'error': 'Bad action!'})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
@@ -527,13 +507,11 @@ class EditProjects(BaseHandler):
 
     __required_fields = []
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/portfolio.html")
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
@@ -542,7 +520,6 @@ class EditProjects(BaseHandler):
         self.write({'projects': list_projects})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -581,7 +558,6 @@ class EditProjects(BaseHandler):
             self.write({'projects': {}, 'error': 'Bad action!'})
         self.finish()
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
@@ -629,14 +605,13 @@ class EditProjects(BaseHandler):
 
 
 class Login(BaseHandler):
-    @reconect
+
     @tornado.gen.coroutine
     def get(self):
         if self.current_user:
             self.redirect('/admin')
         self.render("admin/login.html")
 
-    @reconect
     @tornado.gen.coroutine
     def post(self):
         data = json.loads(self.request.body.decode())
@@ -665,7 +640,6 @@ class Login(BaseHandler):
 
 class Logout(BaseHandler):
 
-    @reconect
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):

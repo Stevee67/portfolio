@@ -113,19 +113,6 @@ def verify_password(pwhash, password):
     return pwhash and \
            check_password_hash(pwhash, password)
 
-def reconect(func):
-    def wraps(*args, **kwargs):
-        try:
-            res = func(*args, **kwargs)
-        except:
-            args[0].db.connect()
-            try:
-                res = func(*args, **kwargs)
-            except:
-                res = 'error'
-        return res
-    return wraps
-
 @tornado.gen.coroutine
 def paginaion(db, table, item_per_page, page):
     cur_pages = yield db.execute("SELECT COUNT(ip) FROM {}".format(table))
