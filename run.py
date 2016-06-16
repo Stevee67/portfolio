@@ -42,6 +42,7 @@ application = Application()
 def run():
     container = tornado.wsgi.WSGIContainer(application)
     http_server = tornado.httpserver.HTTPServer(container)
+    print(config.PORT, config.HOST)
     http_server.listen(config.PORT, config.HOST)
     tornado.ioloop.IOLoop.current().start()
 

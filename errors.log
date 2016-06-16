@@ -133,3 +133,338 @@ INFO     [2016-06-16 11:01:26,477] /home/webdev/Projects/AboutMe/run.py modified
 INFO     [2016-06-16 11:08:54,103] /home/webdev/Projects/AboutMe/run.py modified; restarting server
 INFO     [2016-06-16 11:09:15,358] /home/webdev/Projects/AboutMe/run.py modified; restarting server
 INFO     [2016-06-16 11:10:14,703] /home/webdev/Projects/AboutMe/run.py modified; restarting server
+ERROR    [2016-06-16 11:10:31,144] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:31,185] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:31,187] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:31,188] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:31,189] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:31,192] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:31,195] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:31,295] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:32,890] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:32,894] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:32,898] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:32,900] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:32,902] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:32,904] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:32,906] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:37,971] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:48,827] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:48,830] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:48,833] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:48,834] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:48,836] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:48,842] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:10:48,846] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+INFO     [2016-06-16 11:11:14,735] /home/webdev/Projects/AboutMe/run.py modified; restarting server
+ERROR    [2016-06-16 11:11:37,334] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:37,343] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:37,344] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:37,346] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:37,348] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:37,351] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:43,686] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:43,687] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:43,690] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:43,693] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+INFO     [2016-06-16 11:11:55,335] /home/webdev/Projects/AboutMe/run.py modified; restarting server
+ERROR    [2016-06-16 11:11:56,133] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:56,136] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:56,137] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
+ERROR    [2016-06-16 11:11:56,140] Uncaught exception
+Traceback (most recent call last):
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/http1connection.py", line 238, in _read_message
+    delegate.finish()
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/httpserver.py", line 288, in finish
+    self.server.request_callback(self.request)
+  File "/home/webdev/Projects/.venv/lib/python3.4/site-packages/tornado/wsgi.py", line 277, in __call__
+    WSGIContainer.environ(request), start_response)
+TypeError: __call__() takes 2 positional arguments but 3 were given
