@@ -24,6 +24,8 @@ class BaseHandler(tornado.web.RequestHandler):
 
     @property
     def db(self):
+        if self.application.db.closed:
+            self.application.db.connect()
         return self.application.db
 
     def get_current_user(self):
