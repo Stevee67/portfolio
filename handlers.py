@@ -2,7 +2,7 @@ import tornado.web
 import tornado.gen
 from modules.utils import format_date, send_message_async, dict_from_cursor_one, dict_from_cursor_all, \
     generate_password, verify_password, strip_date, get_next_index_from_file, merge_dict_by_kk, reconect, paginaion
-
+import requests
 import datetime
 from urllib import parse
 import tornado.ioloop
@@ -84,7 +84,7 @@ class HomeHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
         try:
-            # response = requests.get('http://ipinfo.io')
+            response = requests.get('http://ipinfo.io')
             user = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(config.SENDER_ADDRESS))
             skills = yield self.db.execute("SELECT * FROM skils ORDER BY kn_percent DESC")
             experiences = yield self.db.execute("SELECT * FROM experience")
@@ -92,7 +92,7 @@ class HomeHandler(BaseHandler):
             projects = yield self.db.execute("SELECT * FROM projects")
             list_projects = yield self.upd_dict_with_img_url(dict_from_cursor_all(projects))
             static_data_cur = yield self.db.execute("SELECT * FROM static_data")
-            # tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
+            tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
             self.render("index.html", user=user.fetchone(),
                         skills=skills.fetchall(),
                         experiences=experiences.fetchall(),
