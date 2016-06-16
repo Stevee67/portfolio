@@ -101,7 +101,7 @@ class HomeHandler(BaseHandler):
                         static_data=merge_dict_by_kk(dict_from_cursor_all(static_data_cur), 'type', 'text'),
                         format_date=format_date)
         except Exception as e:
-            self.log.error(e)
+            # self.log.error(e)
             self.db.connect()
 
 

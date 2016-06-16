@@ -28,21 +28,21 @@ class Application(tornado.web.Application):
         ioloop = IOLoop.instance()
 
         self.db = momoko.Connection(dsn=config.DSN, cursor_factory=DictCursor)
-        self.log = Log('errors.log')
+        # self.log = Log('errors.log')
         try:
             future = self.db.connect()
             ioloop.add_future(future, lambda x: ioloop.stop())
             ioloop.start()
             future.result()
         except:
-            self.log.error('Error db conection!')
+            pass
+            # self.log.error('Error db conection!')
           # raises exception on connection error
 
 application = Application()
 def run():
     container = tornado.wsgi.WSGIContainer(application)
     http_server = tornado.httpserver.HTTPServer(container)
-    print(config.PORT, config.HOST)
     http_server.listen(config.PORT, config.HOST)
     tornado.ioloop.IOLoop.current().start()
 
