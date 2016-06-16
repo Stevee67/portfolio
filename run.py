@@ -6,7 +6,6 @@ from psycopg2.extras import DictCursor
 from urls import hundlers
 import momoko
 import config
-import django.core.handlers.wsgi
 from tornado.ioloop import IOLoop
 from handlers import ErrorHandler
 from modules.utils import Log
@@ -42,8 +41,6 @@ class Application(tornado.web.Application):
 
 application = Application()
 def run():
-    wsgi_app = tornado.wsgi.WSGIContainer(
-        django.core.handlers.wsgi.WSGIHandler())
     server = tornado.httpserver.HTTPServer(application)
     server.listen(config.PORT)
     tornado.ioloop.IOLoop.instance().start()
