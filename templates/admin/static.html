@@ -22,7 +22,7 @@
 
         $scope.delete = function(static_element) {
             return $http({ method: 'DELETE',url: '/admin/static', data: static_element}).then(function successCallback(response) {
-                $scope.static_data = response.data.static_data
+                $scope.delete_element($scope.static_data , static_element)
                 $scope.types = response.data.types;
             }, function errorCallback(response) {
             });
@@ -40,7 +40,11 @@
             if(url !== ''){
                 return $http({ method: 'PUT',url: url, data: static_element}).then(function successCallback(response) {
                     $('#addStatic').modal('hide');
-                    $scope.static_data = response.data.static_data
+                    if(index === -1){
+                        $scope.update_list($scope.static_data, response.data.std)
+                    }else {
+                        $scope.static_data.push(response.data.std)
+                    }
                 }, function errorCallback(response) {
                 });
             }
@@ -89,7 +93,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="element in static_data">
+                                            <tr ng-if="element" ng-repeat="element in static_data track by $index">
                                                 <td ng-bind="element.type"></td>
                                                 <td ng-bind="element.text"></td>
                                                 <td><button class="btn btn-primary" ng-click="edit(element)">Edit</button></td>

@@ -26,24 +26,27 @@
         };
 
         $scope.delete = function(experience) {
-            return $http({ method: 'DELETE',url: '/admin/experience', data: experience}).then(function successCallback(response) {
-                $scope.experiences = response.data.experiences
+            return $http({ method: 'DELETE',url: '/admin/experience', data: experience}).then(function successCallback() {
+                $scope.delete_element($scope.experiences, experience)
             }, function errorCallback(response) {
             });
         };
 
         $scope.add_experience = function(experience) {
-
             var url ='';
             if(experience.hasOwnProperty('id')){
                 url = '/admin/experience?edit'
             }else{
                 url = '/admin/experience?add'
             }
-            if(url !== ''){
+            if(url !== '' && chech_date_from_to(experience.w_from, experience.w_to)){
                 return $http({ method: 'PUT',url: url, data: experience}).then(function successCallback(response) {
                     $('#addExperience').modal('hide');
-                    $scope.experiences = response.data.experiences
+                    if(experience.hasOwnProperty('id')){
+                        $scope.update_list($scope.experiences, response.data.experience)
+                    }else {
+                        $scope.experiences.push(response.data.experience)
+                    }
                 }, function errorCallback(response) {
                 });
             }
@@ -96,7 +99,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="experience in experiences">
+                                            <tr ng-if="experience" ng-repeat="experience in experiences">
                                                 <td ng-bind="experience.title"></td>
                                                 <td ng-bind="experience.subtitle"></td>
                                                 <td pf-date="experience.w_from"></td>

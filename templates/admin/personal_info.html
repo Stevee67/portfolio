@@ -6,21 +6,11 @@
     portfolioApp.controller('personal_info', function($scope, $http) {
 
         $scope.change_password = {};
+        $scope.required_fields = ['name', 'lastname', 'email', 'age'];
 
         $scope.get_personal_info = function () {
             return $http({ method: 'POST',url: '/admin/personal_info'}).then(function successCallback(response) {
-                $scope.info = response.data
-            }, function errorCallback(response) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
-        };
-
-        $scope.save = function(info) {
-            return $http({ method: 'PUT',url: '/admin/personal_info?edit', data: info}).then(function successCallback(response) {
-                $scope.info = response.data.data
-                if('success' in response.data)
-                    flash(response.data.success)
+                $scope.data = response.data.data
             }, function errorCallback(response) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -51,7 +41,7 @@
                 <ol class="breadcrumb">
                     <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
                     <li><i class="icon_document_alt"></i>Forms</li>
-                    <li><i class="fa fa-file-text-o"></i>Form elements</li>
+                    <li><i class="fa fa-file-text-o"></i>Personal info</li>
                 </ol>
             </div>
         </div>
@@ -66,65 +56,66 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">FirstName</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" ng-model="info.name" placeholder="put your name">
+                                    <input type="text" class="form-control" ng-model="data.name" placeholder="put your name" pf-required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">LastName</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" ng-model="info.lastname" placeholder="put your last name">
+                                    <input type="text" class="form-control" ng-model="data.lastname" placeholder="put your last name" pf-required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Email</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" ng-model="info.email" placeholder="put your email">
+                                    <input type="text" class="form-control" ng-model="data.email" placeholder="put your email" pf-required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Age</label>
                                 <div class="col-sm-7">
-                                    <input class="form-control" type="text" ng-model="info.age" placeholder="put your age">
+                                    <input class="form-control" type="text" ng-model="data.age" placeholder="put your age" pf-required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Phone</label>
                                 <div class="col-sm-7">
-                                    <input class="form-control" type="text" ng-model="info.phone" placeholder="put your phone">
+                                    <input class="form-control" type="text" ng-model="data.phone" placeholder="put your phone">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Address</label>
                                 <div class="col-sm-7">
-                                    <input class="form-control" type="text" ng-model="info.address" placeholder="put your address">
+                                    <input class="form-control" type="text" ng-model="data.address" placeholder="put your address">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Skype</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" ng-model="info.skype" placeholder="put your skype">
+                                    <input type="text" class="form-control" ng-model="data.skype" placeholder="put your skype">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Linkedin</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" ng-model="info.linkedin" placeholder="put your linkedin url">
+                                    <input type="text" class="form-control" ng-model="data.linkedin" placeholder="put your linkedin url">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-lg-2 control-label">Facebook</label>
-                                <div class="col-lg-7">
-                                    <input type="text" class="form-control" ng-model="info.facebook" placeholder="put your facebook url">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                    <label class="col-lg-2 control-label">About Me</label>
+                                <label class="col-sm-2 control-label">Facebook</label>
                                 <div class="col-sm-7">
-                                    <textarea class="form-control" rows="6" ng-model="info.about_me"></textarea>
+                                    <input type="text" class="form-control" ng-model="data.facebook" placeholder="put your facebook url">
                                 </div>
                             </div>
+                            <div class="form-group">
+                                    <label class="col-sm-2 control-label">About Me</label>
+                                <div class="col-sm-7">
+                                    <textarea class="form-control" rows="6" ng-model="data.about_me"></textarea>
+                                </div>
+                            </div>
+                            <span ng-if="error" style="color: red" ng-bind="error"></span>
                         </form>
-                        <button style="float: right;" type="submit" class="btn btn-primary" ng-click="save(info)">Save</button>
+                        <button id="btn-personal-info" type="submit" class="btn btn-primary" pf-save="data" pf-required-fields="required_fields">Save</button>
                     </div>
                 </section>
                 <section class="panel">

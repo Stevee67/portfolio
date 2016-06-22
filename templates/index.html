@@ -73,8 +73,8 @@
                 <div class="row">
                   <div class="col s12">
                     <div class="home-inner">
-                      <h1 class="home-title">HI! I'm <span>{{ user['name'] }} {{ user['lastname'] }}</span></h1>
-                      <p>{{user['short_about'] if user['short_about'] else ''}}</p>
+                      <h1 class="home-title">HI! I'm <span>{{ user.name }} {{ user.lastname }}</span></h1>
+                      <!--<p>{{user.short_about if user.short_about else ''}}</p>-->
                       <a class="hire-me-btn btn waves-effect waves-light btn-large" href="#footer">Write me <i class="mdi-content-send left"></i>
                       </a>
                       <!-- Call to About Button -->
@@ -101,15 +101,15 @@
                       <div class="col s12 m8 l9">
                         <div class="about-inner-right">
                           <h3>About Me</h3>
-                          <p>{{user['about_me'] if user['about_me'] else ''}}</p>
+                          <p>{{user.about_me if user.about_me else ''}}</p>
                           <div class="personal-information col s12 m12 l6">
                             <h3>Personal Information</h3>
                             <ul>
-                              <li><span>Name : </span>{{ user['name'] }} {{ user['lastname'] }}</li>
-                              <li><span>Age : </span>{{ user['age'] }} Years</li>
-                              <li><span>Phone : </span>{{ user['phone'] }}</li>
-                              <li><span>Email : </span>{{ user['email'] }}</li>
-                              <li><span>Address : </span>{{ user['address'] }}</li>
+                              <li><span>Name : </span>{{ user.name }} {{ user.lastname }}</li>
+                              <li><span>Age : </span>{{ user.age }} Years</li>
+                              <li><span>Phone : </span>{{ user.phone }}</li>
+                              <li><span>Email : </span>{{ user.email }}</li>
+                              <li><span>Address : </span>{{ user.address }}</li>
                             </ul>
                           </div>
                           <div class="resume-download col s12 m12 l6">
@@ -136,9 +136,9 @@
 
                   <div class="skill-progress-bar">
                     {% for skill in skills %}
-                    <span>{{skill['name']}}</span>
+                    <span>{{skill.name}}</span>
                     <div class="pro-bar-container color-wisteria">
-                      <div class="pro-bar bar-100 color-amethyst" data-pro-bar-percent="{{skill['kn_percent']}}"></div>
+                      <div class="pro-bar bar-100 color-amethyst" data-pro-bar-percent="{{skill.kn_percent}}"></div>
                     </div>
                     {% end %}
                   </div>
@@ -157,17 +157,17 @@
                       <div class="col s12">
                         <div class="card">
                           <div class="card-image waves-effect waves-block waves-light">
-                          <h2 class="experience-title">{{format_date(experience['w_from'])}} - {{format_date(experience['w_to']) if experience['w_to'] else 'Present'}}</h2>
+                          <h2 class="experience-title">{{format_date(experience.w_from)}} - {{format_date(experience.w_to) if experience.w_to else 'Present'}}</h2>
                             <img class="activator" src="/static/img/office.jpg">
                           </div>
                           <div class="card-content">
-                            <span class="card-title activator reveal-title">{{experience['title']}}<i class="material-icons right">more_vert</i></span>
-                            <p><a href="#">{{experience['subtitle']}}</a></p>
+                            <span class="card-title activator reveal-title">{{experience.title}}<i class="material-icons right">more_vert</i></span>
+                            <p><a href="#">{{experience.subtitle}}</a></p>
                           </div>
                           <div class="card-reveal">
-                            <span class="card-title reveal-title">{{experience['title']}}<i class="material-icons right">close</i></span>
-                            <a href="#" class="card-subtitle">{{experience['subtitle']}}</a>
-                            <p>{{experience['description']}}</p>
+                            <span class="card-title reveal-title">{{experience.title}}<i class="material-icons right">close</i></span>
+                            <a href="#" class="card-subtitle">{{experience.subtitle}}</a>
+                            <p>{{experience.description}}</p>
                           </div>
                         </div>
                       </div>
@@ -194,17 +194,17 @@
                     <div class="col s12">
                       <div class="card">
                         <div class="card-image waves-effect waves-block waves-light">
-                        <h2 class="experience-title">{{format_date(education['ed_from'])}} - {{format_date(education['ed_to'])}}</h2>
+                        <h2 class="experience-title">{{format_date(education.ed_from)}} - {{format_date(education.ed_to)}}</h2>
                           <img class="activator" src="/static/img/graduate-cap.jpg">
                         </div>
                         <div class="card-content">
-                          <span class="card-title activator reveal-title">{{education['level']}}<i class="material-icons right">more_vert</i></span>
-                          <p><a href="#">{{education['title']}}</a></p>
+                          <span class="card-title activator reveal-title">{{education.level}}<i class="material-icons right">more_vert</i></span>
+                          <p><a href="#">{{education.title}}</a></p>
                         </div>
                         <div class="card-reveal">
-                          <span class="card-title reveal-title">{{education['level']}}<i class="material-icons right">close</i></span>
-                          <a href="#" class="card-subtitle">{{education['title']}}</a>
-                          <p>{{education['description']}}</p>
+                          <span class="card-title reveal-title">{{education.level}}<i class="material-icons right">close</i></span>
+                          <a href="#" class="card-subtitle">{{education.title}}</a>
+                          <p>{{education.description}}</p>
                         </div>
                       </div>
                     </div>

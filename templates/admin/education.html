@@ -27,23 +27,26 @@
 
         $scope.delete = function(education) {
             return $http({ method: 'DELETE',url: '/admin/education', data: education}).then(function successCallback(response) {
-                $scope.educations = response.data.educations
+                $scope.delete_element($scope.educations, education)
             }, function errorCallback(response) {
             });
         };
 
         $scope.add_education = function(education) {
-
             var url ='';
             if(education.hasOwnProperty('id')){
                 url = '/admin/education?edit'
             }else{
                 url = '/admin/education?add'
             }
-            if(url !== ''){
+            if(url !== '' && chech_date_from_to(education.ed_from, education.ed_to)){
                 return $http({ method: 'PUT',url: url, data: education}).then(function successCallback(response) {
                     $('#addEducation').modal('hide');
-                    $scope.educations = response.data.educations
+                    if(education.hasOwnProperty('id')){
+                        $scope.update_list($scope.educations, response.data.education)
+                    }else {
+                        $scope.educations.push(response.data.education)
+                    }
                 }, function errorCallback(response) {
                 });
             }
@@ -96,7 +99,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="education in educations">
+                                            <tr ng-if="education" ng-repeat="education in educations">
                                                 <td ng-bind="education.title"></td>
                                                 <td ng-bind="education.level"></td>
                                                 <td pf-date="education.ed_from"></td>
@@ -126,7 +129,7 @@
               <div class="modal-body" >
                   <div class="modal-row"><input type="text" class="form-control" ng-model="new_education.title" placeholder="title"></div>
                   <div class="modal-row"><input type="text" class="form-control" ng-model="new_education.level" placeholder="level"></div>
-                  <div class="modal-row"><input type="date" class="form-control" ng-model="new_education.ed_from" placeholder="from"></div>
+                  <div class="modal-row"><input type="date" class="form-control" ng-model="new_education.ed_from" placeholder="from" required></div>
                   <div class="modal-row"><input type="date" pf-date class="form-control" ng-model="new_education.ed_to" placeholder="to"></div>
                   <div class="modal-row"><textarea class="form-control" ng-model="new_education.description" placeholder="description"></textarea></div>
               </div>

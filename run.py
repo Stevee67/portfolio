@@ -2,11 +2,8 @@ import tornado.ioloop
 import tornado.web
 import tornado.options
 import tornado.httpserver
-from psycopg2.extras import DictCursor
 from urls import hundlers
-import momoko
 import config
-from tornado.ioloop import IOLoop
 from handlers import ErrorHandler
 from modules.utils import Log
 import tornado.wsgi
@@ -25,17 +22,6 @@ class Application(tornado.web.Application):
             debug=True,
         )
         super(Application, self).__init__(handlers, **settings)
-        ioloop = IOLoop.instance()
-
-        self.db = momoko.Connection(dsn=config.DSN, cursor_factory=DictCursor)
-        # self.log = Log('errors.log')
-        try:
-            future = self.db.connect()
-            ioloop.add_future(future, lambda x: ioloop.stop())
-            ioloop.start()
-            future.result()
-        except:
-            pass
             # self.log.error('Error db conection!')
           # raises exception on connection error
 

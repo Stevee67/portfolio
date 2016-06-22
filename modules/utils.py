@@ -4,27 +4,9 @@ import time
 import config
 import smtplib
 import tornado.gen
-from werkzeug.security import generate_password_hash, check_password_hash
-from os import listdir
-from os.path import isfile, join
 import re
 import math
 import logging
-
-def get_only_files_from_dir(path):
-    return [f for f in listdir(path) if isfile(join(path, f))]
-
-def get_next_index_from_file(path):
-    files = get_only_files_from_dir(path)
-    index = 1
-    for file in files:
-        reg = re.match('([a-z_-]*[0-9_-]*)+(\((\d)+\))+\.\w+', file)
-        if reg:
-            if int(reg.group(3)) > index:
-                index = int(reg.group(3))+1
-    return index
-
-
 
 def datetime_from_utc_to_local(utc_datetime):
     now_timestamp = time.time()
@@ -63,7 +45,9 @@ def send_message_async(message):
 def call_blocking_func(func, *args, **kwargs):
     threading.Thread(target=func, args=args, kwargs=kwargs).start()
 
-def dict_from_cursor_one(cursor):
+@tornado.gen.coroutine
+def dict_from_cursor_one(curso):
+    cursor = yield curso
     keys = cursor.description
     obj = cursor.fetchone()
     new_dict = {}
@@ -73,6 +57,16 @@ def dict_from_cursor_one(cursor):
                 new_dict[k[0]] = format_date(obj[k[0]])
             else:
                 new_dict[k[0]] = obj[k[0]]
+        return new_dict
+
+def object_to_dict(object):
+    new_dict = {}
+    if object:
+        for k in object.__dict__:
+            if isinstance(object.__getattribute__(k), datetime.datetime):
+                new_dict[k] = format_date(object.__getattribute__(k))
+            else:
+                new_dict[k] = object.__getattribute__(k)
         return new_dict
 
 def dict_from_cursor_all(cursor):
@@ -97,32 +91,21 @@ def merge_dict(list_dict):
         new_dict.update(d)
     return new_dict
 
-def merge_dict_by_kk(list_dict, k1, k2):
+def merge_object_by_kk(list_dict, k1, k2):
     new_dict = {}
     for el in list_dict:
-        new_dict[el[k1]] = el[k2]
+        new_dict[el.__getattribute__(k1)] = el.__getattribute__(k2)
     return new_dict
-
-def generate_password(password):
-    if password:
-           return generate_password_hash(password,
-                                   method='pbkdf2:sha256',
-                                   salt_length=32)
-
-def verify_password(pwhash, password):
-    return pwhash and \
-           check_password_hash(pwhash, password)
 
 @tornado.gen.coroutine
 def paginaion(db, table, item_per_page, page):
-    cur_pages = yield db.execute("SELECT COUNT(ip) FROM {}".format(table))
-    len = cur_pages.fetchone()
+    cur_count = yield db.execute("SELECT COUNT(ip) FROM {}".format(table))
+    len = cur_count.fetchone()
     pages = len[0]/item_per_page
     offset = (page-1) * item_per_page
     data = yield db.execute("SELECT * FROM {0} LIMIT {1} OFFSET {2}"
                                      .format(table, item_per_page, offset))
-    return math.ceil(pages), dict_from_cursor_all(data)
-
+    return math.ceil(pages), dict_from_cursor_all(data), len[0]
 
 class Log:
     def __init__(self, path):

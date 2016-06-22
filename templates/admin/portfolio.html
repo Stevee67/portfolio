@@ -21,14 +21,15 @@
 
         $scope.delete = function(project) {
             return $http({ method: 'DELETE',url: '/admin/projects', data: project}).then(function successCallback(response) {
-                $scope.projects = response.data.projects
+                $scope.delete_element($scope.projects, project)
             }, function errorCallback(response) {
             });
         };
 
         $scope.save = function (project) {
             var url ='';
-            if(project.hasOwnProperty('id')){
+            $scope.edit = project.hasOwnProperty('id');
+            if($scope.edit){
                 url = '/admin/projects?edit'
             }else{
                 url = '/admin/projects?add'
@@ -36,7 +37,11 @@
             if(url !== ''){
                 return $http({ method: 'PUT',url: url, data: project}).then(function successCallback(response) {
                     $('#addProject').modal('hide');
-                    $scope.projects = response.data.projects
+                    if($scope.edit){
+                        $scope.update_list($scope.projects, response.data.project)
+                    }else {
+                        $scope.projects.push(response.data.project)
+                    }
                 }, function errorCallback(response) {
                 });
             }
@@ -91,9 +96,10 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="project in projects">
+                                            <tr ng-if="project" ng-repeat="project in projects">
                                                 <td ng-bind="project.name"></td>
                                                 <td ng-bind="project.url"></td>
+                                                <td><img ng-src="{[{project.image_url}]}" style="width: 50px"></td>
                                                 <td><button class="btn btn-primary" ng-click="edit(project)">Edit</button></td>
                                                 <td><button class="btn btn-primary" ng-click="delete(project)">Delete</button></td>
                                             </tr>

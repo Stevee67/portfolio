@@ -6,41 +6,26 @@
     portfolioApp.controller('skills', function($scope, $http) {
 
         $scope.new_skill = {};
+        $scope.required_fields = ['name', 'kn_percent'];
 
         $scope.get_skills = function () {
             return $http({ method: 'POST',url: '/admin/skills'}).then(function successCallback(response) {
-                $scope.skills = response.data.skills
+                $scope.list_data = response.data.skills
             }, function errorCallback(response) {
             });
         };
 
         $scope.edit = function(skill) {
-            $scope.new_skill = skill;
+            $scope.new_skill = jQuery.extend({}, skill);
             $('#addSkill').modal('show');
         };
+
         $scope.delete = function(skill) {
             return $http({ method: 'DELETE',url: '/admin/skills', data: skill}).then(function successCallback(response) {
-                $scope.skills = response.data.skills
+                $scope.delete_element($scope.list_data, skill)
             }, function errorCallback(response) {
             });
         };
-
-        $scope.add_skill = function(skill) {
-            var url ='';
-            if(skill.hasOwnProperty('id')){
-                url = '/admin/skills?edit'
-            }else{
-                url = '/admin/skills?add'
-            }
-            if(url !== ''){
-                return $http({ method: 'PUT',url: url, data: skill}).then(function successCallback(response) {
-                    $('#addSkill').modal('hide');
-                    $scope.skills = response.data.skills
-                }, function errorCallback(response) {
-                });
-            }
-
-        }
 
     });
 
@@ -85,7 +70,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="skill in skills">
+                                            <tr ng-if="skill" ng-repeat="skill in list_data">
                                                 <td ng-bind="skill.name"></td>
                                                 <td ng-bind="skill.kn_percent"></td>
                                                 <td><button class="btn btn-primary" ng-click="edit(skill)">Edit</button></td>
@@ -110,12 +95,12 @@
                   <h4 class="modal-title">Add Skill</h4>
               </div>
               <div class="modal-body" >
-                  <div style="padding-bottom: 10px"><input type="text" class="form-control" ng-model="new_skill.name" placeholder="name"></div>
-                  <div><input type="number" class="form-control" ng-model="new_skill.kn_percent" placeholder="percent"></div>
+                  <div style="padding-bottom: 10px"><input type="text" class="form-control" ng-model="new_skill.name" placeholder="name" pf-required=""></div>
+                  <div><input type="number" class="form-control" ng-model="new_skill.kn_percent" placeholder="percent" pf-required=""></div>
               </div>
               <div class="modal-footer">
                   <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                  <button class="btn btn-success" type="button" ng-click="add_skill(new_skill)">Save skill</button>
+                  <button id="save_skill" class="btn btn-success" type="button" pf-save="new_skill">Save skill</button>
               </div>
           </div>
       </div>

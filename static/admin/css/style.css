@@ -4062,7 +4062,18 @@ ul.amounts li {
 }
 
 input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:focus, .form-validate .form-group input.error , .form-validate .form-group textarea.error{
-    border-color: #00a0df !important;
+    border-color: red !important;
+}
+.invalid:focus{
+    border-color: red !important;
+}
+
+#btn-personal-info{
+    float: right;
+}
+
+#error-msg{
+    color: red;
 }
 
 #register_form label.error {

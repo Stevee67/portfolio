@@ -10,6 +10,7 @@
                 $scope.visitors = response.data.visitors;
                 $scope.page = response.data.page;
                 $scope.pages = response.data.pages;
+                $scope.count_items = response.data.count;
             }, function errorCallback(response) {
             });
         };
@@ -113,6 +114,7 @@
                                     <button ng-click="prev_page()">Previous</button>
                                     <button ng-click="next_page()">Next</button>
                                     <span>{[{ page }]} / {[{ pages }]}</span>
+                                    <span style="float: right">{[{count_items}]} items</span>
                                 </div>
                             </div>
                         </div><!--/col-->
