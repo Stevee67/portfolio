@@ -22,7 +22,6 @@ class HomeHandler(Base):
         educations = yield self.fetch_all(Educations, order_by={'field':'ed_from', 'type':'ASC'})
         skills = yield self.fetch_all(Skills, order_by={'field':'kn_percent', 'type':'DESC'})
         experiences = yield self.fetch_all(Experience)
-        self.db.close()
 
         # tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
         self.render("index.html", user=user,

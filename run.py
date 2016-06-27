@@ -27,7 +27,7 @@ class Application(tornado.web.Application):
 
 application = Application()
 def run():
-    server = tornado.httpserver.HTTPServer(application)
+    server = tornado.httpserver.HTTPServer(application, no_keep_alive=True)
     server.listen(config.PORT, config.HOST)
     tornado.ioloop.IOLoop.instance().start()
 

@@ -15,9 +15,20 @@ class BaseHandler(tornado.web.RequestHandler):
 
     @property
     def db(self):
-        if db.closed:
-            db.connect()
+        # if db.closed:
+        #     db.connect()
         return db
+
+    @tornado.gen.coroutine
+    def prepare(self):
+        yield db.connect()
+        return super(BaseHandler, self).prepare()
+
+    @tornado.gen.coroutine
+    def on_finish(self):
+        if not self.db.closed:
+            self.db.close()
+        return super(BaseHandler, self).on_finish()
 
 class Base(BaseHandler):
 
