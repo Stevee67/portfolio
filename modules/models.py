@@ -28,9 +28,28 @@ class Main(Base):
         yield self.update()
         return self
 
+    def check_required_fields(self):
+        if not hasattr(self, '_required_fields'):
+            raise Exception('{0} object has not attribute _required_fields'.format(self.__class__.__name__))
+        for k in self._required_fields:
+            if k not in self.__dict__:
+                return False
+            if not self.__getattribute__(k):
+                return False
+        return True
+
+    def check_date_frto(self, fr, to):
+        if not fr:
+            return False
+        if fr>=to:
+            return False
+        return True
+
+
 class Users(Main):
 
     __tablename__ = 'users'
+    _required_fields = ['name', 'lastname', 'email', 'age']
 
     def __init__(self, name=None, lastname=None, email=None, age=None,address=None,phone=None, status=None,
                  skype=None, about_me=None, linkedin=None, facebook=None, short_about=None, password_hash=None):
@@ -77,6 +96,7 @@ class Users(Main):
 class Skills(Main):
 
     __tablename__ = 'skils'
+    _required_fields = ['name', 'kn_percent']
 
     def __init__(self, name=None, user_id=None, kn_percent=None):
         self.name = name
@@ -86,6 +106,7 @@ class Skills(Main):
 class Educations(Main):
 
     __tablename__ = 'educations'
+    _required_fields = ['title', 'level', 'ed_from']
 
     def __init__(self, title=None, level=None, ed_from=None, ed_to=None, description=None):
         self.title = title
@@ -125,6 +146,7 @@ class StaticData(Main):
     STATIC_TYPES = ['SKILL', 'EXPERIENCE', 'EDUCATION', 'PORTFOLIO', 'CONTACT', 'FOOTER', 'HEADER', 'TITLE']
 
     __tablename__ = 'static_data'
+    _required_fields = ['type']
 
     def __init__(self, type=None, text=None):
         self.type = type
@@ -150,6 +172,7 @@ class StaticData(Main):
 class Projects(Main):
 
     __tablename__ = 'projects'
+    _required_fields = ['name', 'url', 'image_id']
 
     def __init__(self, name=None, url=None, image_id=None):
         self.name = name
@@ -208,6 +231,7 @@ class Projects(Main):
 class Experience(Main):
 
     __tablename__ = 'experience'
+    _required_fields = ['title', 'subtitle', 'w_from']
 
     def __init__(self, user_id=None, title=None, subtitle=None, w_from=None, w_to=None, description=None):
         self.user_id = user_id
@@ -219,33 +243,38 @@ class Experience(Main):
 
     @tornado.gen.coroutine
     def save_experience(self, data):
-        for k in self.__dict__:
-            if k in data.keys():
-                if k == 'w_from' or k == 'w_to':
-                    if data[k]:
-                        self.__setattr__(k, strip_date(data[k]))
-                else:
-                    self.__setattr__(k, data[k])
-
-        yield self.save()
-        return self
+        success = self.edit(data)
+        if success == True:
+            yield self.save()
+            return self
+        return success
 
     @tornado.gen.coroutine
     def edit_experience(self, data):
+        success = self.edit(data)
+        if success == True:
+            yield self.update()
+            return self
+        return success
+
+    def edit(self, data):
+        frto = {'w_from':None, 'w_to': None}
         for k in self.__dict__:
             if k in data.keys():
                 if k == 'w_from' or k == 'w_to':
+                    frto[k] = strip_date(data[k])
                     if data[k]:
                         self.__setattr__(k, strip_date(data[k]))
                 else:
                     self.__setattr__(k, data[k])
-
-        yield self.update()
-        return self
+        if not self.check_date_frto(frto['w_from'], frto['w_to']):
+            return 'Date is wrong!'
+        return True
 
 class Images(Main):
 
     __tablename__ = 'images'
+    _required_fields = ['folder_name', 'file_name']
 
     def __init__(self, folder_name=None, file_name=None, mime=None, size=None):
         self.folder_name = folder_name
@@ -263,6 +292,7 @@ class Images(Main):
             index = self.get_next_index_from_file(os.path.abspath("static") + '/img/projects/')
             self.file_name = 'file(' + str(index) + ')''.' + data['file']['mime'].split('/')[1]
             self.folder_name = 'projects'
+            self.mime = data['file']['mime']
             url = os.path.abspath("static") + '/img/projects/' + self.file_name
             with open(url, 'wb+') as f:
                 f.write(content)

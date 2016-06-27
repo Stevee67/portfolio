@@ -6,10 +6,11 @@
     portfolioApp.controller('experience', function($scope, $http) {
 
         $scope.new_experience = {};
+        $scope.required_fields = ['title', 'subtitle', 'w_from'];
 
         $scope.get_experiences = function () {
             return $http({ method: 'POST',url: '/admin/experience'}).then(function successCallback(response) {
-                $scope.experiences = response.data.experiences
+                $scope.list_data = response.data.experiences
             }, function errorCallback(response) {
             });
         };
@@ -27,31 +28,10 @@
 
         $scope.delete = function(experience) {
             return $http({ method: 'DELETE',url: '/admin/experience', data: experience}).then(function successCallback() {
-                $scope.delete_element($scope.experiences, experience)
+                $scope.delete_element($scope.list_data, experience)
             }, function errorCallback(response) {
             });
         };
-
-        $scope.add_experience = function(experience) {
-            var url ='';
-            if(experience.hasOwnProperty('id')){
-                url = '/admin/experience?edit'
-            }else{
-                url = '/admin/experience?add'
-            }
-            if(url !== '' && chech_date_from_to(experience.w_from, experience.w_to)){
-                return $http({ method: 'PUT',url: url, data: experience}).then(function successCallback(response) {
-                    $('#addExperience').modal('hide');
-                    if(experience.hasOwnProperty('id')){
-                        $scope.update_list($scope.experiences, response.data.experience)
-                    }else {
-                        $scope.experiences.push(response.data.experience)
-                    }
-                }, function errorCallback(response) {
-                });
-            }
-
-        }
 
     });
 
@@ -99,7 +79,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-if="experience" ng-repeat="experience in experiences">
+                                            <tr ng-if="experience" ng-repeat="experience in list_data">
                                                 <td ng-bind="experience.title"></td>
                                                 <td ng-bind="experience.subtitle"></td>
                                                 <td pf-date="experience.w_from"></td>
@@ -126,16 +106,32 @@
                   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                   <h4 class="modal-title">Add Experience</h4>
               </div>
-              <div class="modal-body" >
-                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_experience.title" placeholder="title"></div>
-                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_experience.subtitle" placeholder="subtitle"></div>
-                  <div class="modal-row"><input type="date" class="form-control" ng-model="new_experience.w_from" placeholder="from"></div>
-                  <div class="modal-row"><input type="date" pf-date class="form-control" ng-model="new_experience.w_to" placeholder="to"></div>
-                  <div class="modal-row"><textarea class="form-control" ng-model="new_experience.description" placeholder="description"></textarea></div>
+              <div class="modal-body">
+                  <div class="modal-row">
+                      <label class="col-sm-2 control-label">Title <span class="required_star">*</span></label>
+                      <input type="text" class="form-control" ng-model="new_experience.title" placeholder="title" pf-required="">
+                  </div>
+                  <div class="modal-row">
+                      <label class="col-sm-2 control-label">Subtitle <span class="required_star">*</span></label>
+                      <input type="text" class="form-control" ng-model="new_experience.subtitle" placeholder="subtitle" pf-required="">
+                  </div>
+                  <div class="modal-row">
+                      <label class="col-sm-2 control-label">From <span class="required_star">*</span></label>
+                      <input id="from" type="date" class="form-control" ng-model="new_experience.w_from" placeholder="from" pf-required="">
+                  </div>
+                  <div class="modal-row">
+                      <label class="col-sm-2 control-label">To</label>
+                      <input id="to" type="date" pf-date class="form-control" ng-model="new_experience.w_to" placeholder="to">
+                  </div>
+                  <div class="modal-row">
+                      <label class="col-sm-2 mod-label">Description</label>
+                      <textarea class="form-control" ng-model="new_experience.description" placeholder="description"></textarea>
+                  </div>
               </div>
+              <span style="margin-left: 20px" id="error-msg" ng-bind="err"></span>
               <div class="modal-footer">
                   <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                  <button class="btn btn-success" type="button" ng-click="add_experience(new_experience)">Save experience</button>
+                  <button id="save_experience" class="btn btn-success" type="button" pf-save="new_experience">Save experience</button>
               </div>
           </div>
       </div>

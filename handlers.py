@@ -22,6 +22,8 @@ class HomeHandler(Base):
         educations = yield self.fetch_all(Educations, order_by={'field':'ed_from', 'type':'ASC'})
         skills = yield self.fetch_all(Skills, order_by={'field':'kn_percent', 'type':'DESC'})
         experiences = yield self.fetch_all(Experience)
+        self.db.close()
+
         # tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
         self.render("index.html", user=user,
                     skills=skills,
@@ -64,8 +66,6 @@ class FormsHandler(Base):
 class EditPersonalInfo(Base):
 
     _actions = ['passchange', 'edit']
-    __required_fields = []
-
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -166,7 +166,8 @@ class EditExperience(Base):
     @tornado.gen.coroutine
     def post(self):
         user = yield self.fetch_by(Users, email=self.current_user.decode())
-        experiences = yield self.fetch_all(Experience, filter_by={'user_id':user.id})
+        experiences = yield self.fetch_all(Experience, filter_by={'user_id':user.id},
+                                           order_by={'field':'w_from','type':'ASC'})
         self.write({'experiences': [object_to_dict(experience) for experience in experiences]})
         self.finish()
 
@@ -184,9 +185,11 @@ class EditExperience(Base):
             elif action == 'edit':
                 old_experience = yield self.fetch(Experience, data['id'])
                 experience = yield old_experience.edit_experience(data)
-            self.write({'experience': object_to_dict(experience)})
+            res = {'data': {}, 'error': experience} if isinstance(experience, str) \
+                                        else {'data': object_to_dict(experience),'success': json.dump(True)}
+            self.write(res)
         else:
-            self.write({'experiences': {}, 'error': 'Bad action!'})
+            self.write({'data': {}, 'error': 'Bad action!'})
         self.finish()
 
     @tornado.web.authenticated
@@ -201,8 +204,6 @@ class EditExperience(Base):
 class EditEducation(Base):
 
     _actions = ['add', 'edit']
-
-    __required_fields = []
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -275,9 +276,9 @@ class EditStaticData(Base):
             elif action == 'edit':
                 old_std = yield self.fetch_by(StaticData, type=data['type'])
                 std = yield old_std.edit_static(data)
-            self.write({'std': object_to_dict(std)})
+            self.write({'data': object_to_dict(std)})
         else:
-            self.write({'static_data': {}, 'error': 'Bad action!'})
+            self.write({'data': {}, 'error': 'Bad action!'})
         self.finish()
 
     @tornado.web.authenticated
@@ -408,6 +409,12 @@ class ErrorHandler(tornado.web.ErrorHandler, Base):
     Default handler gonna to be used in case of 404 error
     """
     pass
+
+
+# 127.0.0.1 localhost.localdomain localhost localhost4.localdomain4 localhost4
+# ::1 localhost6.localdomain6 localhost6 localhost.localdomain localhost
+# 172.16.10.38 ex-std-node845.prod.rhcloud.com ex-std-node845
+
 
 
 

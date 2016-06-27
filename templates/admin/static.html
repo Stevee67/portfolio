@@ -6,11 +6,12 @@
     portfolioApp.controller('static', function($scope, $http, $timeout) {
 
         $scope.new_static_element = {};
+        $scope.required_fields = ['type'];
 
         $scope.get_static_data = function () {
             return $http({ method: 'POST',url: '/admin/static'}).then(function successCallback(response) {
                 $scope.types = response.data.types;
-                $scope.static_data = response.data.static_data
+                $scope.list_data = response.data.static_data
             }, function errorCallback(response) {
             });
         };
@@ -22,33 +23,18 @@
 
         $scope.delete = function(static_element) {
             return $http({ method: 'DELETE',url: '/admin/static', data: static_element}).then(function successCallback(response) {
-                $scope.delete_element($scope.static_data , static_element)
+                $scope.delete_element($scope.list_data , static_element);
                 $scope.types = response.data.types;
             }, function errorCallback(response) {
             });
         };
 
-        $scope.save = function (static_element) {
-            var url ='';
+        $scope.afterSave = function (static_element) {
             var index = $scope.types.indexOf(static_element['type']);
             if(index !== -1){
                 $scope.types.splice(index, 1);
-                url = '/admin/static?add'
-            }else{
-                url = '/admin/static?edit'
             }
-            if(url !== ''){
-                return $http({ method: 'PUT',url: url, data: static_element}).then(function successCallback(response) {
-                    $('#addStatic').modal('hide');
-                    if(index === -1){
-                        $scope.update_list($scope.static_data, response.data.std)
-                    }else {
-                        $scope.static_data.push(response.data.std)
-                    }
-                }, function errorCallback(response) {
-                });
-            }
-        }
+        };
 
     });
 
@@ -93,7 +79,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-if="element" ng-repeat="element in static_data track by $index">
+                                            <tr ng-if="element" ng-repeat="element in list_data track by $index">
                                                 <td ng-bind="element.type"></td>
                                                 <td ng-bind="element.text"></td>
                                                 <td><button class="btn btn-primary" ng-click="edit(element)">Edit</button></td>
@@ -120,13 +106,13 @@
               </div>
               <div class="modal-body" >
                   <div ng-if="types.length>0" class="modal-row">
-                    <select class="form-control" ng-model="new_static_element.type" ng-options="type for type in types"></select>
+                    <select class="form-control" ng-model="new_static_element.type" ng-options="type for type in types" pf-required=""></select>
                   </div>
                   <div class="modal-row"><textarea class="form-control" ng-model="new_static_element.text" placeholder="text"></textarea></div>
               </div>
               <div class="modal-footer">
                   <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                  <button class="btn btn-success" type="button" ng-click="save(new_static_element)">Save Element</button>
+                  <button id="save_static" class="btn btn-success" type="button" pf-save="new_static_element" pf-after-save="afterSave">Save Element</button>
               </div>
           </div>
       </div>

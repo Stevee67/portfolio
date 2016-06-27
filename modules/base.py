@@ -46,7 +46,7 @@ class Base(BaseHandler):
             :param Module: class for list objects that we return
             :param filter_by:  attribute is dict where key - field in Module.__tablename__ and value - value for this field
             :param order_by: attribute is dict where key 'field' - field in which we will sort
-                   and value - DESC or ASC sorted type
+                   and 'type' - DESC or ASC sorted type
             :return list Module objects:
         """
         SQL = "SELECT * FROM {0}".format(Module.__tablename__)
@@ -75,6 +75,8 @@ class Base(BaseHandler):
 
     @tornado.gen.coroutine
     def save(self):
+        if not self.check_required_fields():
+            return
         SELECT_SQL = 'SELECT * FROM {}'.format(self.__class__.__dict__['__tablename__'])+ ' WHERE '
         SQL_INSERT = "INSERT INTO {} (".format(self.__class__.__dict__['__tablename__'])
         VALUES = ' VALUES('
@@ -95,6 +97,8 @@ class Base(BaseHandler):
         :param filter: must be dict with field and value key
         :return:
         """
+        if not self.check_required_fields():
+            return
         SQL_UPDATE = "UPDATE {} SET ".format(self.__class__.__dict__['__tablename__'])
         for k in self.__dict__:
             if k != 'id' and self.__getattribute__(k) != None:
@@ -116,8 +120,6 @@ class Base(BaseHandler):
         object = cls()
         if obj:
             for k in object.__dict__.keys():
-                if k == 'password_hash':
-                    continue
                 if k in obj:
                     object.__setattr__(k, obj[k])
                 else:
@@ -135,8 +137,6 @@ class Base(BaseHandler):
             keys = object.__dict__.keys()
             if obj:
                 for k in keys:
-                    if k == 'password_hash':
-                        continue
                     if k in obj:
                         object.__setattr__(k, obj[k])
                     else:

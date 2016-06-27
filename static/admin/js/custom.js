@@ -57,11 +57,8 @@ portfolioApp.directive('pfDate', function () {
             link: function (scope, element, attrs, model) {
 
                 var Error = false;
-
                 element.click(function(){
-                    $timeout(function () {
-                        errorMsg(element)
-                    }, 700)
+                    errorMsg(element)
                 });
 
                 scope.$watch('ngModel', function (nv, ov) {
@@ -90,7 +87,8 @@ portfolioApp.directive('pfDate', function () {
             restrict: 'A',
             scope: {
                 pfSave: '=',
-                pfRequiredFields: '='
+                pfRequiredFields: '=',
+                pfAfterSave: '='//must be callable
             },
             link: function (scope, element, attrs, model) {
                 
@@ -99,34 +97,57 @@ portfolioApp.directive('pfDate', function () {
                 var button = angular.element(buttonDOMElement);
 
                 var onButtonClick = function () {
+                    scope.$parent.loading = true;
                     var url = scope['pfSave'].hasOwnProperty('id')?window.location.pathname+'?edit': window.location.pathname+'?add';
-                    var modal = $('#'+getModalId())
+                    var modal = $('#'+getModalId());
                     if(ifAllow() === true){
                        return $http({ method: 'PUT',url: url, data: scope['pfSave']}).then(function successCallback(response) {
-                           if(modal){
-                               $timeout(function () {
-                                  modal.modal('hide')
-                               }, 500)
-                           }
-
-                           if(scope.$parent.hasOwnProperty('list_data')){
-                               if(scope['pfSave'].hasOwnProperty('id')){
-                                    scope.$parent.update_list(scope.$parent.list_data, response.data.data)
-                               }else {
-                                    scope.$parent.list_data.push(response.data.data)
+                           if(response.data.hasOwnProperty('error')){
+                               error_msg(response.data.error)
+                           }else{
+                               if(scope['pfAfterSave'])
+                                   scope['pfAfterSave'](scope['pfSave']);
+                               if(modal){
+                                   $timeout(function () {
+                                      modal.modal('hide')
+                                   }, 500)
                                }
-                           }else if(scope.$parent.hasOwnProperty('data')){
-                               scope.$parent.data = response.data.data;
-                               if('success' in response.data)
-                                   flash(response.data.success)
+                               if(scope.$parent.hasOwnProperty('list_data')){
+                                   if(scope['pfSave'].hasOwnProperty('id')){
+                                        scope.$parent.update_list(scope.$parent.list_data, response.data.data)
+                                   }else {
+                                        scope.$parent.list_data.push(response.data.data)
+                                   }
+                               }else if(scope.$parent.hasOwnProperty('data')){
+                                   scope.$parent.data = response.data.data;
+                                   if('success' in response.data)
+                                       flash(response.data.success)
+                               }
+                               loading_false()
                            }
                        }, function errorCallback() {
                            flash('Server error!')
                        });
                     }else{
-                        flash('Fill out required fields!')
+                        scope.$parent.loading = false;
+                        $timeout(function () {
+                            error_msg('Fill out required fields!')
+                        },100);
                     }
                 };
+
+                function loading_false(){
+                    $timeout(function () {
+                        scope.$parent.loading = false
+                    }, 2000)
+                }
+
+                function error_msg(msg) {
+                    scope.$parent.err = msg;
+                    $timeout(function () {
+                        scope.$parent.err = ''
+                    }, 1000)
+                }
             
                 button.on('click', onButtonClick);
             
@@ -141,7 +162,7 @@ portfolioApp.directive('pfDate', function () {
                 }
                 
                 function ifAllow() {
-                    return check_required_fields(scope.$parent.required_fields,scope['pfSave'])
+                    return check_required_fields(scope.$parent.required_fields, scope['pfSave'])
                 }
             }
         }
@@ -152,7 +173,7 @@ function callBackAfterReadFile(file, func, data) {
     if(file){
         var fr = new FileReader();
         fr.onload = function (e) {
-            data['file'] = {'mime': file.type, 'name': file.name, 'content': fr.result}
+            data['file'] = {'mime': file.type, 'name': file.name, 'content': fr.result};
             func(data)
         };
         fr.onerror = function (e) {
@@ -166,8 +187,11 @@ function callBackAfterReadFile(file, func, data) {
 
 function check_required_fields(list_of_r_fields, pass_fields) {
     for(var i=0;list_of_r_fields.length>i;i++){
-        if(pass_fields.hasOwnProperty(list_of_r_fields[i]) && isEmpty(pass_fields[list_of_r_fields[i]])){
-            return 'Fill in '+ list_of_r_fields[i]
+        if(pass_fields.hasOwnProperty(list_of_r_fields[i])){
+            if(isEmpty(pass_fields[list_of_r_fields[i]]))
+                return 'Fill in '+ list_of_r_fields[i]
+        }else{
+            return 'Fill in required fields!'
         }
     }
     return true

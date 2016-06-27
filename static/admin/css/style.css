@@ -3246,6 +3246,7 @@ ul.inbox-pagination li {
 }
 
 .modal-body label {
+    padding-left: 0;
     font-weight: 400;
     font-family: 'Lato', sans-serif;
 }
@@ -4074,6 +4075,12 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
 
 #error-msg{
     color: red;
+}
+
+.required_star{
+    width: 5px;
+    color:red;
+    padding-top:9px
 }
 
 #register_form label.error {
