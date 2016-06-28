@@ -219,7 +219,7 @@ CREATE TABLE static_data (
     type character varying(200),
     text text DEFAULT ''::text,
     cr_tm timestamp without time zone,
-    id character varying(64)
+    id character varying(64) NOT NULL
 );
 
 
@@ -258,7 +258,7 @@ ALTER TABLE ONLY users ALTER COLUMN age SET DEFAULT nextval('personal_info_age_s
 COPY educations (id, title, level, ed_from, ed_to, description, cr_tm) FROM stdin;
 c5ed1d45-2b52-46ba-830d-5430b3b3eca7	Lviv National Agrarian University	Master	2012-09-01 00:00:00	2013-12-20 00:00:00	daaadsasddasasd\r\nsaddasds\r\nsadasdasd\r\nsadadsasd\r\nsadasdaa	\N
 bb6812f2-6cb3-46da-a0c1-d6b3c1a90fd2	Volytsya	Middle School of General Education	1997-09-01 09:00:00	2008-05-31 09:00:00	daaadsasddasasd\r\nsaddasds\r\nsadasdasd\r\nsadadsasd\r\nsadasdaa	\N
-feb53606-8430-4498-9dfc-bab330916d6f	Lviv National Agrarian University	Bachelor	2008-09-01 09:00:00	2012-07-01 09:00:00	1111	\N
+feb53606-8430-4498-9dfc-bab330916d6f	Lviv National Agrarian University	Bachelor	2008-09-01 09:00:00	2012-07-01 09:00:00	111	\N
 \.
 
 
@@ -267,9 +267,10 @@ feb53606-8430-4498-9dfc-bab330916d6f	Lviv National Agrarian University	Bachelor	
 --
 
 COPY experience (id, user_id, title, subtitle, w_from, w_to, description, cr_tm) FROM stdin;
-68dc1d1d-113b-4f15-ad24-4af087baf4ef	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	UkrInSofT	2016-05-23 09:00:00	\N	UkrInSofT is the Ukrainian nearshore web and mobile app development company. UkrInSofT stands for “Ukrainian Innovation Software Technologies”. This phrase perfectly mirrors our approach to software development process: here at UkrInSofT we not just deliver standard solutions, but strive to provide our clients with a software that would address their issue and strengthen their competitive position on the market.	\N
-0b4e28fa-6142-4e4a-9fa2-0986abe58e7d	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Engineer	Viktar	2014-03-09 10:00:00	2014-12-05 10:00:00	Віктар	\N
 464c0136-e79d-4069-8b36-1fc18b876053	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	NTaxa	2015-03-15 10:00:00	2016-05-19 09:00:00	NTaxa	\N
+0b4e28fa-6142-4e4a-9fa2-0986abe58e7d	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Engineer	Viktar	2014-03-09 10:00:00	2014-12-05 10:00:00	Віктар	\N
+4a39b530-5ca1-44b9-9e27-baf9e8db1d8b	984e586d-bd84-4ecc-b261-46b1c9c00c8c	ее	вві	2016-06-15 09:00:00	2016-06-16 09:00:00	в	2016-06-23 11:45:12.055207
+68dc1d1d-113b-4f15-ad24-4af087baf4ef	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	UkrInSofT	2016-05-23 09:00:00	\N	UkrInSofT is the Ukrainian nearshore web and mobile app development company. UkrInSofT stands for “Ukrainian Innovation Software Technologies”. This phrase perfectly mirrors our approach to software development process: here at UkrInSofT we not just deliver standard solutions, but strive to provide our clients with a software that would address their issue and strengthen their competitive position on the market.	\N
 \.
 
 
@@ -308,10 +309,6 @@ COPY projects (id, name, url, image_id, cr_tm) FROM stdin;
 --
 
 COPY skils (id, name, user_id, kn_percent, cr_tm) FROM stdin;
-0c5026ee-b02d-4102-b549-d979c57549b9	jQuery	984e586d-bd84-4ecc-b261-46b1c9c00c8c	40	\N
-c93ebf69-b9e7-42f5-ab1d-b91efe7a2839	AngularJS	984e586d-bd84-4ecc-b261-46b1c9c00c8c	40	\N
-89a6cd37-d391-43e8-9d88-d1f47528cb2a	CSS	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
-fd5e661a-c17e-47da-88b0-1249e1f67850	Flask	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
 c326c527-a370-410a-b52e-bdd5053bd7b1	GIT	984e586d-bd84-4ecc-b261-46b1c9c00c8c	70	\N
 a79fa10e-08d0-4696-a3e3-58b8f8a682ac	SQL	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
 e9d15f1a-78de-48c7-a375-de7010107d87	SQLAlchemy	984e586d-bd84-4ecc-b261-46b1c9c00c8c	50	\N
@@ -321,6 +318,10 @@ e9d15f1a-78de-48c7-a375-de7010107d87	SQLAlchemy	984e586d-bd84-4ecc-b261-46b1c9c0
 568eb211-7389-4253-8bc2-bcea8b54b7f1	tornado	984e586d-bd84-4ecc-b261-46b1c9c00c8c	58	2016-06-21 17:26:08.063024
 b8b25ee2-40d4-4f24-95b6-d6832c738319	html	984e586d-bd84-4ecc-b261-46b1c9c00c8c	50	\N
 f2a136e4-f5b8-4fb6-b02c-617540b53338	js	984e586d-bd84-4ecc-b261-46b1c9c00c8c	55	\N
+c93ebf69-b9e7-42f5-ab1d-b91efe7a2839	AngularJS	984e586d-bd84-4ecc-b261-46b1c9c00c8c	40	\N
+0c5026ee-b02d-4102-b549-d979c57549b9	jQuery	984e586d-bd84-4ecc-b261-46b1c9c00c8c	40	\N
+89a6cd37-d391-43e8-9d88-d1f47528cb2a	CSS	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
+fd5e661a-c17e-47da-88b0-1249e1f67850	Flask	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
 \.
 
 
@@ -329,14 +330,14 @@ f2a136e4-f5b8-4fb6-b02c-617540b53338	js	984e586d-bd84-4ecc-b261-46b1c9c00c8c	55	
 --
 
 COPY static_data (type, text, cr_tm, id) FROM stdin;
-CONTACT	Please contact me, If you have some questions!	2016-06-22 10:57:03.590151	dd3b15cf-a6dd-4182-85bd-cbf7b3a7e894
-SKILL		2016-06-22 10:57:10.484061	2a154bc3-7cc4-4ed3-8128-98272e53ec83
 EXPERIENCE		2016-06-22 10:57:13.749709	d99d1b5d-196a-46d8-85e1-1cc47bf33e0a
 PORTFOLIO		2016-06-22 10:57:20.244415	ffcb0569-9528-4fdf-a8e9-906cb929381e
 FOOTER		2016-06-22 10:57:23.394632	9493761c-b630-429a-a50e-5f5c8d340722
 TITLE		2016-06-22 11:12:43.996111	7f3a1c5a-2e68-470b-9b02-5659a8629421
 HEADER		2016-06-22 10:57:26.200282	e6f24043-9bdc-4c6a-9134-8f08e1431455
 EDUCATION		2016-06-22 10:57:16.786128	3cecf740-3570-4d52-a7da-c9c0aa297185
+CONTACT	Please contact me, If you have some questions!	2016-06-22 10:57:03.590151	dd3b15cf-a6dd-4182-85bd-cbf7b3a7e894
+SKILL		2016-06-23 11:03:26.104706	36ea26b2-25f3-4551-b1c1-3c556809eb5b
 \.
 
 
@@ -509,6 +510,14 @@ ALTER TABLE ONLY projects
 
 ALTER TABLE ONLY skils
     ADD CONSTRAINT skil_id PRIMARY KEY (id);
+
+
+--
+-- Name: static_data_pkey; Type: CONSTRAINT; Schema: public; Owner: webdev; Tablespace: 
+--
+
+ALTER TABLE ONLY static_data
+    ADD CONSTRAINT static_data_pkey PRIMARY KEY (id);
 
 
 --
