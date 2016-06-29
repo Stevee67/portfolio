@@ -9,6 +9,7 @@ SENDER_ADDRESS = 'stopa6767@gmail.com'
 SECRET_COOKIE = 'jhyjs584sjhs45s69s9ww98r'
 DEFAULT_IMAGE_ID = '0000000-0000-0000-0000-000000000001'
 
+
 DB_HOST = 'localhost'
 DB_USER = 'webdev'
 DB_PASS = 'webdev_access'
