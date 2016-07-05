@@ -1,29 +1,26 @@
 import tornado.web
 import tornado.gen
-from modules.utils import format_date, send_message_async, dict_from_cursor_all, \
-      merge_object_by_kk, paginaion, object_to_dict
-import requests
+from modules.utils import format_date, send_message_async, merge_object_by_kk, paginaion, object_to_dict, success
 import tornado.ioloop
 import json
 import re
 import config
 from modules.base import Base
-from modules.models import Users, StaticData, Projects, Educations, Skills, Experience
+from modules.models import Users, StaticData, Projects, Educations, Skills, Experience, Visitors
 
 
 class HomeHandler(Base):
 
     @tornado.gen.coroutine
     def get(self):
-        # response = requests.get('http://ipinfo.io')
+        ip = self.request.remote_ip
         user = yield self.fetch(Users, '984e586d-bd84-4ecc-b261-46b1c9c00c8c')
         static_data = yield self.fetch_all(StaticData)
         projects = yield Projects().get_projects()
-        educations = yield self.fetch_all(Educations, order_by={'field':'ed_from', 'type':'ASC'})
-        skills = yield self.fetch_all(Skills, order_by={'field':'kn_percent', 'type':'DESC'})
+        educations = yield self.fetch_all(Educations, order_by={'ed_from':'ASC'})
+        skills = yield self.fetch_all(Skills, order_by={'kn_percent':'DESC'})
         experiences = yield self.fetch_all(Experience)
-
-        # tornado.ioloop.IOLoop.current().spawn_callback(self.save_visitors, response.json())
+        yield Visitors().save_visitors(ip)
         self.render("index.html", user=user,
                     skills=skills,
                     experiences=experiences,
@@ -71,13 +68,12 @@ class EditPersonalInfo(Base):
     def get(self):
         self.render("admin/personal_info.html")
 
-
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         personal_info = yield self.fetch_by(Users, email=config.SENDER_ADDRESS)
-        self.write({'data':object_to_dict(personal_info)})
-        self.finish()
+        return personal_info
 
 
     @tornado.web.authenticated
@@ -102,25 +98,20 @@ class EditSkills(Base):
 
     _actions = ['add', 'edit']
 
-    __required_fields = []
-
-
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/skills.html")
 
-
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         user = yield self.fetch_by(Users, email=self.current_user.decode())
-        skills = yield self.fetch_all(Skills, filter_by={'user_id':user.id})
-        list_skills= [object_to_dict(skill) for skill in skills]
-        self.write({'skills': list_skills})
-        self.finish()
+        skills = yield self.fetch_all(Skills, filter_by={'user_id':user.id}, order_by={'kn_percent':'DESC'})
+        return skills
 
-
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -131,13 +122,12 @@ class EditSkills(Base):
         if action in EditSkills._actions:
             if action == 'add':
                 skill = yield Skills().save_object(data)
-            elif action == 'edit':
+            else:
                 old_sk = yield self.fetch(Skills, data['id'])
                 skill = yield old_sk.edit_object(data)
-            self.write({'data': object_to_dict(skill)})
+            return skill
         else:
-            self.write({'data': {}, 'error': 'Bad action!'})
-        self.finish()
+            raise Exception('Bad action')
 
 
     @tornado.web.authenticated
@@ -146,31 +136,27 @@ class EditSkills(Base):
         data = json.loads(self.request.body.decode())
         skill = yield self.fetch(Skills, data['id'])
         skill.remove()
-        self.write({})
         self.finish()
 
 class EditExperience(Base):
 
     _actions = ['add', 'edit']
 
-    __required_fields = []
-
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/experience.html")
 
-
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         user = yield self.fetch_by(Users, email=self.current_user.decode())
         experiences = yield self.fetch_all(Experience, filter_by={'user_id':user.id},
-                                           order_by={'field':'w_from','type':'ASC'})
-        self.write({'experiences': [object_to_dict(experience) for experience in experiences]})
-        self.finish()
+                                           order_by={'w_from':'ASC'})
+        return experiences
 
-
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -181,15 +167,12 @@ class EditExperience(Base):
         if action in EditExperience._actions:
             if action == 'add':
                 experience = yield Experience().save_experience(data)
-            elif action == 'edit':
+            else:
                 old_experience = yield self.fetch(Experience, data['id'])
                 experience = yield old_experience.edit_experience(data)
-            res = {'data': {}, 'error': experience} if isinstance(experience, str) \
-                                        else {'data': object_to_dict(experience),'success': json.dump(True)}
-            self.write(res)
+            return experience
         else:
-            self.write({'data': {}, 'error': 'Bad action!'})
-        self.finish()
+            raise Exception('Bad action')
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -197,7 +180,6 @@ class EditExperience(Base):
         data = json.loads(self.request.body.decode())
         experience = yield self.fetch(Experience, data['id'])
         yield experience.remove()
-        self.write({})
         self.finish()
 
 class EditEducation(Base):
@@ -209,13 +191,14 @@ class EditEducation(Base):
     def get(self):
         self.render("admin/education.html")
 
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         educations = yield self.fetch_all(Educations)
-        self.write({'educations': [object_to_dict(education) for education in educations]})
-        self.finish()
+        return educations
 
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -224,13 +207,12 @@ class EditEducation(Base):
         if action in EditExperience._actions:
             if action == 'add':
                 education = yield Educations().save_education(data)
-            elif action == 'edit':
+            else:
                 old_education = yield self.fetch(Educations, data['id'])
                 education = yield old_education.edit_education(data)
-            self.write({'education': object_to_dict(education)})
+            return education
         else:
-            self.write({'educations': {}, 'error': 'Bad action!'})
-        self.finish()
+            raise Exception('Bad action')
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -238,29 +220,26 @@ class EditEducation(Base):
         data = json.loads(self.request.body.decode())
         education = yield self.fetch(Educations, data['id'])
         yield education.remove()
-        self.write({})
         self.finish()
 
 class EditStaticData(Base):
 
     _actions = ['add', 'edit']
 
-    __required_fields = []
-
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/static.html")
 
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         static_data = yield self.fetch_all(StaticData)
-        list_static_data = [object_to_dict(data) for data in static_data]
         types = yield StaticData().get_allowed_types()
-        self.write({'static_data': list_static_data, 'types': types})
-        self.finish()
+        return {'data': [object_to_dict(data) for data in static_data], 'types': types}
 
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -272,14 +251,14 @@ class EditStaticData(Base):
                     self.write({'static_data': {}, 'error': 'Static data is full or not selected!'})
                     return
                 std = yield StaticData().save_object(data)
-            elif action == 'edit':
+            else:
                 old_std = yield self.fetch_by(StaticData, type=data['type'])
                 std = yield old_std.edit_static(data)
-            self.write({'data': object_to_dict(std)})
+            return std
         else:
-            self.write({'data': {}, 'error': 'Bad action!'})
-        self.finish()
+            raise Exception('Bad action')
 
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def delete(self):
@@ -287,69 +266,63 @@ class EditStaticData(Base):
         std = yield self.fetch(StaticData, data['id'])
         yield std.remove()
         types = yield StaticData().get_allowed_types()
-        self.write({'types': types})
-        self.finish()
+        return types
 
-class Visitors(Base):
+class ListVisitors(Base):
 
     item_per_page = 25
 
     _actions = ['add', 'edit']
-
-    __required_fields = []
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/visitors.html", format_date=format_date)
 
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         data = json.loads(self.request.body.decode())
-        pages, list_visitors, count = yield paginaion(self.db, 'visitors', Visitors.item_per_page, data['page'])
-        item_on_pages = str(data['page']*Visitors.item_per_page) if data['page'] != pages else str(count)
-        self.write({'visitors': list_visitors,
+        pages, list_visitors, count = yield paginaion(self.db, 'visitors', ListVisitors.item_per_page, data['page'])
+        item_on_pages = str(data['page']*ListVisitors.item_per_page) if data['page'] != pages else str(count)
+        return {'visitors': list_visitors,
                     'pages': pages,
                     'page': data['page'],
-                    'count':  item_on_pages+'/'+str(count)})
-        self.finish()
+                    'count':  item_on_pages+'/'+str(count)}
 
 
 class EditProjects(Base):
 
     _actions = ['add', 'edit']
 
-    __required_fields = []
-
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self):
         self.render("admin/portfolio.html")
 
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         projects = yield Projects().get_projects()
-        self.write({'projects': projects})
-        self.finish()
+        return projects
 
+    @success
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
         data = json.loads(self.request.body.decode())
         action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
         if action in EditExperience._actions:
-            project = {}
             if action == 'add':
                 project = yield Projects().save_project(data)
-            elif action == 'edit':
+            else:
                 project = yield self.fetch(Projects, data['id'])
                 yield project.edit_project(data)
-            self.write({'project': object_to_dict(project)})
+            return project
         else:
-            self.write({'projects': {}, 'error': 'Bad action!'})
-        self.finish()
+            raise Exception('Bad action')
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -357,7 +330,6 @@ class EditProjects(Base):
         data = json.loads(self.request.body.decode())
         project = yield self.fetch(Projects, data['id'])
         yield project.delete_project()
-        self.write({})
         self.finish()
 
 

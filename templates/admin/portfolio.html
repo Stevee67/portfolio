@@ -3,60 +3,33 @@
 {% block content %}
 
 <script>
-    portfolioApp.controller('portfolio', function($scope, $http, $timeout) {
+    portfolioApp.controller('portfolio', function($scope, $http) {
 
         $scope.new_project = {};
-
-        $scope.get_projects = function () {
-            return $http({ method: 'POST',url: '/admin/projects'}).then(function successCallback(response) {
-                $scope.projects = response.data.projects
-            }, function errorCallback(response) {
-            });
-        };
+        $scope.required_fields = ['name', 'url'];
 
         $scope.edit = function(project) {
-            $scope.new_project = project;
+            $scope.new_project = jQuery.extend({}, project);
             $('#addProject').modal('show');
         };
 
         $scope.delete = function(project) {
-            return $http({ method: 'DELETE',url: '/admin/projects', data: project}).then(function successCallback(response) {
-                $scope.delete_element($scope.projects, project)
+            return $http({ method: 'DELETE',url: '/admin/projects', data: project}).then(function successCallback() {
+                $scope.delete_element($scope.data, project)
             }, function errorCallback(response) {
             });
         };
 
-        $scope.save = function (project) {
-            var url ='';
-            $scope.edit = project.hasOwnProperty('id');
-            if($scope.edit){
-                url = '/admin/projects?edit'
-            }else{
-                url = '/admin/projects?add'
-            }
-            if(url !== ''){
-                return $http({ method: 'PUT',url: url, data: project}).then(function successCallback(response) {
-                    $('#addProject').modal('hide');
-                    if($scope.edit){
-                        $scope.update_list($scope.projects, response.data.project)
-                    }else {
-                        $scope.projects.push(response.data.project)
-                    }
-                }, function errorCallback(response) {
-                });
-            }
-        }
-
         $scope.add_project = function(project) {
             var file = document.getElementById("portfolio-img").files[0];
-            callBackAfterReadFile(file, $scope.save, project)
+            callBackAfterReadFile(file, project);
             $("#portfolio-img").val('');
         }
 
     });
 
 </script>
-<section ng-init="get_projects()" id="main-content" style="margin-bottom: 200px" ng-controller="portfolio">
+<section ng-init="init()" id="main-content" style="margin-bottom: 200px" ng-controller="portfolio">
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
@@ -96,7 +69,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-if="project" ng-repeat="project in projects">
+                                            <tr ng-if="project" ng-repeat="project in data">
                                                 <td ng-bind="project.name"></td>
                                                 <td ng-bind="project.url"></td>
                                                 <td><img ng-src="{[{project.image_url}]}" style="width: 50px"></td>
@@ -122,13 +95,14 @@
                   <h4 class="modal-title">Add Project</h4>
               </div>
               <div class="modal-body" >
-                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_project.name" placeholder="title"></div>
-                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_project.url" placeholder="url"></div>
-                  <div class="modal-row"><input id="portfolio-img" type="file" class="form-control" ng-model="new_project.img" placeholder="url"></div>
+                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_project.name" placeholder="name" pf-required=""></div>
+                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_project.url" placeholder="url" pf-required=""></div>
+                  <div class="modal-row"><input id="portfolio-img" type="file" class="form-control" ng-model="new_project.img" ></div>
               </div>
+              <span style="margin-left: 20px" id="error-msg" ng-bind="err"></span>
               <div class="modal-footer">
                   <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                  <button class="btn btn-success" type="button" ng-click="add_project(new_project)">Save Project</button>
+                  <button id="save_project" class="btn btn-success" type="button" pf-before-save="add_project" pf-save="new_project">Save Project</button>
               </div>
           </div>
       </div>

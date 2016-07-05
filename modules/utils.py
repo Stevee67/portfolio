@@ -4,7 +4,7 @@ import time
 import config
 import smtplib
 import tornado.gen
-import re
+import json
 import math
 import logging
 
@@ -116,6 +116,29 @@ class Log:
         logging.error(message)
         print(message)
 
+
+def success(func):
+
+    @tornado.gen.coroutine
+    def wrapped(obj,*args, **kwargs):
+        result = yield func(obj,*args, **kwargs)
+        if isinstance(result, dict):
+            res = {'dict_data': result, 'error': 'false', 'success': 'true'}
+        elif isinstance(result, str):
+            res = {'data': {}, 'error': result, 'success': 'false'}
+        elif isinstance(result, list):
+            data = []
+            for d in result:
+                if isinstance(d, str):
+                    data.append(d)
+                else:
+                    data.append(object_to_dict(d))
+            res =  {'data': data,'error': 'false', 'success': 'true'}
+        else:
+            res = {'data': object_to_dict(result), 'error': 'false', 'success': 'true'}
+        obj.write(res)
+        obj.finish()
+    return wrapped
 
 
 

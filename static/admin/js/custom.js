@@ -19,6 +19,19 @@ portfolioApp.run(function($rootScope, $http) {
                     delete list[i]
                 }
             }
+        },
+        init: function () {
+            $rootScope.$$childHead.loading = true;
+            return $http({ method: 'POST',url: window.location.pathname}).then(function successCallback(response) {
+                if(response.data.hasOwnProperty('dict_data')){
+                    $rootScope.$$childHead.dict_data = response.data.dict_data
+                    $rootScope.$$childHead.data = response.data.dict_data.data;
+                }else{
+                    $rootScope.$$childHead.data = response.data.data;
+                }
+                $rootScope.$$childHead.loading = false;
+            }, function errorCallback(response) {
+            });
         }
     })
 
@@ -88,7 +101,8 @@ portfolioApp.directive('pfDate', function () {
             scope: {
                 pfSave: '=',
                 pfRequiredFields: '=',
-                pfAfterSave: '='//must be callable
+                pfAfterSave: '=',//must be callable
+                pfBeforeSave: '='//must be callable
             },
             link: function (scope, element, attrs, model) {
                 
@@ -100,9 +114,12 @@ portfolioApp.directive('pfDate', function () {
                     scope.$parent.loading = true;
                     var url = scope['pfSave'].hasOwnProperty('id')?window.location.pathname+'?edit': window.location.pathname+'?add';
                     var modal = $('#'+getModalId());
+                    if(scope['pfBeforeSave'])
+                        scope['pfBeforeSave'](scope['pfSave']);
                     if(ifAllow() === true){
                        return $http({ method: 'PUT',url: url, data: scope['pfSave']}).then(function successCallback(response) {
-                           if(response.data.hasOwnProperty('error')){
+                           console.log(response.data);
+                           if(response.data.error !== 'false'){
                                error_msg(response.data.error)
                            }else{
                                if(scope['pfAfterSave'])
@@ -112,19 +129,20 @@ portfolioApp.directive('pfDate', function () {
                                       modal.modal('hide')
                                    }, 500)
                                }
-                               if(scope.$parent.hasOwnProperty('list_data')){
+                               var up_data = response.data.hasOwnProperty('dict_data')? response.data.dict_data.data: response.data.data;
+                               if($.isArray(scope.$parent.data)){
                                    if(scope['pfSave'].hasOwnProperty('id')){
-                                        scope.$parent.update_list(scope.$parent.list_data, response.data.data)
+                                        scope.$parent.update_list(scope.$parent.data, up_data)
                                    }else {
-                                        scope.$parent.list_data.push(response.data.data)
+                                        scope.$parent.data.push(up_data)
                                    }
-                               }else if(scope.$parent.hasOwnProperty('data')){
-                                   scope.$parent.data = response.data.data;
-                                   if('success' in response.data)
-                                       flash(response.data.success)
+                               }else {
+                                   scope.$parent.data = up_data;
                                }
-                               loading_false()
                            }
+                           if('success' in response.data && response.data.success !== 'true')
+                               flash(response.data.success);
+                           loading_false()
                        }, function errorCallback() {
                            flash('Server error!')
                        });
@@ -169,19 +187,16 @@ portfolioApp.directive('pfDate', function () {
 })
 
 
-function callBackAfterReadFile(file, func, data) {
+function callBackAfterReadFile(file, data) {
     if(file){
         var fr = new FileReader();
         fr.onload = function (e) {
-            data['file'] = {'mime': file.type, 'name': file.name, 'content': fr.result};
-            func(data)
+            data['file'] = {'mime': file.type, 'name': file.name, 'content': fr.result}
         };
         fr.onerror = function (e) {
             flash('File loading error');
         };
         fr.readAsDataURL(file);
-    }else{
-        func(data)
     }
 }
 

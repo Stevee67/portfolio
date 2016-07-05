@@ -8,13 +8,6 @@
         $scope.new_education = {};
         $scope.required_fields = ['title', 'level', 'ed_from'];
 
-        $scope.get_educations = function () {
-            return $http({ method: 'POST',url: '/admin/education'}).then(function successCallback(response) {
-                $scope.list_data = response.data.educations
-            }, function errorCallback(response) {
-            });
-        };
-
         $scope.edit = function(education) {
             if(education.ed_from){
                 education.ed_from = new Date(education.ed_from)
@@ -22,13 +15,13 @@
             if(education.ed_to){
                 education.ed_to = new Date(education.ed_to)
             }
-            $scope.new_education = education;
+            $scope.new_education = jQuery.extend({}, education);
             $('#addEducation').modal('show');
         };
 
         $scope.delete = function(education) {
-            return $http({ method: 'DELETE',url: '/admin/education', data: education}).then(function successCallback(response) {
-                $scope.delete_element($scope.educations, education)
+            return $http({ method: 'DELETE',url: '/admin/education', data: education}).then(function successCallback() {
+                $scope.delete_element($scope.data, education)
             }, function errorCallback(response) {
             });
         };
@@ -36,7 +29,7 @@
     });
 
 </script>
-<section ng-init="get_educations()" id="main-content" style="margin-bottom: 200px" ng-controller="education">
+<section ng-init="init()" id="main-content" style="margin-bottom: 200px" ng-controller="education">
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
@@ -79,7 +72,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-if="education" ng-repeat="education in list_data">
+                                            <tr ng-if="education" ng-repeat="education in data">
                                                 <td ng-bind="education.title"></td>
                                                 <td ng-bind="education.level"></td>
                                                 <td pf-date="education.ed_from"></td>
@@ -113,6 +106,7 @@
                   <div class="modal-row"><input id="ed_to" type="date" pf-date class="form-control" ng-model="new_education.ed_to" placeholder="to"></div>
                   <div class="modal-row"><textarea class="form-control" ng-model="new_education.description" placeholder="description"></textarea></div>
               </div>
+              <span style="margin-left: 20px" id="error-msg" ng-bind="err"></span>
               <div class="modal-footer">
                   <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
                   <button id="save_education" class="btn btn-success" type="button" pf-save="new_education">Save education</button>

@@ -8,38 +8,31 @@
         $scope.new_static_element = {};
         $scope.required_fields = ['type'];
 
-        $scope.get_static_data = function () {
-            return $http({ method: 'POST',url: '/admin/static'}).then(function successCallback(response) {
-                $scope.types = response.data.types;
-                $scope.list_data = response.data.static_data
-            }, function errorCallback(response) {
-            });
-        };
-
         $scope.edit = function(static_element) {
-            $scope.new_static_element = static_element;
+            $scope.new_static_element = jQuery.extend({}, static_element);
             $('#addStatic').modal('show');
         };
 
         $scope.delete = function(static_element) {
             return $http({ method: 'DELETE',url: '/admin/static', data: static_element}).then(function successCallback(response) {
-                $scope.delete_element($scope.list_data , static_element);
-                $scope.types = response.data.types;
+                $scope.delete_element($scope.data , static_element);
+                console.log(response.data)
+                $scope.dict_data.types = response.data.data;
             }, function errorCallback(response) {
             });
         };
 
         $scope.afterSave = function (static_element) {
-            var index = $scope.types.indexOf(static_element['type']);
+            var index = $scope.dict_data.types.indexOf(static_element['type']);
             if(index !== -1){
-                $scope.types.splice(index, 1);
+                $scope.dict_data.types.splice(index, 1);
             }
         };
 
     });
 
 </script>
-<section ng-init="get_static_data()" id="main-content" style="margin-bottom: 200px" ng-controller="static">
+<section ng-init="init()" id="main-content" style="margin-bottom: 200px" ng-controller="static">
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
@@ -79,7 +72,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-if="element" ng-repeat="element in list_data track by $index">
+                                            <tr ng-if="element" ng-repeat="element in data track by $index">
                                                 <td ng-bind="element.type"></td>
                                                 <td ng-bind="element.text"></td>
                                                 <td><button class="btn btn-primary" ng-click="edit(element)">Edit</button></td>
@@ -91,7 +84,7 @@
                             </div>
                         </div><!--/col-->
 
-                        <a ng-if="types.length>0" class="btn btn-success" data-toggle="modal" href="#addStatic" ng-click="new_static_element={}">Add Element</a>
+                        <a ng-if="dict_data.types.length>0" class="btn btn-success" data-toggle="modal" href="#addStatic" ng-click="new_static_element={}">Add Element</a>
                     </div>
                 </section>
             </div>
@@ -105,8 +98,8 @@
                   <h4 class="modal-title">Add Project</h4>
               </div>
               <div class="modal-body" >
-                  <div ng-if="types.length>0" class="modal-row">
-                    <select class="form-control" ng-model="new_static_element.type" ng-options="type for type in types" pf-required=""></select>
+                  <div ng-if="dict_data.types.length>0" class="modal-row">
+                    <select class="form-control" ng-model="new_static_element.type" ng-options="type for type in dict_data.types" pf-required=""></select>
                   </div>
                   <div class="modal-row"><textarea class="form-control" ng-model="new_static_element.text" placeholder="text"></textarea></div>
               </div>

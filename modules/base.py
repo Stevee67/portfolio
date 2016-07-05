@@ -1,6 +1,4 @@
 import tornado.web, tornado.gen
-import datetime
-from urllib import parse
 from modules.utils import dict_from_cursor_one
 from modules.db_utils import db
 
@@ -71,7 +69,10 @@ class Base(BaseHandler):
         if order_by:
             if not isinstance(order_by, dict):
                 raise AttributeError('The sort_by attribute must be dictionary!')
-            SQL += ' ORDER BY {} {}'.format(order_by['field'], order_by['type'])
+            SQL += ' ORDER BY'
+            for ok, ov in order_by.items():
+                SQL += ' {} {},'.format(ok, ov)
+            SQL = SQL[0:-1]
         cur = yield self.db.execute(SQL)
         return Module.get_all(cur)
 
@@ -160,15 +161,6 @@ class Base(BaseHandler):
     def get_current_user(self):
         return self.get_secure_cookie("email")
 
-    @tornado.gen.coroutine
-    def save_visitors(self, data):
-        region = parse.unquote(data['region']).replace('"', '_').replace('*', '_').replace('/', '_'). \
-            replace('\\', '_').replace("'", '_')
-        yield self.db.execute("INSERT INTO visitors(ip, location, date, city, country, region, hostname)"
-                              "VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}')".
-                              format(data['ip'], data['loc'], datetime.datetime.now(), data['city'], data['country'],
-                                     region, data['hostname']))
-
     def write_error(self, status_code, **kwargs):
         if status_code in [403, 404, 500, 503]:
             self.render("admin/404.html")
@@ -180,3 +172,4 @@ class Base(BaseHandler):
         email = self.current_user.decode()
         cur = yield self.db.execute("SELECT * FROM users WHERE email='{}'".format(email))
         return dict_from_cursor_one(cur)
+

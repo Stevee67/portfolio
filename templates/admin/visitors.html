@@ -7,10 +7,10 @@
 
         $scope.get_visitors = function (page) {
             return $http({ method: 'POST',url: '/admin/visitors', data:{'page': page}}).then(function successCallback(response) {
-                $scope.visitors = response.data.visitors;
-                $scope.page = response.data.page;
-                $scope.pages = response.data.pages;
-                $scope.count_items = response.data.count;
+                $scope.visitors = response.data.dict_data.visitors;
+                $scope.page = response.data.dict_data.page;
+                $scope.pages = response.data.dict_data.pages;
+                $scope.count_items = response.data.dict_data.count;
             }, function errorCallback(response) {
             });
         };
@@ -29,32 +29,6 @@
             if($scope.page !== 1)
                 $scope.get_visitors($scope.page-1)
         };
-
-        $scope.delete = function(static_element) {
-            return $http({ method: 'DELETE',url: '/admin/static', data: static_element}).then(function successCallback(response) {
-                $scope.static_data = response.data.static_data
-                $scope.types = response.data.types;
-            }, function errorCallback(response) {
-            });
-        };
-
-        $scope.save = function (static_element) {
-            var url ='';
-            var index = $scope.types.indexOf(static_element['type']);
-            if(index !== -1){
-                $scope.types.splice(index, 1);
-                url = '/admin/static?add'
-            }else{
-                url = '/admin/static?edit'
-            }
-            if(url !== ''){
-                return $http({ method: 'PUT',url: url, data: static_element}).then(function successCallback(response) {
-                    $('#addStatic').modal('hide');
-                    $scope.static_data = response.data.static_data
-                }, function errorCallback(response) {
-                });
-            }
-        }
 
     });
 
@@ -118,32 +92,10 @@
                                 </div>
                             </div>
                         </div><!--/col-->
-
-                        <a ng-if="types.length>0" class="btn btn-success" data-toggle="modal" href="#addStatic" ng-click="new_static_element={}">Add Element</a>
                     </div>
                 </section>
             </div>
         </div>
     </section>
-    <div class="modal fade" id="addStatic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                  <h4 class="modal-title">Add Project</h4>
-              </div>
-              <div class="modal-body" >
-                  <div ng-if="types.length>0" class="modal-row">
-                    <select class="form-control" ng-model="new_static_element.type" ng-options="type for type in types"></select>
-                  </div>
-                  <div class="modal-row"><textarea class="form-control" ng-model="new_static_element.text" placeholder="text"></textarea></div>
-              </div>
-              <div class="modal-footer">
-                  <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                  <button class="btn btn-success" type="button" ng-click="save(new_static_element)">Save Element</button>
-              </div>
-          </div>
-      </div>
-    </div>
 </section>
 {% end %}

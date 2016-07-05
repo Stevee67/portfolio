@@ -1,12 +1,15 @@
 from modules.base import Base
-from modules.utils import object_to_dict, strip_date
+from modules.utils import strip_date
 import tornado.gen
 import re
 import config
 import base64
+import datetime
+from urllib import parse
 import os
 from os.path import isfile, join
 from werkzeug.security import generate_password_hash, check_password_hash
+import geoip2.database
 
 
 
@@ -41,6 +44,8 @@ class Main(Base):
     def check_date_frto(self, fr, to):
         if not fr:
             return False
+        if not to:
+            return True
         if fr>=to:
             return False
         return True
@@ -157,7 +162,7 @@ class StaticData(Main):
         for k in self.__dict__:
             if k in data.keys():
                 self.__setattr__(k, data[k])
-        yield self.update(filter={'field': 'type', 'value': data['type']})
+        yield self.update(filter={'type',data['type']})
         return self
 
     @tornado.gen.coroutine
@@ -213,12 +218,12 @@ class Projects(Main):
 
     @tornado.gen.coroutine
     def get_projects(self):
-        projs = yield self.fetch_all(Projects, order_by={'field':'cr_tm','type':'DESC'})
+        projs = yield self.fetch_all(Projects, order_by={'cr_tm':'DESC'})
         ret = []
         for project in projs:
             image = yield self.fetch(Images, project.image_id)
             project.get_image_url(image)
-            ret.append(object_to_dict(project))
+            ret.append(project)
         return ret
 
     def get_image_url(self, image):
@@ -326,3 +331,49 @@ class Images(Main):
 
     def image_url(self):
         return '/static/img/{0}/{1}'.format(self.folder_name, self.file_name)
+
+class Visitors(Main):
+
+    __tablename__ = 'visitors'
+    _required_fields = []
+
+    def __init__(self, location=None, last_visit=None, city=None, country=None, region=None, hostname=None, ip=None, count_visits=None):
+        self.location = location
+        self.last_visit = last_visit
+        self.city = city
+        self.country = country
+        self.region = region
+        self.hostname = hostname
+        self.ip = ip
+        self.count_visits = count_visits
+
+    @tornado.gen.coroutine
+    def save_visitors(self, ip):
+        path = os.path.dirname(os.path.abspath('static')) + '/static/GeoLite2-City.mmdb'
+        reader = geoip2.database.Reader(path)
+        try:
+            response = reader.city(ip)
+            yield self._save(response)
+        except Exception as e:
+            print(e)
+        reader.close()
+
+    @tornado.gen.coroutine
+    def _save(self, georesp):
+        region = parse.unquote(georesp.subdivisions.most_specific.name).replace('"', '_').replace('*', '_').replace('/', '_'). \
+            replace('\\', '_').replace("'", '_')
+        ip = str(georesp.traits.ip_address)
+        visitor = yield self.fetch_by(Visitors, ip=ip)
+        if visitor:
+            visitor.last_visit = datetime.datetime.now()
+            visitor.count_visits = visitor.count_visits + 1
+            yield visitor.update()
+        else:
+            self.ip = georesp.traits.ip_address
+            self.location = 'longitude: '+str(georesp.location.longitude)+' / '+'latitude: '+str(georesp.location.latitude)
+            self.last_visit = datetime.datetime.now()
+            self.city = georesp.city.name
+            self.country = georesp.country.name
+            self.region = region
+            self.count_visits = 1
+            yield self.save()

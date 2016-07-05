@@ -230,15 +230,16 @@ ALTER TABLE static_data OWNER TO webdev;
 --
 
 CREATE TABLE visitors (
-    ip character varying(100),
+    id character varying(64) NOT NULL,
     location character varying(100),
-    date timestamp without time zone,
+    last_visit timestamp without time zone,
     city character varying(200),
     country character varying(200),
     region character varying(200),
     hostname character varying(200),
     cr_tm timestamp without time zone,
-    id character varying(64)
+    ip character varying(100),
+    count_visits integer
 );
 
 
@@ -259,6 +260,7 @@ COPY educations (id, title, level, ed_from, ed_to, description, cr_tm) FROM stdi
 c5ed1d45-2b52-46ba-830d-5430b3b3eca7	Lviv National Agrarian University	Master	2012-09-01 00:00:00	2013-12-20 00:00:00	daaadsasddasasd\r\nsaddasds\r\nsadasdasd\r\nsadadsasd\r\nsadasdaa	\N
 bb6812f2-6cb3-46da-a0c1-d6b3c1a90fd2	Volytsya	Middle School of General Education	1997-09-01 09:00:00	2008-05-31 09:00:00	daaadsasddasasd\r\nsaddasds\r\nsadasdasd\r\nsadadsasd\r\nsadasdaa	\N
 feb53606-8430-4498-9dfc-bab330916d6f	Lviv National Agrarian University	Bachelor	2008-09-01 09:00:00	2012-07-01 09:00:00	111	\N
+683ee25e-a2eb-4f7b-b699-717d45321bba	Azbuka svitu	pre intermediate	2015-04-18 21:00:00	2015-06-04 21:00:00	\N	2016-07-05 12:05:25.587365
 \.
 
 
@@ -269,7 +271,6 @@ feb53606-8430-4498-9dfc-bab330916d6f	Lviv National Agrarian University	Bachelor	
 COPY experience (id, user_id, title, subtitle, w_from, w_to, description, cr_tm) FROM stdin;
 464c0136-e79d-4069-8b36-1fc18b876053	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	NTaxa	2015-03-15 10:00:00	2016-05-19 09:00:00	NTaxa	\N
 0b4e28fa-6142-4e4a-9fa2-0986abe58e7d	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Engineer	Viktar	2014-03-09 10:00:00	2014-12-05 10:00:00	Віктар	\N
-4a39b530-5ca1-44b9-9e27-baf9e8db1d8b	984e586d-bd84-4ecc-b261-46b1c9c00c8c	ее	вві	2016-06-15 09:00:00	2016-06-16 09:00:00	в	2016-06-23 11:45:12.055207
 68dc1d1d-113b-4f15-ad24-4af087baf4ef	984e586d-bd84-4ecc-b261-46b1c9c00c8c	Python Developer	UkrInSofT	2016-05-23 09:00:00	\N	UkrInSofT is the Ukrainian nearshore web and mobile app development company. UkrInSofT stands for “Ukrainian Innovation Software Technologies”. This phrase perfectly mirrors our approach to software development process: here at UkrInSofT we not just deliver standard solutions, but strive to provide our clients with a software that would address their issue and strengthen their competitive position on the market.	\N
 \.
 
@@ -298,9 +299,9 @@ SELECT pg_catalog.setval('personal_info_age_seq', 1, false);
 --
 
 COPY projects (id, name, url, image_id, cr_tm) FROM stdin;
-8a00584a-cd19-410e-8e34-4b090d001987	FeatureApp	http://test-ukrinsoft.rhcloud.com/	08688184-a8c4-420b-bd09-d9131edea063	\N
 27bb84f3-c08c-447c-808c-2c252a0617fc	Profireader	http://profireader.com/	4af519d5-35ec-4b36-82cd-d9e22d1f4f49	\N
 9b0cdfe3-d401-49f8-bd65-7feadfbc6a05	Parser for Insurance Company	http://verifacto.com	76f986f5-095e-4f58-98ac-eb5a834a8f3c	\N
+8a00584a-cd19-410e-8e34-4b090d001987	FeatureApp	http://test-ukrinsoft.rhcloud.com/	08688184-a8c4-420b-bd09-d9131edea063	\N
 \.
 
 
@@ -309,19 +310,20 @@ COPY projects (id, name, url, image_id, cr_tm) FROM stdin;
 --
 
 COPY skils (id, name, user_id, kn_percent, cr_tm) FROM stdin;
-c326c527-a370-410a-b52e-bdd5053bd7b1	GIT	984e586d-bd84-4ecc-b261-46b1c9c00c8c	70	\N
-a79fa10e-08d0-4696-a3e3-58b8f8a682ac	SQL	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
 e9d15f1a-78de-48c7-a375-de7010107d87	SQLAlchemy	984e586d-bd84-4ecc-b261-46b1c9c00c8c	50	\N
+fd5e661a-c17e-47da-88b0-1249e1f67850	Flask	984e586d-bd84-4ecc-b261-46b1c9c00c8c	62	\N
 6128d7d6-dc19-4716-8da3-d246cd0e8c4f	Python	984e586d-bd84-4ecc-b261-46b1c9c00c8c	75	\N
 7d0b55d8-52fd-4d13-a18d-2dd952419ad6	Jinja	984e586d-bd84-4ecc-b261-46b1c9c00c8c	70	\N
 3e136b31-9f68-4861-894c-0e22e49ade99	PostgreSQL	984e586d-bd84-4ecc-b261-46b1c9c00c8c	55	\N
+c93ebf69-b9e7-42f5-ab1d-b91efe7a2839	AngularJS	984e586d-bd84-4ecc-b261-46b1c9c00c8c	45	\N
+c326c527-a370-410a-b52e-bdd5053bd7b1	GIT	984e586d-bd84-4ecc-b261-46b1c9c00c8c	70	\N
+a79fa10e-08d0-4696-a3e3-58b8f8a682ac	SQL	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
+f2a136e4-f5b8-4fb6-b02c-617540b53338	JS	984e586d-bd84-4ecc-b261-46b1c9c00c8c	55	\N
+b8b25ee2-40d4-4f24-95b6-d6832c738319	HTML	984e586d-bd84-4ecc-b261-46b1c9c00c8c	50	\N
+bb08069e-2025-4ef6-a0ca-66365d2f6d9c	jira	984e586d-bd84-4ecc-b261-46b1c9c00c8c	70	2016-07-05 11:57:51.980204
 568eb211-7389-4253-8bc2-bcea8b54b7f1	tornado	984e586d-bd84-4ecc-b261-46b1c9c00c8c	58	2016-06-21 17:26:08.063024
-b8b25ee2-40d4-4f24-95b6-d6832c738319	html	984e586d-bd84-4ecc-b261-46b1c9c00c8c	50	\N
-f2a136e4-f5b8-4fb6-b02c-617540b53338	js	984e586d-bd84-4ecc-b261-46b1c9c00c8c	55	\N
-c93ebf69-b9e7-42f5-ab1d-b91efe7a2839	AngularJS	984e586d-bd84-4ecc-b261-46b1c9c00c8c	40	\N
 0c5026ee-b02d-4102-b549-d979c57549b9	jQuery	984e586d-bd84-4ecc-b261-46b1c9c00c8c	40	\N
 89a6cd37-d391-43e8-9d88-d1f47528cb2a	CSS	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
-fd5e661a-c17e-47da-88b0-1249e1f67850	Flask	984e586d-bd84-4ecc-b261-46b1c9c00c8c	60	\N
 \.
 
 
@@ -337,7 +339,7 @@ TITLE		2016-06-22 11:12:43.996111	7f3a1c5a-2e68-470b-9b02-5659a8629421
 HEADER		2016-06-22 10:57:26.200282	e6f24043-9bdc-4c6a-9134-8f08e1431455
 EDUCATION		2016-06-22 10:57:16.786128	3cecf740-3570-4d52-a7da-c9c0aa297185
 CONTACT	Please contact me, If you have some questions!	2016-06-22 10:57:03.590151	dd3b15cf-a6dd-4182-85bd-cbf7b3a7e894
-SKILL		2016-06-23 11:03:26.104706	36ea26b2-25f3-4551-b1c1-3c556809eb5b
+SKILL		2016-06-29 17:49:28.578701	9061a77d-e0a0-463f-b4cf-5feee496bea8
 \.
 
 
@@ -346,7 +348,7 @@ SKILL		2016-06-23 11:03:26.104706	36ea26b2-25f3-4551-b1c1-3c556809eb5b
 --
 
 COPY users (id, name, lastname, email, age, phone, address, status, skype, about_me, linkedin, facebook, short_about, password_hash, cr_tm) FROM stdin;
-984e586d-bd84-4ecc-b261-46b1c9c00c8c	Stepan	Shysh	stopa6767@gmail.com	25	+380934340484	Lviv, Hotckevycha str. 58	admin	stopa67	Hello my name is Steve)) I live in great city - Lviv! I"m programmer and i like my job :)Yeep	www.linkedin.com	www.facebook.com/profile.php?id=100009694988182	None	pbkdf2:sha256:1000$nYyzpA4VibTjnRyKx2Xix8vKi8FmQgY5$13bdba63da2b467fd081f15a2a2eabd4f305abbe56fa3dd8dcd37806c45ee276	\N
+984e586d-bd84-4ecc-b261-46b1c9c00c8c	Stepan	Shysh	stopa6767@gmail.com	25	+380934340484	Lviv, Hotckevycha str. 58	admin	stopa67	Hello my name is Steve)) I live in great city - Lviv! I"m programmer and i like my job :)Yeep	www.linkedin.com	www.facebook.com/profile.php?id=100009694988182	None	pbkdf2:sha256:1000$uYkuf2SFRp9FwIzM65jW7wLybo2AgTZ2$dc7c7a6f6ba4ccca4b56f1c3ab5d28739c4ba120e1ac3825675989bfa4c58c05	\N
 \.
 
 
@@ -354,113 +356,8 @@ COPY users (id, name, lastname, email, age, phone, address, status, skype, about
 -- Data for Name: visitors; Type: TABLE DATA; Schema: public; Owner: webdev
 --
 
-COPY visitors (ip, location, date, city, country, region, hostname, cr_tm, id) FROM stdin;
-95.215.156.204	49.8407,24.0305	2016-05-26 18:11:43.316974	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:11:44.099027	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:11:44.800298	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:16:34.708705	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:16:35.764569	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:16:36.39578	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:16:42.166274	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:18:13.990957	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:18:14.635972	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:18:15.256691	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:20:58.899444	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:21:39.736253	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:22:15.406909	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:26:49.218079	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:29:03.893303	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-26 18:35:49.014672	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:41:57.50979	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:42:27.661325	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:43:05.775251	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:44:09.868038	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:44:19.782067	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:44:51.339783	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:45:36.340127	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:45:48.105776	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:46:21.817387	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:46:29.48913	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:47:01.514193	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:47:08.976731	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:47:50.022496	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:50:11.195709	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:50:55.476007	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:51:00.923678	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:53:50.367051	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:53:55.488561	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:54:54.598854	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:55:36.120058	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 11:58:23.766357	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:02:54.357489	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:03:08.913541	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:08:49.804032	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:09:41.434206	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:15:10.803063	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:16:34.662783	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:18:56.474795	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:19:41.571034	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:21:21.573304	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:21:50.828468	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:22:28.261867	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:22:50.951257	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:23:46.639686	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:26:59.798228	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:28:17.040817	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:29:13.097976	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:31:58.011931	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:33:05.806915	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:33:51.728016	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:34:33.831437	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:35:23.025426	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:42:38.432245	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:43:44.650055	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:45:01.484811	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:48:19.217877	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:49:52.179673	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:51:32.039949	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:52:46.572283	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:54:01.745354	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:56:31.988239	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 12:59:06.483807	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 13:00:51.129136	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 13:12:41.488718	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 13:40:51.304757	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 13:40:53.316527	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-05-27 13:54:34.684199	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:34:04.516743	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:35:24.455672	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:35:57.839652	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:37:02.79877	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:37:53.066719	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:38:46.573839	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:45:24.787408	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:45:34.755883	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:45:57.068852	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:46:05.602237	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:48:50.376192	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:50:14.832194	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:51:34.857729	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:51:57.092042	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:54:24.998057	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:55:15.777761	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:55:29.651167	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:56:08.330193	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:56:28.085711	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 10:56:39.370367	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 12:14:58.509071	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 13:35:38.735279	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 17:59:01.819579	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 18:16:30.63562	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 18:16:55.933137	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-03 18:18:49.847985	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-16 12:06:17.905294	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-16 12:28:18.489394	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-16 14:38:29.031729	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-16 15:37:52.564205	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-16 15:56:45.187327	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-16 16:11:03.367372	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
-95.215.156.204	49.8407,24.0305	2016-06-17 10:51:24.865136	Lviv	UA	L_vivs_ka Oblast_	ip-95-215-156-204.network.lviv.ua	\N	\N
+COPY visitors (id, location, last_visit, city, country, region, hostname, cr_tm, ip, count_visits) FROM stdin;
+6745036d-efb6-4a6f-8f39-304e44b7c3bd	longitude: 24.0305 / latitude: 49.8407	2016-07-05 17:28:51.115474	Lviv	Ukraine	L_vivs_ka Oblast_	\N	2016-07-05 17:27:06.772075	95.215.156.204	3
 \.
 
 
@@ -542,6 +439,22 @@ ALTER TABLE ONLY users
 
 ALTER TABLE ONLY skils
     ADD CONSTRAINT unqi_name UNIQUE (name);
+
+
+--
+-- Name: vis_ip_uniq; Type: CONSTRAINT; Schema: public; Owner: webdev; Tablespace: 
+--
+
+ALTER TABLE ONLY visitors
+    ADD CONSTRAINT vis_ip_uniq UNIQUE (ip);
+
+
+--
+-- Name: vis_pk; Type: CONSTRAINT; Schema: public; Owner: webdev; Tablespace: 
+--
+
+ALTER TABLE ONLY visitors
+    ADD CONSTRAINT vis_pk PRIMARY KEY (id);
 
 
 --
