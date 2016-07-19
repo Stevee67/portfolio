@@ -1,0 +1,103 @@
+{% extends 'main.html' %}
+<script src="/static/admin/js/form-component.js"></script>
+{% block content %}
+
+<script>
+    portfolioApp.controller('visitors', function($scope, $http) {
+
+        $scope.get_visitors = function (page) {
+            return $http({ method: 'POST',url: '/admin/visitors', data:{'page': page}}).then(function successCallback(response) {
+                $scope.visitors = response.data.dict_data.visitors;
+                $scope.page = response.data.dict_data.page;
+                $scope.pages = response.data.dict_data.pages;
+                $scope.count_items = response.data.dict_data.count;
+            }, function errorCallback(response) {
+            });
+        };
+
+        $scope.edit = function(static_element) {
+            $scope.new_static_element = static_element;
+            $('#addStatic').modal('show');
+        };
+
+        $scope.next_page = function () {
+            if($scope.page !== $scope.pages)
+                $scope.get_visitors($scope.page+1)
+        };
+
+        $scope.prev_page = function () {
+            if($scope.page !== 1)
+                $scope.get_visitors($scope.page-1)
+        };
+
+    });
+
+</script>
+<section ng-init="get_visitors(1)" id="main-content" style="margin-bottom: 200px" ng-controller="visitors">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-file-text-o"></i>Visitors</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+                    <li><i class="icon_document_alt"></i>Forms</li>
+                    <li><i class="fa fa-file-text-o"></i>Visitors</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Visitors
+                    </header>
+                    <div class="panel-body">
+                        <div class="col-lg-9 col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h2><i class="fa fa-flag-o red"></i><strong>Visitors</strong></h2>
+                                    <div class="panel-actions">
+                                        <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
+                                        <a href="index.html#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
+                                        <a href="index.html#" class="btn-close"><i class="fa fa-times"></i></a>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table bootstrap-datatable countries">
+                                        <thead>
+                                            <tr>
+                                                <th>Ip</th>
+                                                <th>Country</th>
+                                                <th>City</th>
+                                                <th>Region</th>
+                                                <th>Last visit</th>
+                                                <th>Count visit</th>
+                                                <th>Location</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="visitor in visitors">
+                                                <td ng-bind="visitor.ip"></td>
+                                                <td ng-bind="visitor.country"></td>
+                                                <td ng-bind="visitor.city"></td>
+                                                <td ng-bind="visitor.region"></td>
+                                                <td ng-bind="visitor.last_visit"></td>
+                                                <td ng-bind="visitor.count_visits"></td>
+                                                <td ng-bind="visitor.location"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button ng-click="prev_page()">Previous</button>
+                                    <button ng-click="next_page()">Next</button>
+                                    <span>{[{ page }]} / {[{ pages }]}</span>
+                                    <span style="float: right">{[{count_items}]} items</span>
+                                </div>
+                            </div>
+                        </div><!--/col-->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+{% end %}

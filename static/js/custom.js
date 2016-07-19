@@ -38,7 +38,7 @@ jQuery(function($){
 
 	var owl = $("#owl-carousel"); 
     owl.owlCarousel({
-        items : 4, //4 items above 1024px browser width
+        items : 3, //4 items above 1024px browser width
         itemsDesktop : [1024,3], //3 items between 1024px and 901px
         itemsDesktopSmall : [900,2], // betweem 900px and 601px
         itemsTablet: [600,1], //1 items between 600 and 0
@@ -60,7 +60,7 @@ jQuery(function($){
 
 	var owl1 = $("#owl-carousel1"); 
 	owl1.owlCarousel({
-	    items : 4, //4 items above 1024px browser width
+	    items : 3, //4 items above 1024px browser width
 	    itemsDesktop : [1024,3], //3 items between 1024px and 901px
 	    itemsDesktopSmall : [900,2], // betweem 900px and 601px
 	    itemsTablet: [600,1], //1 items between 600 and 0
@@ -214,14 +214,6 @@ jQuery(function($){
 
 	
 });
-
-get_personal_info = function () {
-	console.log('here')
-	$.post('/admin/personal_info', function (data) {
-
-	})
-}
-get_personal_info()
 
 function send_email(){
 	var data = {};

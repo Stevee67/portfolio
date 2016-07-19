@@ -73,8 +73,8 @@
                 <div class="row">
                   <div class="col s12">
                     <div class="home-inner">
-                      <h1 class="home-title">HI! I'm <span>{{ user['name'] }} {{ user['lastname'] }}</span></h1>
-                      <p>{{user['short_about']}}</p>
+                      <h1 class="home-title">HI! I'm <span>{{ user.name }} {{ user.lastname }}</span></h1>
+                      <!--<p>{{user.short_about if user.short_about else ''}}</p>-->
                       <a class="hire-me-btn btn waves-effect waves-light btn-large" href="#footer">Write me <i class="mdi-content-send left"></i>
                       </a>
                       <!-- Call to About Button -->
@@ -101,19 +101,19 @@
                       <div class="col s12 m8 l9">
                         <div class="about-inner-right">
                           <h3>About Me</h3>
-                          <p>{{user['about_me']}}</p>
+                          <p>{{user.about_me if user.about_me else ''}}</p>
                           <div class="personal-information col s12 m12 l6">
                             <h3>Personal Information</h3>
                             <ul>
-                              <li><span>Name : </span>{{ user['name'] }} {{ user['lastname'] }}</li>
-                              <li><span>Age : </span>{{ user['age'] }} Years</li>
-                              <li><span>Phone : </span>{{ user['phone'] }}</li>
-                              <li><span>Email : </span>{{ user['email'] }}</li>
-                              <li><span>Address : </span>{{ user['address'] }}</li>
+                              <li><span>Name : </span>{{ user.name }} {{ user.lastname }}</li>
+                              <li><span>Age : </span>{{ user.age }} Years</li>
+                              <li><span>Phone : </span>{{ user.phone }}</li>
+                              <li><span>Email : </span>{{ user.email }}</li>
+                              <li><span>Address : </span>{{ user.address }}</li>
                             </ul>
                           </div>
                           <div class="resume-download col s12 m12 l6">
-                            <a href="#" class="waves-effect waves-light btn-large resume-btn"><i class="mdi-content-archive left"></i> Download Resume</a>
+                            <!--<a href="#" class="waves-effect waves-light btn-large resume-btn"><i class="mdi-content-archive left"></i> Download Resume</a>-->
                           </div>
                         </div>
                       </div>
@@ -130,15 +130,15 @@
               <div class="container">
                 <div class="skill-inner">
                   <h2 class="title">Skills</h2>
-                  <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English</p>
+                  <p>{{static_data['SKILL'] if static_data['SKILL'] else ''}}</p>
 
                   <!-- Start skills progress bar -->
 
                   <div class="skill-progress-bar">
                     {% for skill in skills %}
-                    <span>{{skill['name']}}</span>
+                    <span>{{skill.name}}</span>
                     <div class="pro-bar-container color-wisteria">
-                      <div class="pro-bar bar-100 color-amethyst" data-pro-bar-percent="{{skill['kn_percent']}}"></div>
+                      <div class="pro-bar bar-100 color-amethyst" data-pro-bar-percent="{{skill.kn_percent}}"></div>
                     </div>
                     {% end %}
                   </div>
@@ -150,24 +150,24 @@
               <div class="container">
                 <div class="experience-inner">
                   <h2 class="title">Experience</h2>
-                  <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English</p>
+                  <p>{{static_data['EXPERIENCE'] if static_data['EXPERIENCE'] else ''}}</p>
                   <div id="owl-carousel" class="experience-slider row">
                     <!-- Start Single Experience -->
                     {% for experience in experiences %}
                       <div class="col s12">
                         <div class="card">
                           <div class="card-image waves-effect waves-block waves-light">
-                          <h2 class="experience-title">{{format_date(experience['w_from'])}} - {{format_date(experience['w_to']) if experience['w_to'] else 'Present'}}</h2>
+                          <h2 class="experience-title">{{format_date(experience.w_from)}} - {{format_date(experience.w_to) if experience.w_to else 'Present'}}</h2>
                             <img class="activator" src="/static/img/office.jpg">
                           </div>
                           <div class="card-content">
-                            <span class="card-title activator reveal-title">{{experience['title']}}<i class="material-icons right">more_vert</i></span>
-                            <p><a href="#">{{experience['subtitle']}}</a></p>
+                            <span class="card-title activator reveal-title">{{experience.title}}<i class="material-icons right">more_vert</i></span>
+                            <p><a href="#">{{experience.subtitle}}</a></p>
                           </div>
                           <div class="card-reveal">
-                            <span class="card-title reveal-title">{{experience['title']}}<i class="material-icons right">close</i></span>
-                            <a href="#" class="card-subtitle">{{experience['subtitle']}}</a>
-                            <p>{{experience['title']}}</p>
+                            <span class="card-title reveal-title">{{experience.title}}<i class="material-icons right">close</i></span>
+                            <a href="#" class="card-subtitle">{{experience.subtitle}}</a>
+                            <p>{{experience.description}}</p>
                           </div>
                         </div>
                       </div>
@@ -187,24 +187,24 @@
               <div class="container">
                 <div class="education-inner">
                   <h2 class="title">Education</h2>
-                  <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English</p>
+                  <p>{{static_data['EDUCATION'] if static_data['EDUCATION'] else ''}}</p>
                   <div id="owl-carousel1" class="experience-slider row">
                     <!-- Start Single Experience -->
                     {% for education in educations %}
                     <div class="col s12">
                       <div class="card">
                         <div class="card-image waves-effect waves-block waves-light">
-                        <h2 class="experience-title">{{format_date(education['ed_from'])}} - {{format_date(education['ed_to'])}}</h2>
+                        <h2 class="experience-title">{{format_date(education.ed_from)}} - {{format_date(education.ed_to)}}</h2>
                           <img class="activator" src="/static/img/graduate-cap.jpg">
                         </div>
                         <div class="card-content">
-                          <span class="card-title activator reveal-title">{{education['level']}}<i class="material-icons right">more_vert</i></span>
-                          <p><a href="#">{{education['title']}}</a></p>
+                          <span class="card-title activator reveal-title">{{education.level}}<i class="material-icons right">more_vert</i></span>
+                          <p><a href="#">{{education.title}}</a></p>
                         </div>
                         <div class="card-reveal">
-                          <span class="card-title reveal-title">{{education['level']}}<i class="material-icons right">close</i></span>
-                          <a href="#" class="card-subtitle">{{education['title']}}</a>
-                          <p>{{education['description']}}</p>
+                          <span class="card-title reveal-title">{{education.level}}<i class="material-icons right">close</i></span>
+                          <a href="#" class="card-subtitle">{{education.title}}</a>
+                          <p>{{education.description}}</p>
                         </div>
                       </div>
                     </div>
@@ -225,6 +225,7 @@
               <div class="container">
                 <div class="portfolio-top-inner">
                    <h2 class="title">Portfolio</h2>
+                   <p>{{static_data['PORTFOLIO'] if static_data['PORTFOLIO'] else ''}}</p>
                    <!--<div class="controls">  -->
                     <!--<button class="filter waves-effect waves-light btn" data-filter="all">All</button>-->
                     <!--<button class="filter waves-effect waves-light btn" data-filter=".html">HTMl</button>-->
@@ -239,11 +240,12 @@
                 <div class="portfolio-bottom-inner">
                   <div id="portfolio-list">
                     {% for project in projects %}
-                    <div class="mix html" data-value="2">
-                      <a href="{{project['url']}}">
-                        <img src="/static/img/portfolio/logo/profireader.fw.png" alt="img">
+                    <div class="mix html" data-value="2" style="text-align: center">
+                      <a href="{{project.url}}">
+                        <img src="{{project.image_url}}" alt="img">
                         <i class="material-icons view-icon">pageview</i>
                       </a>
+                      <span style="margin-bottom: 20px">{{project.name}}</span>
                     </div>
                     {% end %}
                   </div>
@@ -259,7 +261,7 @@
                   <div class="col s12">
                     <div class="footer-top-inner">
                       <h2 class="title">Contact</h2>
-                      <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.</p>
+                      <p>{{static_data['CONTACT'] if static_data['CONTACT'] else ''}}</p>
                       <div class="contact">
                         <div class="row">
                           <div class="col s12 m6 l6">
@@ -304,6 +306,7 @@
                 <div class="row">
                   <div class="col s12">
                     <div class="footer-inner">
+                      <p>{{static_data['FOOTER'] if static_data['FOOTER'] else ''}}</p>
                       <!-- Bottom to Up Btn -->
                       <button class="btn-floating btn-large up-btn"><i class="mdi-navigation-expand-less"></i></button>
                     </div>

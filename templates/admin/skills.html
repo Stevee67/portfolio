@@ -6,46 +6,24 @@
     portfolioApp.controller('skills', function($scope, $http) {
 
         $scope.new_skill = {};
-
-        $scope.get_skills = function () {
-            return $http({ method: 'POST',url: '/admin/skills'}).then(function successCallback(response) {
-                $scope.skills = response.data.skills
-            }, function errorCallback(response) {
-            });
-        };
+        $scope.required_fields = ['name', 'kn_percent'];
 
         $scope.edit = function(skill) {
-            $scope.new_skill = skill;
+            $scope.new_skill = jQuery.extend({}, skill);
             $('#addSkill').modal('show');
         };
+
         $scope.delete = function(skill) {
             return $http({ method: 'DELETE',url: '/admin/skills', data: skill}).then(function successCallback(response) {
-                $scope.skills = response.data.skills
+                $scope.delete_element($scope.data, skill)
             }, function errorCallback(response) {
             });
         };
-
-        $scope.add_skill = function(skill) {
-            var url ='';
-            if(skill.hasOwnProperty('id')){
-                url = '/admin/skills?edit'
-            }else{
-                url = '/admin/skills?add'
-            }
-            if(url !== ''){
-                return $http({ method: 'PUT',url: url, data: skill}).then(function successCallback(response) {
-                    $('#addSkill').modal('hide');
-                    $scope.skills = response.data.skills
-                }, function errorCallback(response) {
-                });
-            }
-
-        }
 
     });
 
 </script>
-<section ng-init="get_skills()" id="main-content" style="margin-bottom: 200px" ng-controller="skills">
+<section ng-init="init()" id="main-content" style="margin-bottom: 200px" ng-controller="skills">
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
@@ -85,7 +63,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="skill in skills">
+                                            <tr ng-if="skill" ng-repeat="skill in data">
                                                 <td ng-bind="skill.name"></td>
                                                 <td ng-bind="skill.kn_percent"></td>
                                                 <td><button class="btn btn-primary" ng-click="edit(skill)">Edit</button></td>
@@ -96,7 +74,7 @@
                                 </div>
                             </div>
                         </div><!--/col-->
-                        <a class="btn btn-success" data-toggle="modal" href="#addSkill">Add Skill</a>
+                        <a class="btn btn-success" data-toggle="modal" href="#addSkill" ng-click="new_skill={}">Add Skill</a>
                     </div>
                 </section>
             </div>
@@ -110,12 +88,19 @@
                   <h4 class="modal-title">Add Skill</h4>
               </div>
               <div class="modal-body" >
-                  <div style="padding-bottom: 10px"><input type="text" class="form-control" ng-model="new_skill.name" placeholder="name"></div>
-                  <div><input type="number" class="form-control" ng-model="new_skill.kn_percent" placeholder="percent"></div>
+                  <div style="padding-bottom: 10px">
+                      <label class="col-sm-4 control-label">Name <span class="required_star">*</span></label>
+                      <input type="text" class="form-control" ng-model="new_skill.name" placeholder="name" pf-required="">
+                  </div>
+                  <div>
+                      <label class="col-sm-4 control-label">Knowledge percent <span class="required_star">*</span></label>
+                      <input type="number" class="form-control" ng-model="new_skill.kn_percent" placeholder="percent" pf-required="">
+                  </div>
               </div>
+              <span style="margin-left: 20px" id="error-msg" ng-bind="err"></span>
               <div class="modal-footer">
                   <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                  <button class="btn btn-success" type="button" ng-click="add_skill(new_skill)">Save skill</button>
+                  <button id="save_skill" class="btn btn-success" type="button" pf-save="new_skill">Save skill</button>
               </div>
           </div>
       </div>

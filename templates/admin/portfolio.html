@@ -1,0 +1,111 @@
+{% extends 'main.html' %}
+<script src="/static/admin/js/form-component.js"></script>
+{% block content %}
+
+<script>
+    portfolioApp.controller('portfolio', function($scope, $http) {
+
+        $scope.new_project = {};
+        $scope.required_fields = ['name', 'url'];
+
+        $scope.edit = function(project) {
+            $scope.new_project = jQuery.extend({}, project);
+            $('#addProject').modal('show');
+        };
+
+        $scope.delete = function(project) {
+            return $http({ method: 'DELETE',url: '/admin/projects', data: project}).then(function successCallback() {
+                $scope.delete_element($scope.data, project)
+            }, function errorCallback(response) {
+            });
+        };
+
+        $scope.add_project = function(project) {
+            var file = document.getElementById("portfolio-img").files[0];
+            callBackAfterReadFile(file, project);
+            $("#portfolio-img").val('');
+        }
+
+    });
+
+</script>
+<section ng-init="init()" id="main-content" style="margin-bottom: 200px" ng-controller="portfolio">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-file-text-o"></i>Projects</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+                    <li><i class="icon_document_alt"></i>Forms</li>
+                    <li><i class="fa fa-file-text-o"></i>Projects</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Projects
+                    </header>
+                    <div class="panel-body">
+                        <div class="col-lg-9 col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h2><i class="fa fa-flag-o red"></i><strong>Projects</strong></h2>
+                                    <div class="panel-actions">
+                                        <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
+                                        <a href="index.html#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
+                                        <a href="index.html#" class="btn-close"><i class="fa fa-times"></i></a>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table bootstrap-datatable countries">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Url</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-if="project" ng-repeat="project in data">
+                                                <td ng-bind="project.name"></td>
+                                                <td ng-bind="project.url"></td>
+                                                <td><img ng-src="{[{project.image_url}]}" style="width: 50px"></td>
+                                                <td><button class="btn btn-primary" ng-click="edit(project)">Edit</button></td>
+                                                <td><button class="btn btn-primary" ng-click="delete(project)">Delete</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div><!--/col-->
+                        <a class="btn btn-success" data-toggle="modal" href="#addProject" ng-click="new_project={}">Add Project</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="addProject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Add Project</h4>
+              </div>
+              <div class="modal-body" >
+                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_project.name" placeholder="name" pf-required=""></div>
+                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_project.url" placeholder="url" pf-required=""></div>
+                  <div class="modal-row"><input id="portfolio-img" type="file" class="form-control" ng-model="new_project.img" ></div>
+              </div>
+              <span style="margin-left: 20px" id="error-msg" ng-bind="err"></span>
+              <div class="modal-footer">
+                  <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                  <button id="save_project" class="btn btn-success" type="button" pf-before-save="add_project" pf-save="new_project">Save Project</button>
+              </div>
+          </div>
+      </div>
+    </div>
+</section>
+{% end %}

@@ -615,6 +615,10 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
     margin: 0 0 0 10px;    
 }
 
+.modal-content .modal-row{
+    padding-bottom: 10px
+}
+
 .navbar-form .form-control{
     width: 200px;
     height: 30px;
@@ -627,7 +631,7 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
     /* Safari and Chrome */
     .dropdown-menu.extended  {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.176) !important;
-    };
+    }
 }
 /* bootstrape editor*/
  #editor {
@@ -1198,7 +1202,7 @@ div[data-role="editor-toolbar"] {
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.1);
   
 }
-}
+
 .panel.panel-default.panel-heading {
   background: #97d3c5;   
 }
@@ -1505,7 +1509,7 @@ div[data-role="editor-toolbar"] {
   -moz-box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, 0.1);
   box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, 0.1);
 }
-* /Widget-Content */
+ /*/Widget-Content *!*/
 
 .widget-content .error .form-inline button{
 	margin-left:-2px;
@@ -1683,7 +1687,7 @@ div[data-role="editor-toolbar"] {
   cursor:move;
 }
 /*-----	map-----*/
-* Google maps */
+/** Google maps *!*/
 
 .gmap iframe{
 	width: 100%;
@@ -1838,7 +1842,7 @@ div[data-role="editor-toolbar"] {
 
 .state-overview .value h1 {
     font-weight: 300;
-    font-weight: 30px;
+    font-weight: 100;
 }
 
 .state-overview .symbol i {
@@ -2079,7 +2083,7 @@ div[data-role="editor-toolbar"] {
     /* Safari and Chrome */
     .panel-footer.revenue-foot {
         margin-bottom: -4px;
-    };
+    }
     }
 
 
@@ -2148,6 +2152,21 @@ div[data-role="editor-toolbar"] {
     line-height: 20px;
     font-weight: 300;
     font-style: italic;
+}
+
+.flash {
+  position: fixed;
+  z-index: 1;
+  top: 100px;
+  left: 10px;
+  color: #fff;
+  font-size: 19px;
+  width: 20%;
+  padding: 20px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background-color: #2a292f
 }
 
 a.view-all {
@@ -2433,9 +2452,6 @@ ul.ft-link li a i {
 }
 
 /*profile-widget image bg*/
-.profile-widget-img{
-    background: url('../img/backgrounds/bg-11-small.jpg') no-repeat !important;    
-}
 .profile-nav .profile-widget-img .bg-layer {
     background: rgba(0,0,0,0.5) !important;
 }
@@ -2771,7 +2787,6 @@ ul.ft-link li a i {
 }
 /*weather widget 2*/
 .weather-bg-img {
-    background: url(../img/backgrounds/bg-14-small.jpg) no-repeat center center;    
     color: #fff;
     text-shadow: 0px 1px 5px #fed189;
     text-align: center;
@@ -3231,6 +3246,7 @@ ul.inbox-pagination li {
 }
 
 .modal-body label {
+    padding-left: 0;
     font-weight: 400;
     font-family: 'Lato', sans-serif;
 }
@@ -4047,7 +4063,24 @@ ul.amounts li {
 }
 
 input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:focus, .form-validate .form-group input.error , .form-validate .form-group textarea.error{
-    border-color: #00a0df !important;
+    border-color: red !important;
+}
+.invalid:focus{
+    border-color: red !important;
+}
+
+#btn-personal-info{
+    float: right;
+}
+
+#error-msg{
+    color: red;
+}
+
+.required_star{
+    width: 5px;
+    color:red;
+    padding-top:9px
 }
 
 #register_form label.error {
@@ -4424,21 +4457,6 @@ table.sliders tr td {
     padding-left: 34px;
 }
 
-.has-js .label_radio {
-    background: url(../img/checkbox/radio-off.png) no-repeat;
-}
-
-.has-js .label_check {
-    background: url(../img/checkbox/check-off.png) no-repeat;
-}
-
-.has-js label.c_on {
-    background: url(../img/checkbox/check-on.png) no-repeat;
-}
-
-.has-js label.r_on {
-    background: url(../img/checkbox/radio-on.png) no-repeat;
-}
 
 .has-js .label_check input,
 .has-js .label_radio input {
@@ -4500,15 +4518,6 @@ table.sliders tr td {
 
 
 /*ck editor*/
-
-.cke_top, .cke_bottom {
-    background: #F5F5F5 !important;
-    background: -moz-linear-gradient(center top , #F5F5F5, #F5F5F5) repeat scroll 0 0 #F5F5F5 !important;
-    background: -webkit-linear-gradient(center top , #F5F5F5, #F5F5F5) repeat scroll 0 0 #F5F5F5 !important;
-    background: -o-linear-gradient(center top , #F5F5F5, #F5F5F5) repeat scroll 0 0 #F5F5F5 !important;
-    box-shadow: none;
-    padding: 6px 8px 2px;
-}
 
 .cke_top {
     border-bottom: 1px solid #cccccc !important;

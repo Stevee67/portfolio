@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="6943b984-7163-4661-b207-f289ce79e6cd" name="debian" url="http://192.168.0.186">
-        <fileTransfer host="192.168.0.186" port="22" rootFolder="/home/webdev" accessType="SFTP" password="dfdddfcfdfc8dfcedfcfdfdcdff5dfcbdfc9dfc9dfcfdfd9dfd9" username="webdev">
+      <webServer id="6943b984-7163-4661-b207-f289ce79e6cd" name="debian" url="http://192.168.0.129">
+        <fileTransfer host="192.168.0.129" port="22" rootFolder="/home/webdev" accessType="SFTP" password="dfdddfcfdfc8dfcedfcfdfdcdff5dfcbdfc9dfc9dfcfdfd9dfd9" username="webdev">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>
