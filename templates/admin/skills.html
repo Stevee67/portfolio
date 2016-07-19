@@ -1,0 +1,109 @@
+{% extends 'main.html' %}
+<script src="/static/admin/js/form-component.js"></script>
+{% block content %}
+
+<script>
+    portfolioApp.controller('skills', function($scope, $http) {
+
+        $scope.new_skill = {};
+        $scope.required_fields = ['name', 'kn_percent'];
+
+        $scope.edit = function(skill) {
+            $scope.new_skill = jQuery.extend({}, skill);
+            $('#addSkill').modal('show');
+        };
+
+        $scope.delete = function(skill) {
+            return $http({ method: 'DELETE',url: '/admin/skills', data: skill}).then(function successCallback(response) {
+                $scope.delete_element($scope.data, skill)
+            }, function errorCallback(response) {
+            });
+        };
+
+    });
+
+</script>
+<section ng-init="init()" id="main-content" style="margin-bottom: 200px" ng-controller="skills">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-file-text-o"></i> Skills</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+                    <li><i class="icon_document_alt"></i>Forms</li>
+                    <li><i class="fa fa-file-text-o"></i>Skills</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Skills
+                    </header>
+                    <div class="panel-body">
+                        <div class="col-lg-9 col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h2><i class="fa fa-flag-o red"></i><strong>Skills</strong></h2>
+                                    <div class="panel-actions">
+                                        <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
+                                        <a href="index.html#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
+                                        <a href="index.html#" class="btn-close"><i class="fa fa-times"></i></a>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table bootstrap-datatable countries">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>knowledge_percent</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-if="skill" ng-repeat="skill in data">
+                                                <td ng-bind="skill.name"></td>
+                                                <td ng-bind="skill.kn_percent"></td>
+                                                <td><button class="btn btn-primary" ng-click="edit(skill)">Edit</button></td>
+                                                <td><button class="btn btn-primary" ng-click="delete(skill)">Delete</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div><!--/col-->
+                        <a class="btn btn-success" data-toggle="modal" href="#addSkill" ng-click="new_skill={}">Add Skill</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="addSkill" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Add Skill</h4>
+              </div>
+              <div class="modal-body" >
+                  <div style="padding-bottom: 10px">
+                      <label class="col-sm-4 control-label">Name <span class="required_star">*</span></label>
+                      <input type="text" class="form-control" ng-model="new_skill.name" placeholder="name" pf-required="">
+                  </div>
+                  <div>
+                      <label class="col-sm-4 control-label">Knowledge percent <span class="required_star">*</span></label>
+                      <input type="number" class="form-control" ng-model="new_skill.kn_percent" placeholder="percent" pf-required="">
+                  </div>
+              </div>
+              <span style="margin-left: 20px" id="error-msg" ng-bind="err"></span>
+              <div class="modal-footer">
+                  <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                  <button id="save_skill" class="btn btn-success" type="button" pf-save="new_skill">Save skill</button>
+              </div>
+          </div>
+      </div>
+    </div>
+</section>
+{% end %}

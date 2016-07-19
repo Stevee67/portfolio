@@ -1,0 +1,118 @@
+{% extends 'main.html' %}
+<script src="/static/admin/js/form-component.js"></script>
+{% block content %}
+
+<script>
+    portfolioApp.controller('education', function($scope, $http) {
+
+        $scope.new_education = {};
+        $scope.required_fields = ['title', 'level', 'ed_from'];
+
+        $scope.edit = function(education) {
+            if(education.ed_from){
+                education.ed_from = new Date(education.ed_from)
+            }
+            if(education.ed_to){
+                education.ed_to = new Date(education.ed_to)
+            }
+            $scope.new_education = jQuery.extend({}, education);
+            $('#addEducation').modal('show');
+        };
+
+        $scope.delete = function(education) {
+            return $http({ method: 'DELETE',url: '/admin/education', data: education}).then(function successCallback() {
+                $scope.delete_element($scope.data, education)
+            }, function errorCallback(response) {
+            });
+        };
+
+    });
+
+</script>
+<section ng-init="init()" id="main-content" style="margin-bottom: 200px" ng-controller="education">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-file-text-o"></i> Educations</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+                    <li><i class="icon_document_alt"></i>Forms</li>
+                    <li><i class="fa fa-file-text-o"></i>Education</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Education
+                    </header>
+                    <div class="panel-body">
+                        <div class="col-lg-9 col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h2><i class="fa fa-flag-o red"></i><strong>Education</strong></h2>
+                                    <div class="panel-actions">
+                                        <a href="index.html#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
+                                        <a href="index.html#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
+                                        <a href="index.html#" class="btn-close"><i class="fa fa-times"></i></a>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table bootstrap-datatable countries">
+                                        <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Level</th>
+                                                <th>From</th>
+                                                <th>To</th>
+                                                <th>Description</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-if="education" ng-repeat="education in data">
+                                                <td ng-bind="education.title"></td>
+                                                <td ng-bind="education.level"></td>
+                                                <td pf-date="education.ed_from"></td>
+                                                <td pf-date="education.ed_to"></td>
+                                                <td ng-bind="education.description"></td>
+                                                <td><button class="btn btn-primary" ng-click="edit(education)">Edit</button></td>
+                                                <td><button class="btn btn-primary" ng-click="delete(education)">Delete</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div><!--/col-->
+                        <a class="btn btn-success" data-toggle="modal" href="#addEducation" ng-click="new_education={}">Add Education</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="addEducation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Add Education</h4>
+              </div>
+              <div class="modal-body" >
+                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_education.title" placeholder="title" pf-required=""></div>
+                  <div class="modal-row"><input type="text" class="form-control" ng-model="new_education.level" placeholder="level" pf-required=""></div>
+                  <div class="modal-row"><input id="ed_from" type="date" class="form-control" ng-model="new_education.ed_from" placeholder="from" pf-required=""></div>
+                  <div class="modal-row"><input id="ed_to" type="date" pf-date class="form-control" ng-model="new_education.ed_to" placeholder="to"></div>
+                  <div class="modal-row"><textarea class="form-control" ng-model="new_education.description" placeholder="description"></textarea></div>
+              </div>
+              <span style="margin-left: 20px" id="error-msg" ng-bind="err"></span>
+              <div class="modal-footer">
+                  <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+                  <button id="save_education" class="btn btn-success" type="button" pf-save="new_education">Save education</button>
+              </div>
+          </div>
+      </div>
+    </div>
+</section>
+{% end %}

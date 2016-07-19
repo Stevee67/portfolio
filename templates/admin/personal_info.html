@@ -1,0 +1,149 @@
+{% extends 'main.html' %}
+<script src="/static/admin/js/form-component.js"></script>
+{% block content %}
+
+<script>
+    portfolioApp.controller('personal_info', function($scope, $http) {
+
+        $scope.change_password = {};
+        $scope.required_fields = ['name', 'lastname', 'email', 'age'];
+        $scope.loading = false;
+
+        $scope.get_personal_info = function () {
+            return $http({ method: 'POST',url: '/admin/personal_info'}).then(function successCallback(response) {
+                $scope.data = response.data.data
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+        };
+
+        $scope.change_pass = function(data) {
+            return $http({ method: 'PUT',url: '/admin/personal_info?passchange', data: data}).then(function successCallback(response) {
+                if('success' in response.data){
+                    flash(response.data.success)
+                }else if('error' in response.data){
+                    flash(response.data.error)
+                }
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+        }
+
+    });
+
+</script>
+<section ng-init="get_personal_info()" id="main-content" style="margin-bottom: 200px" ng-controller="personal_info">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-file-text-o"></i> Form elements</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+                    <li><i class="icon_document_alt"></i>Forms</li>
+                    <li><i class="fa fa-file-text-o"></i>Personal info</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Personal info
+                    </header>
+                    <div class="panel-body">
+                        <form class="form-horizontal " method="get">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">FirstName</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="data.name" placeholder="put your name" pf-required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">LastName</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="data.lastname" placeholder="put your last name" pf-required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Email</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="data.email" placeholder="put your email" pf-required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Age</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" ng-model="data.age" placeholder="put your age" pf-required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Phone</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" ng-model="data.phone" placeholder="put your phone">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Address</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" ng-model="data.address" placeholder="put your address">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Skype</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="data.skype" placeholder="put your skype">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Linkedin</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="data.linkedin" placeholder="put your linkedin url">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Facebook</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="data.facebook" placeholder="put your facebook url">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                    <label class="col-sm-2 control-label">About Me</label>
+                                <div class="col-sm-7">
+                                    <textarea class="form-control" rows="6" ng-model="data.about_me"></textarea>
+                                </div>
+                            </div>
+                            <span ng-if="error" style="color: red" ng-bind="error"></span>
+                        </form>
+                        <span style="margin-left: 20px" id="error-msg" ng-bind="err"></span>
+                        <button id="btn-personal-info" type="submit" class="btn btn-primary" pf-save="data" pf-required-fields="required_fields" ng-disabled="loading">Save</button>
+                    </div>
+                </section>
+                <section class="panel">
+                    <header class="panel-heading">
+                        Change password
+                    </header>
+                    <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">New password</label>
+                                <div class="col-sm-7">
+                                    <input type="password" class="form-control" ng-model="change_password.new_pass" placeholder="put new password">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Check password</label>
+                                <div class="col-sm-7">
+                                    <input type="password" class="form-control" ng-model="change_password.check_pass" placeholder="check new password">
+                                </div>
+                            </div>
+                        </form>
+                        <button style="float: right;" type="submit" class="btn btn-primary" ng-click="change_pass(change_password)">Change</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</section>
+{% end %}

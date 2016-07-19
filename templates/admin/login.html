@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../../favicon.png">
+    <title>Login</title>
+    <link href="/static/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/admin/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/static/admin/css/elegant-icons-style.css" rel="stylesheet" />
+    <link href="/static/admin/css/font-awesome.css" rel="stylesheet" />
+    <link href="/static/admin/css/style.css" rel="stylesheet">
+    <link href="/static/admin/css/style-responsive.css" rel="stylesheet" />
+    <script src="/static/admin/js/html5shiv.js"></script>
+    <script src="/static/admin/js/jquery.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="/static/admin/js/custom.js"></script>
+</head>
+  <body class="login-img3-body">
+  <script>
+    portfolioApp.controller('login', function($scope, $http, $timeout) {
+
+        $scope.user_data = {};
+
+        $scope.login = function(data){
+            return $http({ method: 'POST',url: '/admin/login', data: data}).then(function successCallback(response) {
+                if('error' in response.data){
+                    $scope.error = response.data.error;
+                    $timeout(function () {
+                        $scope.error = ''
+                    }, 2000)
+                }else{
+                    window.location.href = '/admin'
+                }
+            }, function errorCallback(response) {
+            });
+        }
+
+    });
+
+</script>
+
+    <div ng-app="portfolio_app" class="container">
+
+      <form class="login-form" ng-controller="login">
+        <div class="login-wrap">
+            <p class="login-img"><i class="icon_lock_alt"></i></p>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="icon_profile"></i></span>
+              <input type="text" class="form-control" placeholder="email" autofocus ng-model="user_data.email">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="icon_key_alt"></i></span>
+                <input type="password" class="form-control" placeholder="Password" ng-model="user_data.password">
+            </div>
+            <span ng-if="error" style="color: red" ng-bind="error"></span>
+            <label class="checkbox">
+                <input type="checkbox" value="remember-me"> Remember me
+                <!--<span class="pull-right"> <a href="#"> Forgot Password?</a></span>-->
+            </label>
+            <button class="btn btn-primary btn-lg btn-block" ng-disabled="login-form.$invalid" type="submit" ng-click="login(user_data)">Login</button>
+        </div>
+      </form>
+
+    </div>
+
+
+  </body>
+</html>
