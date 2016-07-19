@@ -306,6 +306,7 @@ class EditProjects(Base):
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
+
         data = json.loads(self.request.body.decode())
         action = re.match('(.*\?)([a-z]+)', self.request.uri).group(2)
         if action in EditExperience._actions:

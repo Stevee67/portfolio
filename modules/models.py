@@ -296,6 +296,10 @@ class Images(Main):
             self.size = len(content)
             index = self.get_next_index_from_file(os.path.abspath("static") + '/img/projects/')
             self.file_name = 'file(' + str(index) + ')''.' + data['file']['mime'].split('/')[1]
+            check = yield self.fetch_by(Images, file_name=self.file_name,folder_name=self.folder_name)
+            if check:
+                image = yield self.fetch(Images, config.DEFAULT_IMAGE_ID)
+                return image
             self.folder_name = 'projects'
             self.mime = data['file']['mime']
             url = os.path.abspath("static") + '/img/projects/' + self.file_name
@@ -313,7 +317,9 @@ class Images(Main):
     @tornado.gen.coroutine
     def delete_image(self):
         if self.id != config.DEFAULT_IMAGE_ID:
-            os.remove(os.path.abspath("static") + '/img/projects/' + self.file_name)
+            image = os.path.abspath("static") + '/img/projects/' + self.file_name
+            if os.path.isfile(image):
+                os.remove(image)
             yield self.remove()
 
     def get_next_index_from_file(self, path):
