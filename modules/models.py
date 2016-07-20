@@ -355,9 +355,11 @@ class Visitors(Main):
 
     @tornado.gen.coroutine
     def save_visitors(self, ip):
+
+        ip = '203.211.23.206'
         path = os.path.dirname(os.path.abspath('static')) + '/static/GeoLite2-City.mmdb'
         reader = geoip2.database.Reader(path)
-        print(ip)
+
         try:
             response = reader.city(ip)
             yield self._save(response)
@@ -367,8 +369,11 @@ class Visitors(Main):
 
     @tornado.gen.coroutine
     def _save(self, georesp):
-        region = parse.unquote(georesp.subdivisions.most_specific.name).replace('"', '_').replace('*', '_').replace('/', '_'). \
+        if georesp.subdivisions.most_specific.name:
+            region = parse.unquote(georesp.subdivisions.most_specific.name).replace('"', '_').replace('*', '_').replace('/', '_'). \
             replace('\\', '_').replace("'", '_')
+        else:
+            region = None
         ip = str(georesp.traits.ip_address)
         visitor = yield self.fetch_by(Visitors, ip=ip)
         if visitor:
