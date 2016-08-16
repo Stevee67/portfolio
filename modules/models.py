@@ -364,7 +364,6 @@ class Visitors(Main):
     def save_visitors(self, ip):
         path = os.path.dirname(os.path.abspath('static')) + '/static/GeoLite2-City.mmdb'
         reader = geoip2.database.Reader(path)
-        ip = '203.211.23.206'
         try:
             response = reader.city(ip)
             yield self._save(response)
@@ -400,7 +399,10 @@ class Visitors(Main):
                     visitor.last_visit) - tmsp_today
 
             if 0 <= range_of_date < 86400:
-                visitor.today_visit += 1
+                if not visitor.today_visit:
+                    visitor.today_visit = 1
+                else:
+                    visitor.today_visit += 1
 
             visitor.last_visit = datetime.datetime.now()
             visitor.count_visits += 1
