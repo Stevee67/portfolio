@@ -32,18 +32,32 @@ class HomeHandler(Base):
                     static_data=merge_object_by_kk(static_data, 'type', 'text'),
                     format_date=format_date)
 
-
+    @success
     @tornado.gen.coroutine
     def post(self):
-        message = """ Message from %(from)s \n
-            User email %(email)s \n
-            Subject: %(subject)s \n
-            Message: %(message)s""" % {'from': self.get_argument('name'),
-                                       'email': self.get_argument('email'),
-                                       'subject': self.get_argument('subject'),
-                                       'message': self.get_argument('message')}
+        x_real_ip = self.request.headers.get("X-Real-IP")
+        ip = x_real_ip or self.request.remote_ip
+        visitor = yield self.fetch_by(Visitors, ip=ip)
+        error = yield visitor.if_limit_out()
+        if not error:
+            if visitor.today_messages:
+                visitor.today_messages += 1
+            else:
+                visitor.today_messages = 1
+            yield visitor.update()
+            message = """ Message from %(from)s \n
+                User email %(email)s \n
+                Subject: %(subject)s \n
+                Message: %(message)s""" % {'from': self.get_argument('name'),
+                                           'email': self.get_argument('email'),
+                                           'subject': self.get_argument('subject'),
+                                           'message': self.get_argument('message')}
 
-        tornado.ioloop.IOLoop.current().spawn_callback(send_message_async, message)
+            tornado.ioloop.IOLoop.current().spawn_callback(send_message_async,
+                                                           message)
+            return "Thank you for you message. I'll answer you in a few hours."
+        else:
+            return error
 
 
 class AdminHandler(Base):

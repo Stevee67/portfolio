@@ -4,14 +4,15 @@ import time
 import config
 import smtplib
 import tornado.gen
-import json
 import math
 import logging
+
 
 def datetime_from_utc_to_local(utc_datetime):
     now_timestamp = time.time()
     offset = datetime.datetime.fromtimestamp(now_timestamp) - datetime.datetime.utcfromtimestamp(now_timestamp)
     return utc_datetime + offset
+
 
 def format_date(date):
     b = datetime_from_utc_to_local(date)
@@ -20,11 +21,13 @@ def format_date(date):
     formating_date = '{0}/{1}/{2}'.format(month, day, b.year)
     return formating_date
 
+
 def strip_date(date):
     if date:
         return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
     else:
         return None
+
 
 def send_message(message, password=config.MAIL_PASS):
     fromaddr = config.SENDER_ADDRESS
@@ -37,13 +40,16 @@ def send_message(message, password=config.MAIL_PASS):
     server.sendmail(fromaddr, toaddrs, message)
     server.quit()
 
+
 @tornado.gen.coroutine
 def send_message_async(message):
     yield call_blocking_func(send_message, message)
 
+
 @tornado.gen.coroutine
 def call_blocking_func(func, *args, **kwargs):
     threading.Thread(target=func, args=args, kwargs=kwargs).start()
+
 
 @tornado.gen.coroutine
 def dict_from_cursor_one(curso):
@@ -59,6 +65,7 @@ def dict_from_cursor_one(curso):
                 new_dict[k[0]] = obj[k[0]]
         return new_dict
 
+
 def object_to_dict(object):
     new_dict = {}
     if object:
@@ -68,6 +75,7 @@ def object_to_dict(object):
             else:
                 new_dict[k] = object.__getattribute__(k)
         return new_dict
+
 
 def dict_from_cursor_all(cursor):
     keys = cursor.description
@@ -84,6 +92,7 @@ def dict_from_cursor_all(cursor):
                         new_dict[k[0]] = obj[k[0]]
             list_objs.append(new_dict)
     return list_objs
+
 
 def merge_dict(list_dict):
     new_dict = {}
@@ -121,7 +130,6 @@ class Log:
 
 
 def success(func):
-
     @tornado.gen.coroutine
     def wrapped(obj,*args, **kwargs):
         result = yield func(obj,*args, **kwargs)

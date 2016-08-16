@@ -349,7 +349,8 @@ class Visitors(Main):
 
     def __init__(self, location=None, last_visit=None, city=None,
                  country=None, region=None, hostname=None,
-                 ip=None, count_visits=None, today_visit=None):
+                 ip=None, count_visits=None, today_visit=None,
+                 today_messages=None):
         self.location = location
         self.last_visit = last_visit
         self.city = city
@@ -359,6 +360,7 @@ class Visitors(Main):
         self.ip = ip
         self.count_visits = count_visits
         self.today_visit = today_visit
+        self.today_messages = today_messages
 
     @tornado.gen.coroutine
     def save_visitors(self, ip):
@@ -368,6 +370,7 @@ class Visitors(Main):
             response = reader.city(ip)
             yield self._save(response)
         except Exception as e:
+            yield self._save(ip)
             print(e)
         reader.close()
 
@@ -380,18 +383,45 @@ class Visitors(Main):
             range_of_date = datetime.datetime.timestamp(
                 visobj.last_visit) - tmsp_today
             if 0 >= range_of_date > 86400:
+                visobj.today_messages = 0
                 visobj.today_visit = 0
             yield visobj.update()
 
     @tornado.gen.coroutine
-    def _save(self, georesp):
-        if georesp.subdivisions.most_specific.name:
-            region = parse.unquote(georesp.subdivisions.most_specific.name).replace('"', '_').replace('*', '_').replace('/', '_'). \
-            replace('\\', '_').replace("'", '_')
+    def if_limit_out(self):
+        if self:
+            if self.today_messages:
+                if self.today_messages >= config.LIMIT_MESSAGES:
+                    return 'Mail limit exceeded!'
+                else:
+                    return ''
+            else:
+                return ''
         else:
-            region = None
-        ip = str(georesp.traits.ip_address)
-        visitor = yield self.fetch_by(Visitors, ip=ip)
+            return 'error'
+
+    @tornado.gen.coroutine
+    def _save(self, georesp):
+        if isinstance(georesp, str):
+            visitor = yield self.fetch_by(Visitors, ip=georesp)
+            if not visitor:
+                self.ip = georesp
+        else:
+            if georesp.subdivisions.most_specific.name:
+                region = parse.unquote(georesp.subdivisions.most_specific.name).replace('"', '_').replace('*', '_').replace('/', '_'). \
+                replace('\\', '_').replace("'", '_')
+            else:
+                region = None
+            ip = str(georesp.traits.ip_address)
+            visitor = yield self.fetch_by(Visitors, ip=ip)
+            if not visitor:
+                self.region = region
+                self.city = georesp.city.name
+                self.country = georesp.country.name
+                self.ip = georesp.traits.ip_address
+                self.location = 'longitude: ' + str(
+                    georesp.location.longitude) + ' / ' + 'latitude: ' + str(
+                    georesp.location.latitude)
         if visitor:
             today = datetime.datetime.date(datetime.datetime.now())
             tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
@@ -408,11 +438,7 @@ class Visitors(Main):
             visitor.count_visits += 1
             yield visitor.update()
         else:
-            self.ip = georesp.traits.ip_address
-            self.location = 'longitude: '+str(georesp.location.longitude)+' / '+'latitude: '+str(georesp.location.latitude)
+            self.today_visit = 1
             self.last_visit = datetime.datetime.now()
-            self.city = georesp.city.name
-            self.country = georesp.country.name
-            self.region = region
             self.count_visits = 1
             yield self.save()
