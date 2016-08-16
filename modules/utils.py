@@ -91,21 +91,24 @@ def merge_dict(list_dict):
         new_dict.update(d)
     return new_dict
 
+
 def merge_object_by_kk(list_dict, k1, k2):
     new_dict = {}
     for el in list_dict:
         new_dict[el.__getattribute__(k1)] = el.__getattribute__(k2)
     return new_dict
 
+
 @tornado.gen.coroutine
-def paginaion(db, table, item_per_page, page):
-    cur_count = yield db.execute("SELECT COUNT(ip) FROM {}".format(table))
+def pagination(db, table, item_per_page, page):
+    cur_count = yield db.execute("SELECT COUNT(id) FROM {}".format(table))
     len = cur_count.fetchone()
     pages = len[0]/item_per_page
     offset = (page-1) * item_per_page
     data = yield db.execute("SELECT * FROM {0} LIMIT {1} OFFSET {2}"
                                      .format(table, item_per_page, offset))
     return math.ceil(pages), dict_from_cursor_all(data), len[0]
+
 
 class Log:
     def __init__(self, path):

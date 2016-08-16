@@ -5,6 +5,7 @@ import re
 import config
 import base64
 import datetime
+import time
 from urllib import parse
 import os
 from os.path import isfile, join
@@ -233,6 +234,7 @@ class Projects(Main):
             self.__setattr__('image_url', '/static/img/' + 'projects' + '/' + \
                             'default.png')
 
+
 class Experience(Main):
 
     __tablename__ = 'experience'
@@ -275,6 +277,7 @@ class Experience(Main):
         if not self.check_date_frto(frto['w_from'], frto['w_to']):
             return 'Date is wrong!'
         return True
+
 
 class Images(Main):
 
@@ -338,12 +341,15 @@ class Images(Main):
     def image_url(self):
         return '/static/img/{0}/{1}'.format(self.folder_name, self.file_name)
 
+
 class Visitors(Main):
 
     __tablename__ = 'visitors'
     _required_fields = []
 
-    def __init__(self, location=None, last_visit=None, city=None, country=None, region=None, hostname=None, ip=None, count_visits=None):
+    def __init__(self, location=None, last_visit=None, city=None,
+                 country=None, region=None, hostname=None,
+                 ip=None, count_visits=None, today_visit=None):
         self.location = location
         self.last_visit = last_visit
         self.city = city
@@ -352,20 +358,31 @@ class Visitors(Main):
         self.hostname = hostname
         self.ip = ip
         self.count_visits = count_visits
+        self.today_visit = today_visit
 
     @tornado.gen.coroutine
     def save_visitors(self, ip):
-
-        ip = '203.211.23.206'
         path = os.path.dirname(os.path.abspath('static')) + '/static/GeoLite2-City.mmdb'
         reader = geoip2.database.Reader(path)
-
+        ip = '203.211.23.206'
         try:
             response = reader.city(ip)
             yield self._save(response)
         except Exception as e:
             print(e)
         reader.close()
+
+    @tornado.gen.coroutine
+    def edit_today_visitors(self, list_visitors):
+        for visitor in list_visitors:
+            visobj = yield self.fetch(Visitors, visitor['id'])
+            today = datetime.datetime.date(datetime.datetime.now())
+            tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
+            range_of_date = datetime.datetime.timestamp(
+                visobj.last_visit) - tmsp_today
+            if 0 >= range_of_date > 86400:
+                visobj.today_visit = 0
+            yield visobj.update()
 
     @tornado.gen.coroutine
     def _save(self, georesp):
@@ -377,8 +394,16 @@ class Visitors(Main):
         ip = str(georesp.traits.ip_address)
         visitor = yield self.fetch_by(Visitors, ip=ip)
         if visitor:
+            today = datetime.datetime.date(datetime.datetime.now())
+            tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
+            range_of_date = datetime.datetime.timestamp(
+                    visitor.last_visit) - tmsp_today
+
+            if 0 <= range_of_date < 86400:
+                visitor.today_visit += 1
+
             visitor.last_visit = datetime.datetime.now()
-            visitor.count_visits = visitor.count_visits + 1
+            visitor.count_visits += 1
             yield visitor.update()
         else:
             self.ip = georesp.traits.ip_address
