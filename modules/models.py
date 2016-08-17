@@ -389,6 +389,8 @@ class Visitors(Main):
                 if range_of_send_email_date <= 0 \
                         and visitor.today_messages != 0:
                     visitor.today_messages = 0
+            else:
+                visitor.today_messages = 0
             if range_of_visit_date <= 0 and visitor.today_visit != 0:
                 visitor.today_visit = 0
             yield visitor.update()
