@@ -296,14 +296,13 @@ class ListVisitors(Base):
     @tornado.gen.coroutine
     def post(self):
         data = json.loads(self.request.body.decode())
+        yield Visitors().edit_today_visitors()
         pages, list_visitors, count = yield pagination(self.db, 'visitors',
                                                       ListVisitors.item_per_page,
                                                       data['page'])
 
         item_on_pages = str(data['page']*ListVisitors.item_per_page) \
             if data['page'] != pages else str(count)
-
-        yield Visitors().edit_today_visitors(list_visitors)
         return {'visitors': list_visitors,
                     'pages': pages,
                     'page': data['page'],

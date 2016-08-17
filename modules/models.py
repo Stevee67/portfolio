@@ -375,17 +375,18 @@ class Visitors(Main):
         reader.close()
 
     @tornado.gen.coroutine
-    def edit_today_visitors(self, list_visitors):
+    def edit_today_visitors(self):
+        list_visitors = yield self.fetch_all(Visitors)
         for visitor in list_visitors:
-            visobj = yield self.fetch(Visitors, visitor['id'])
             today = datetime.datetime.date(datetime.datetime.now())
             tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
             range_of_date = datetime.datetime.timestamp(
-                visobj.last_visit) - tmsp_today
-            if 0 >= range_of_date > 86400:
-                visobj.today_messages = 0
-                visobj.today_visit = 0
-            yield visobj.update()
+                visitor.last_visit) - tmsp_today
+            if range_of_date <= 0 and (
+                    visitor.today_messages != 0 or visitor.today_visit != 0):
+                visitor.today_messages = 0
+                visitor.today_visit = 0
+            yield visitor.update()
 
     @tornado.gen.coroutine
     def if_limit_out(self):
@@ -427,7 +428,6 @@ class Visitors(Main):
             tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
             range_of_date = datetime.datetime.timestamp(
                     visitor.last_visit) - tmsp_today
-
             if 0 <= range_of_date < 86400:
                 if not visitor.today_visit:
                     visitor.today_visit = 1
