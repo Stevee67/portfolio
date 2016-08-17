@@ -215,23 +215,34 @@ jQuery(function($){
 	
 });
 
+function set_value(objs, value) {
+	for(var n=0; n<objs.length; n++){
+		console.log(objs[n]);
+			objs[n].value = value
+		}
+}
+
 function send_email(error){
 	if(error){
 		flash(error)
 	}else {
 		var data = {};
 		var required_fields = ['name', 'email', 'subject', 'message'];
+		var objs = [];
 		for(var i=0; i<required_fields.length; i++){
 			var field_obj = document.getElementById(required_fields[i]);
+			objs.push(field_obj);
 			var field_obj_val = field_obj.value;
 			if(field_obj_val){
 				data[required_fields[i]] = field_obj_val;
 			}
-			else{
-				flash("Please fill field "+"<span style='color:red'>"+required_fields[i]+ "</span>"+"!");
+			else {
+				flash("Please fill field " + "<span style='color:red'>" + required_fields[i] + "</span>" + "!");
 				return
 			}
 		}
+		set_value(objs, '');
+
 		$.ajax({
 			url: '/',
 			type: 'post',
