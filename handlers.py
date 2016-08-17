@@ -7,7 +7,7 @@ import re
 import config
 from modules.base import Base
 from modules.models import Users, StaticData, Projects, Educations, Skills, Experience, Visitors
-
+import datetime
 
 class HomeHandler(Base):
 
@@ -44,6 +44,7 @@ class HomeHandler(Base):
                 visitor.today_messages += 1
             else:
                 visitor.today_messages = 1
+            visitor.last_email = datetime.datetime.now()
             yield visitor.update()
             message = """ Message from %(from)s \n
                 User email %(email)s \n

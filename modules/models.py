@@ -350,7 +350,7 @@ class Visitors(Main):
     def __init__(self, location=None, last_visit=None, city=None,
                  country=None, region=None, hostname=None,
                  ip=None, count_visits=None, today_visit=None,
-                 today_messages=None):
+                 today_messages=None, last_email=None):
         self.location = location
         self.last_visit = last_visit
         self.city = city
@@ -361,6 +361,7 @@ class Visitors(Main):
         self.count_visits = count_visits
         self.today_visit = today_visit
         self.today_messages = today_messages
+        self.last_email = last_email
 
     @tornado.gen.coroutine
     def save_visitors(self, ip):
@@ -380,12 +381,14 @@ class Visitors(Main):
         for visitor in list_visitors:
             today = datetime.datetime.date(datetime.datetime.now())
             tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
-            range_of_date = datetime.datetime.timestamp(
+            range_of_visit_date = datetime.datetime.timestamp(
                 visitor.last_visit) - tmsp_today
-            if range_of_date <= 0 and (
-                    visitor.today_messages != 0 or visitor.today_visit != 0):
-                visitor.today_messages = 0
+            range_of_send_email_date = datetime.datetime.timestamp(
+                visitor.last_email) - tmsp_today
+            if range_of_visit_date <= 0 and visitor.today_visit != 0:
                 visitor.today_visit = 0
+            if range_of_send_email_date <= 0 and visitor.today_messages != 0:
+                visitor.today_messages = 0
             yield visitor.update()
 
     @tornado.gen.coroutine
