@@ -383,12 +383,14 @@ class Visitors(Main):
             tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
             range_of_visit_date = datetime.datetime.timestamp(
                 visitor.last_visit) - tmsp_today
-            range_of_send_email_date = datetime.datetime.timestamp(
-                visitor.last_email) - tmsp_today
+            if visitor.last_email:
+                range_of_send_email_date = datetime.datetime.timestamp(
+                    visitor.last_email) - tmsp_today
+                if range_of_send_email_date <= 0 \
+                        and visitor.today_messages != 0:
+                    visitor.today_messages = 0
             if range_of_visit_date <= 0 and visitor.today_visit != 0:
                 visitor.today_visit = 0
-            if range_of_send_email_date <= 0 and visitor.today_messages != 0:
-                visitor.today_messages = 0
             yield visitor.update()
 
     @tornado.gen.coroutine
