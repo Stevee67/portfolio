@@ -252,7 +252,7 @@ function send_email(error){
 			}
 		})
 	}
-	
+
 }
 
 function flash(message) {
