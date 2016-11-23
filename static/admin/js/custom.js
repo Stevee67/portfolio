@@ -116,9 +116,9 @@ portfolioApp.directive('pfDate', function () {
                     var modal = $('#'+getModalId());
                     if(scope['pfBeforeSave'])
                         scope['pfBeforeSave'](scope['pfSave']);
-                    if(ifAllow() === true){
+                    $timeout(function () {
+                        if(ifAllow() === true){
                        return $http({ method: 'PUT',url: url, data: scope['pfSave']}).then(function successCallback(response) {
-                           console.log(response.data);
                            if(response.data.error !== 'false'){
                                error_msg(response.data.error)
                            }else{
@@ -152,6 +152,8 @@ portfolioApp.directive('pfDate', function () {
                             error_msg('Fill out required fields!')
                         },100);
                     }
+                    }, 500)
+
                 };
 
                 function loading_false(){
@@ -192,6 +194,7 @@ function callBackAfterReadFile(file, data) {
         var fr = new FileReader();
         fr.onload = function (e) {
             data['file'] = {'mime': file.type, 'name': file.name, 'content': fr.result}
+            return 'SUCCESS'
         };
         fr.onerror = function (e) {
             flash('File loading error');

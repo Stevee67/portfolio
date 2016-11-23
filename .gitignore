@@ -3,4 +3,7 @@ __pycache__/
 test_*.py
 # PyCharm
 .idea/
-
+.*/
+.openshift/
+.cache/
+test_*/

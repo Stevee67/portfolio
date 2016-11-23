@@ -22,8 +22,9 @@
 
         $scope.add_project = function(project) {
             var file = document.getElementById("portfolio-img").files[0];
-            callBackAfterReadFile(file, project);
+            var status = callBackAfterReadFile(file, project);
             $("#portfolio-img").val('');
+            return status
         }
 
     });

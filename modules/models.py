@@ -5,6 +5,7 @@ import re
 import config
 import base64
 import datetime
+import time
 from urllib import parse
 import os
 from os.path import isfile, join
@@ -56,8 +57,10 @@ class Users(Main):
     __tablename__ = 'users'
     _required_fields = ['name', 'lastname', 'email', 'age']
 
-    def __init__(self, name=None, lastname=None, email=None, age=None,address=None,phone=None, status=None,
-                 skype=None, about_me=None, linkedin=None, facebook=None, short_about=None, password_hash=None):
+    def __init__(self, name=None, lastname=None, email=None,
+                 age=None,address=None,phone=None, status=None,
+                 skype=None, about_me=None, linkedin=None, facebook=None,
+                 short_about=None, password_hash=None, photopath=None):
         self.name = name
         self.lastname = lastname
         self.email = email
@@ -73,6 +76,7 @@ class Users(Main):
         self.facebook = facebook
         self.short_about = short_about
         self.password_hash = password_hash
+        self.photopath = photopath
 
     @tornado.gen.coroutine
     def change_pass(self, data):
@@ -98,6 +102,7 @@ class Users(Main):
     def verify_password(self, password):
         return self and check_password_hash(self.password_hash, password)
 
+
 class Skills(Main):
 
     __tablename__ = 'skils'
@@ -107,6 +112,7 @@ class Skills(Main):
         self.name = name
         self.user_id = user_id
         self.kn_percent = kn_percent
+
 
 class Educations(Main):
 
@@ -146,6 +152,7 @@ class Educations(Main):
         yield self.update()
         return self
 
+
 class StaticData(Main):
 
     STATIC_TYPES = ['SKILL', 'EXPERIENCE', 'EDUCATION', 'PORTFOLIO', 'CONTACT', 'FOOTER', 'HEADER', 'TITLE']
@@ -173,6 +180,7 @@ class StaticData(Main):
             if element.type in res:
                 del res[res.index(element.type)]
         return res
+
 
 class Projects(Main):
 
@@ -233,6 +241,7 @@ class Projects(Main):
             self.__setattr__('image_url', '/static/img/' + 'projects' + '/' + \
                             'default.png')
 
+
 class Experience(Main):
 
     __tablename__ = 'experience'
@@ -276,6 +285,7 @@ class Experience(Main):
             return 'Date is wrong!'
         return True
 
+
 class Images(Main):
 
     __tablename__ = 'images'
@@ -296,6 +306,10 @@ class Images(Main):
             self.size = len(content)
             index = self.get_next_index_from_file(os.path.abspath("static") + '/img/projects/')
             self.file_name = 'file(' + str(index) + ')''.' + data['file']['mime'].split('/')[1]
+            check = yield self.fetch_by(Images, file_name=self.file_name,folder_name=self.folder_name)
+            if check:
+                image = yield self.fetch(Images, config.DEFAULT_IMAGE_ID)
+                return image
             self.folder_name = 'projects'
             self.mime = data['file']['mime']
             url = os.path.abspath("static") + '/img/projects/' + self.file_name
@@ -313,7 +327,9 @@ class Images(Main):
     @tornado.gen.coroutine
     def delete_image(self):
         if self.id != config.DEFAULT_IMAGE_ID:
-            os.remove(os.path.abspath("static") + '/img/projects/' + self.file_name)
+            image = os.path.abspath("static") + '/img/projects/' + self.file_name
+            if os.path.isfile(image):
+                os.remove(image)
             yield self.remove()
 
     def get_next_index_from_file(self, path):
@@ -332,12 +348,16 @@ class Images(Main):
     def image_url(self):
         return '/static/img/{0}/{1}'.format(self.folder_name, self.file_name)
 
+
 class Visitors(Main):
 
     __tablename__ = 'visitors'
     _required_fields = []
 
-    def __init__(self, location=None, last_visit=None, city=None, country=None, region=None, hostname=None, ip=None, count_visits=None):
+    def __init__(self, location=None, last_visit=None, city=None,
+                 country=None, region=None, hostname=None,
+                 ip=None, count_visits=None, today_visit=None,
+                 today_messages=None, last_email=None):
         self.location = location
         self.last_visit = last_visit
         self.city = city
@@ -346,35 +366,95 @@ class Visitors(Main):
         self.hostname = hostname
         self.ip = ip
         self.count_visits = count_visits
+        self.today_visit = today_visit
+        self.today_messages = today_messages
+        self.last_email = last_email
 
     @tornado.gen.coroutine
     def save_visitors(self, ip):
         path = os.path.dirname(os.path.abspath('static')) + '/static/GeoLite2-City.mmdb'
         reader = geoip2.database.Reader(path)
-        print(ip)
         try:
             response = reader.city(ip)
             yield self._save(response)
         except Exception as e:
+            yield self._save(ip)
             print(e)
         reader.close()
 
     @tornado.gen.coroutine
+    def edit_today_visitors(self):
+        list_visitors = yield self.fetch_all(Visitors)
+        for visitor in list_visitors:
+            today = datetime.datetime.date(datetime.datetime.now())
+            tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
+            range_of_visit_date = datetime.datetime.timestamp(
+                visitor.last_visit) - tmsp_today
+            if visitor.last_email:
+                range_of_send_email_date = datetime.datetime.timestamp(
+                    visitor.last_email) - tmsp_today
+                if range_of_send_email_date <= 0 \
+                        and visitor.today_messages != 0:
+                    visitor.today_messages = 0
+            else:
+                visitor.today_messages = 0
+            if range_of_visit_date <= 0 and visitor.today_visit != 0:
+                visitor.today_visit = 0
+            yield visitor.update()
+
+    @tornado.gen.coroutine
+    def if_limit_out(self):
+        if self:
+            if self.today_messages:
+                if self.today_messages >= config.LIMIT_MESSAGES:
+                    return 'Mail limit exceeded!'
+                else:
+                    return ''
+            else:
+                return ''
+        else:
+            return 'error'
+
+    @tornado.gen.coroutine
     def _save(self, georesp):
-        region = parse.unquote(georesp.subdivisions.most_specific.name).replace('"', '_').replace('*', '_').replace('/', '_'). \
-            replace('\\', '_').replace("'", '_')
-        ip = str(georesp.traits.ip_address)
-        visitor = yield self.fetch_by(Visitors, ip=ip)
+        if isinstance(georesp, str):
+            visitor = yield self.fetch_by(Visitors, ip=georesp)
+            if not visitor:
+                self.ip = georesp
+        else:
+            if georesp.subdivisions.most_specific.name:
+                region = parse.unquote(georesp.subdivisions.most_specific.name).replace('"', '_').replace('*', '_').replace('/', '_'). \
+                replace('\\', '_').replace("'", '_')
+            else:
+                region = None
+            ip = str(georesp.traits.ip_address)
+            visitor = yield self.fetch_by(Visitors, ip=ip)
+            if not visitor:
+                self.region = region
+                self.city = georesp.city.name
+                self.country = georesp.country.name
+                self.ip = georesp.traits.ip_address
+                self.location = 'longitude: ' + str(
+                    georesp.location.longitude) + ' / ' + 'latitude: ' + str(
+                    georesp.location.latitude)
         if visitor:
+            today = datetime.datetime.date(datetime.datetime.now())
+            tmsp_today = time.mktime(time.strptime(str(today), '%Y-%m-%d'))
+            range_of_date = datetime.datetime.timestamp(
+                    visitor.last_visit) - tmsp_today
+            if 0 <= range_of_date < 86400:
+                if not visitor.today_visit:
+                    visitor.today_visit = 1
+                else:
+                    visitor.today_visit += 1
+            else:
+                visitor.today_visit = 1
+
             visitor.last_visit = datetime.datetime.now()
-            visitor.count_visits = visitor.count_visits + 1
+            visitor.count_visits += 1
             yield visitor.update()
         else:
-            self.ip = georesp.traits.ip_address
-            self.location = 'longitude: '+str(georesp.location.longitude)+' / '+'latitude: '+str(georesp.location.latitude)
+            self.today_visit = 1
             self.last_visit = datetime.datetime.now()
-            self.city = georesp.city.name
-            self.country = georesp.country.name
-            self.region = region
             self.count_visits = 1
             yield self.save()

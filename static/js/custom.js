@@ -215,28 +215,44 @@ jQuery(function($){
 	
 });
 
-function send_email(){
-	var data = {};
-	var required_fields = ['name', 'email', 'subject', 'message'];
-	for(var i=0; i<required_fields.length; i++){
-		var field_obj = document.getElementById(required_fields[i]);
-		var field_obj_val = field_obj.value;
-		if(field_obj_val){
-			data[required_fields[i]] = field_obj_val;
+function set_value(objs, value) {
+	for(var n=0; n<objs.length; n++){
+		console.log(objs[n]);
+			objs[n].value = value
 		}
-		else{
-			flash("Please fill field "+"<span style='color:red'>"+required_fields[i]+ "</span>"+"!");
-			return
+}
+
+function send_email(error){
+	if(error){
+		flash(error)
+	}else {
+		var data = {};
+		var required_fields = ['name', 'email', 'subject', 'message'];
+		var objs = [];
+		for(var i=0; i<required_fields.length; i++){
+			var field_obj = document.getElementById(required_fields[i]);
+			objs.push(field_obj);
+			var field_obj_val = field_obj.value;
+			if(field_obj_val){
+				data[required_fields[i]] = field_obj_val;
+			}
+			else {
+				flash("Please fill field " + "<span style='color:red'>" + required_fields[i] + "</span>" + "!");
+				return
+			}
 		}
+		set_value(objs, '');
+
+		$.ajax({
+			url: '/',
+			type: 'post',
+			data: data,
+			success: function (data) {
+				flash(data.error)
+			}
+		})
 	}
-	$.ajax({
-		url: '/',
-		type: 'post',
-		data: data,
-		success: function (data) {
-			flash("Thank you for you message. I'll answer you in a few hours.")
-		}
-	})
+	
 }
 
 function flash(message) {

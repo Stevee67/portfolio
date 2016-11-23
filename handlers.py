@@ -1,13 +1,13 @@
 import tornado.web
 import tornado.gen
-from modules.utils import format_date, send_message_async, merge_object_by_kk, paginaion, object_to_dict, success
+from modules.utils import format_date, send_message_async, merge_object_by_kk, pagination, object_to_dict, success
 import tornado.ioloop
 import json
 import re
 import config
 from modules.base import Base
 from modules.models import Users, StaticData, Projects, Educations, Skills, Experience, Visitors
-
+import datetime
 
 class HomeHandler(Base):
 
@@ -18,9 +18,11 @@ class HomeHandler(Base):
         user = yield self.fetch(Users, '984e586d-bd84-4ecc-b261-46b1c9c00c8c')
         static_data = yield self.fetch_all(StaticData)
         projects = yield Projects().get_projects()
-        educations = yield self.fetch_all(Educations, order_by={'ed_from':'ASC'})
-        skills = yield self.fetch_all(Skills, order_by={'kn_percent':'DESC'})
-        experiences = yield self.fetch_all(Experience)
+        educations = yield self.fetch_all(Educations,
+                                          order_by={'ed_from': 'ASC'})
+        skills = yield self.fetch_all(Skills, order_by={'kn_percent': 'DESC'})
+        experiences = yield self.fetch_all(Experience,
+                                           order_by={'w_from': 'ASC'})
         yield Visitors().save_visitors(ip)
         self.render("index.html", user=user,
                     skills=skills,
@@ -30,18 +32,33 @@ class HomeHandler(Base):
                     static_data=merge_object_by_kk(static_data, 'type', 'text'),
                     format_date=format_date)
 
-
+    @success
     @tornado.gen.coroutine
     def post(self):
-        message = """ Message from %(from)s \n
-            User email %(email)s \n
-            Subject: %(subject)s \n
-            Message: %(message)s""" % {'from': self.get_argument('name'),
-                                       'email': self.get_argument('email'),
-                                       'subject': self.get_argument('subject'),
-                                       'message': self.get_argument('message')}
+        x_real_ip = self.request.headers.get("X-Real-IP")
+        ip = x_real_ip or self.request.remote_ip
+        visitor = yield self.fetch_by(Visitors, ip=ip)
+        error = yield visitor.if_limit_out()
+        if not error:
+            if visitor.today_messages:
+                visitor.today_messages += 1
+            else:
+                visitor.today_messages = 1
+            visitor.last_email = datetime.datetime.now()
+            yield visitor.update()
+            message = """ Message from %(from)s \n
+                User email %(email)s \n
+                Subject: %(subject)s \n
+                Message: %(message)s""" % {'from': self.get_argument('name'),
+                                           'email': self.get_argument('email'),
+                                           'subject': self.get_argument('subject'),
+                                           'message': self.get_argument('message')}
 
-        tornado.ioloop.IOLoop.current().spawn_callback(send_message_async, message)
+            tornado.ioloop.IOLoop.current().spawn_callback(send_message_async,
+                                                           message)
+            return "Thank you for you message. I'll answer you in a few hours."
+        else:
+            return error
 
 
 class AdminHandler(Base):
@@ -52,6 +69,7 @@ class AdminHandler(Base):
             self.redirect('/admin/login')
         else:
             self.render("admin/index.html")
+
 
 class EditPersonalInfo(Base):
 
@@ -69,7 +87,6 @@ class EditPersonalInfo(Base):
         personal_info = yield self.fetch_by(Users, email=config.SENDER_ADDRESS)
         return personal_info
 
-
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def put(self, *args, **kwargs):
@@ -80,12 +97,12 @@ class EditPersonalInfo(Base):
         if action in EditPersonalInfo._actions:
             if action == 'edit':
                 new_user = yield user.edit_object(data)
-                self.write({'data':object_to_dict(new_user), 'success': 'You successful change your info!'})
+                self.write({'data':object_to_dict(new_user),
+                            'success': 'You successful change your info!'})
             elif action == 'passchange':
                 result = yield user.change_pass(data)
                 self.write(result)
         self.finish()
-
 
 
 class EditSkills(Base):
@@ -102,7 +119,8 @@ class EditSkills(Base):
     @tornado.gen.coroutine
     def post(self):
         user = yield self.fetch_by(Users, email=self.current_user.decode())
-        skills = yield self.fetch_all(Skills, filter_by={'user_id':user.id}, order_by={'kn_percent':'DESC'})
+        skills = yield self.fetch_all(Skills, filter_by={'user_id': user.id},
+                                      order_by={'kn_percent': 'DESC'})
         return skills
 
     @success
@@ -176,6 +194,7 @@ class EditExperience(Base):
         yield experience.remove()
         self.finish()
 
+
 class EditEducation(Base):
 
     _actions = ['add', 'edit']
@@ -215,6 +234,7 @@ class EditEducation(Base):
         education = yield self.fetch(Educations, data['id'])
         yield education.remove()
         self.finish()
+
 
 class EditStaticData(Base):
 
@@ -262,6 +282,7 @@ class EditStaticData(Base):
         types = yield StaticData().get_allowed_types()
         return types
 
+
 class ListVisitors(Base):
 
     item_per_page = 25
@@ -278,8 +299,13 @@ class ListVisitors(Base):
     @tornado.gen.coroutine
     def post(self):
         data = json.loads(self.request.body.decode())
-        pages, list_visitors, count = yield paginaion(self.db, 'visitors', ListVisitors.item_per_page, data['page'])
-        item_on_pages = str(data['page']*ListVisitors.item_per_page) if data['page'] != pages else str(count)
+        yield Visitors().edit_today_visitors()
+        pages, list_visitors, count = yield pagination(
+            self.db, 'visitors', ListVisitors.item_per_page, data['page'],
+            order_by={'last_visit': 'DESC'})
+
+        item_on_pages = str(data['page']*ListVisitors.item_per_page) \
+            if data['page'] != pages else str(count)
         return {'visitors': list_visitors,
                     'pages': pages,
                     'page': data['page'],
@@ -325,7 +351,6 @@ class EditProjects(Base):
         project = yield self.fetch(Projects, data['id'])
         yield project.delete_project()
         self.finish()
-
 
 
 class Login(Base):

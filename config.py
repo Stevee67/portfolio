@@ -8,7 +8,7 @@ MAIL_PASS = 'nokia675320'
 SENDER_ADDRESS = 'stopa6767@gmail.com'
 SECRET_COOKIE = 'jhyjs584sjhs45s69s9ww98r'
 DEFAULT_IMAGE_ID = '0000000-0000-0000-0000-000000000001'
-
+LIMIT_MESSAGES = 3
 
 DB_HOST = 'localhost'
 DB_USER = 'webdev'
@@ -21,7 +21,7 @@ if os.environ.get('OPENSHIFT_REPO_DIR'):
     DB_PASS = os.environ.get('OPENSHIFT_POSTGRESQL_DB_PASSWORD')
     DB_PORT = os.environ.get('OPENSHIFT_POSTGRESQL_DB_PORT')
 
-PORT = os.environ.get('OPENSHIFT_PYTHON_PORT') or 8888
+PORT = os.environ.get('OPENSHIFT_PYTHON_PORT') or 8000
 HOST = os.environ.get('OPENSHIFT_PYTHON_IP') or '0.0.0.0'
 
 DSN = "dbname='{}' user='{}' password='{}' " \

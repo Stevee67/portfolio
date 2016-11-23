@@ -1,6 +1,6 @@
 tornado==4.3
 Jinja2==2.7.3
-Werkzeug == 0.10.4
+Werkzeug == 0.11.11
 Momoko
 psycopg2 == 2.6.1
 Pillow == 2.9.0
